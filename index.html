@@ -334,7 +334,7 @@ body{background:#fff;overflow:visible}.titlebar,.menubar,.toolbar,.sidebar,.stat
   <div style="margin-top:6px"><button onclick="findNext()">Find Next</button> <button onclick="replaceAll()">Replace All</button> <button onclick="hideFind()">Close</button></div>
 </div>
 
-<input type="file" id="fileInput" accept=".html,.txt,.rtf" onchange="loadFile(event)">
+<input type="file" id="fileInput" accept=".rekhta.json,.json,.html,.txt,.rtf" onchange="loadFile(event)">
 <input type="file" id="fontInput" accept=".ttf,.otf,.woff,.woff2">
 
 <script>
@@ -374,8 +374,484 @@ function newDoc(){if(dirty){if(!confirm('Discard unsaved changes and create a ne
 function closeDoc(){newDoc()}
 function openDoc(){document.getElementById('fileInput').click()}
 function loadFile(e){const f=e.target.files[0];if(!f)return;currentFile=f.name;document.getElementById('docTitle').textContent=currentFile;const r=new FileReader();r.onload=()=>{if(f.name.toLowerCase().endsWith('.html')){const d=new DOMParser().parseFromString(r.result,'text/html');editor.innerHTML=d.body.innerHTML||r.result}else editor.innerText=r.result;dirty=false;document.getElementById('saveStatus').textContent='Opened';updateStatus()};r.readAsText(f);e.target.value=''}
-function saveDoc(){download('REKHTA_Project.html','<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:'+getComputedStyle(editor).fontFamily+';font-size:22px} .doc{direction:'+editor.dir+'}</style></head><body><div class="doc">'+editor.innerHTML+'</div></body></html>');dirty=false;document.getElementById('saveStatus').textContent='Saved'}
-function saveAs(){const n=prompt('Enter file name:','My_Urdu_Document.html');if(n){download(n,n.toLowerCase().endsWith('.html')?'<!DOCTYPE html><html><meta charset="UTF-8"><body><div dir="'+editor.dir+'">'+editor.innerHTML+'</div></body></html>':editor.innerText);dirty=false}}
+function saveDoc(){download('REKHTA_Project.html','<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:'+getComputedStyle(editor).fontFamily+';font-size:22px} .doc{direction:'+editor.dir+'}</style></head><body><div class="doc">'+editor.innerHTML+'</div>
+<script id="rekhta-v2-enhancements">
+/* REKHTA V2 — practical offline enhancements */
+(function(){
+  const $ = id => document.getElementById(id);
+  const designLayer = () => $('designDrawLayer');
+
+  function setSaved(msg){
+    const s=$('saveStatus');
+    if(s) s.textContent=msg;
+  }
+
+  /* Better local project save: keeps text, page settings and design objects. */
+  window.saveDoc = function(){
+    const project = {
+      version: 2,
+      name: currentFile || 'REKHTA Project',
+      html: editor.innerHTML,
+      designs: designLayer() ? designLayer().innerHTML : '',
+      page: {
+        width: page.style.width || page.offsetWidth + 'px',
+        minHeight: page.style.minHeight || page.offsetHeight + 'px',
+        height: page.style.height || 'auto',
+        background: page.style.background || '',
+        border: page.style.border || ''
+      },
+      lang: lang,
+      pageSize: pageSize,
+      savedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=(currentFile||'REKHTA_Project').replace(/\.[^.]+$/,'')+'.rekhta.json';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    dirty=false; setSaved('Saved');
+  };
+
+  window.saveAs = function(){
+    const n=prompt('Project file name:','My_REKHTA_Design.rekhta.json');
+    if(!n) return;
+    const project={
+      version:2,name:n,html:editor.innerHTML,
+      designs:designLayer()?.innerHTML||'',
+      page:{width:page.style.width,minHeight:page.style.minHeight,height:page.style.height,background:page.style.background,border:page.style.border},
+      lang,pageSize,savedAt:new Date().toISOString()
+    };
+    const filename=n.toLowerCase().endsWith('.rekhta.json')?n:n+'.rekhta.json';
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(project,null,2)],{type:'application/json'}));
+    a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    dirty=false;setSaved('Saved As');
+  };
+
+  /* Open now accepts REKHTA project JSON, HTML and text. */
+  window.openDoc = function(){
+    const input=$('fileInput');
+    if(input) input.accept='.rekhta.json,.json,.html,.txt,.rtf';
+    input?.click();
+  };
+
+  window.loadFile = function(e){
+    const f=e.target.files[0]; if(!f)return;
+    currentFile=f.name;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const raw=String(r.result);
+        if(f.name.toLowerCase().endsWith('.rekhta.json') || f.name.toLowerCase().endsWith('.json')){
+          const p=JSON.parse(raw);
+          editor.innerHTML=p.html||'';
+          if(designLayer()) designLayer().innerHTML=p.designs||'';
+          if(p.page){
+            page.style.width=p.page.width||'';
+            page.style.minHeight=p.page.minHeight||'';
+            page.style.height=p.page.height||'auto';
+            page.style.background=p.page.background||'';
+            page.style.border=p.page.border||'';
+          }
+          if(p.pageSize) pageSize=p.pageSize;
+          if(p.lang) setLanguage(p.lang);
+          document.querySelectorAll('.design-object').forEach(el=>makeMovableDesignObject(el));
+          setSaved('Project Opened');
+        }else if(f.name.toLowerCase().endsWith('.html')){
+          const d=new DOMParser().parseFromString(raw,'text/html');
+          editor.innerHTML=d.body.innerHTML||raw;
+          setSaved('HTML Opened');
+        }else{
+          editor.innerText=raw;
+          setSaved('Text Opened');
+        }
+        dirty=false;updateStatus();updatePageIndicator();
+      }catch(err){
+        alert('Could not open this file. Please choose a valid REKHTA project, HTML or text file.');
+      }
+    };
+    r.readAsText(f); e.target.value='';
+  };
+
+  /* Export a clean SVG as an additional reliable offline format. */
+  window.exportSVG = function(){
+    const w=page.offsetWidth,h=page.offsetHeight;
+    const clone=page.cloneNode(true);
+    clone.style.transform='none';clone.style.margin='0';clone.style.boxShadow='none';
+    clone.querySelectorAll('[contenteditable]').forEach(x=>x.removeAttribute('contenteditable'));
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+<foreignObject width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml">${clone.outerHTML}</div>
+</foreignObject></svg>`;
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
+    a.download=(currentFile||'REKHTA_Design').replace(/\.[^.]+$/,'')+'.svg';
+    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  };
+
+  /* True print preview window, with the current page only. */
+  window.printPreview = function(){
+    const w=window.open('','_blank','width=1000,height=800');
+    if(!w){alert('Please allow pop-ups for REKHTA print preview.');return;}
+    const styles=[...document.querySelectorAll('style')].map(s=>s.outerHTML).join('');
+    w.document.write(`<!doctype html><html><head><meta charset="UTF-8"><title>REKHTA Print Preview</title>${styles}
+<style>
+body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!important;margin:0 auto!important;box-shadow:0 2px 12px #0004!important}
+@media print{body{background:#fff}.preview-wrap{padding:0}.page{box-shadow:none!important}}
+</style></head><body><div class="preview-wrap">${page.outerHTML}</div></body></html>`);
+    w.document.close();
+    w.focus();
+  };
+
+  /* Make dashboard quick buttons also reset the page cleanly. */
+  const oldStartMode=window.startMode;
+  window.startMode=function(mode){
+    oldStartMode(mode);
+    setTimeout(()=>{ editor.focus(); updateStatus(); updatePageIndicator(); },60);
+  };
+
+  /* Real ruler toggle instead of an alert. */
+  let rulerOn=false;
+  window.toggleRuler=function(){
+    rulerOn=!rulerOn;
+    document.body.classList.toggle('ruler-on',rulerOn);
+    setSaved(rulerOn?'Ruler ON':'Ruler OFF');
+  };
+
+  /* Font upload: installs a local font for this browser session. */
+  window.installFont=function(){
+    const input=$('fontInput'); if(input) input.click();
+  };
+  const fontInput=$('fontInput');
+  if(fontInput){
+    fontInput.addEventListener('change',e=>{
+      const f=e.target.files[0]; if(!f)return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const family='RKUploadedFont';
+        const st=document.createElement('style');
+        st.textContent=`@font-face{font-family:'${family}';src:url('${reader.result}') format('truetype');font-display:swap}`;
+        document.head.appendChild(st);
+        const sel=$('fontName');
+        if(sel && ![...sel.options].some(o=>o.value===family)){
+          const opt=document.createElement('option');opt.value=family;opt.textContent=f.name;sel.appendChild(opt);
+        }
+        setFont(family);setSaved('Font Installed');
+      };
+      reader.readAsDataURL(f);
+      e.target.value='';
+    });
+  }
+
+  /* Insert a selected image as a movable design object instead of only inline text. */
+  window.insertSelectedPicture=function(e){
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{
+      const el=document.createElement('div');
+      el.className='design-object';
+      el.style.cssText='position:absolute;left:80px;top:80px;width:260px;cursor:move;z-index:25;';
+      el.innerHTML=`<img src="${r.result}" style="display:block;width:100%;height:auto;max-width:none">`;
+      designLayer().appendChild(el);
+      makeDesignElement(el);selectDesignObject(el);changed();
+    };
+    r.readAsDataURL(f);e.target.value='';
+  };
+
+  /* Template restore */
+  window.loadDesignTemplate=function(){
+    const t=localStorage.getItem('rekhta_design_template');
+    if(!t){alert('No saved design template found on this computer.');return;}
+    editor.innerHTML=t;changed();setSaved('Template Loaded');
+  };
+
+  /* Better project autosave with page/design data. */
+  setInterval(()=>{
+    if(typeof dirty!=='undefined' && dirty){
+      localStorage.setItem('rekhta_project_autosave',JSON.stringify({
+        html:editor.innerHTML,designs:designLayer()?.innerHTML||'',
+        width:page.style.width,minHeight:page.style.minHeight,
+        background:page.style.background,border:page.style.border,lang,pageSize
+      }));
+    }
+  },5000);
+
+  /* Add useful buttons to the sidebar without removing any existing option. */
+  const side=document.querySelector('.sidebar');
+  if(side && !document.getElementById('v2-extra-tools')){
+    const box=document.createElement('div');
+    box.id='v2-extra-tools';
+    box.innerHTML=`<div class="side-title">EXTRA TOOLS</div>
+      <button class="sidebtn" onclick="printPreview()">Print Preview</button>
+      <button class="sidebtn" onclick="exportSVG()">Export SVG</button>
+      <button class="sidebtn" onclick="installFont()">Install Local Font</button>
+      <button class="sidebtn" onclick="loadDesignTemplate()">Load Saved Template</button>`;
+    side.appendChild(box);
+  }
+
+  /* Extra menu item for SVG and preview. */
+  const menus=[...document.querySelectorAll('.menu .dropdown')];
+  const fileDrop=menus.find(x=>x.parentElement.querySelector('button')?.textContent.trim()==='File');
+  if(fileDrop){
+    const sep=document.createElement('div');sep.className='sep';fileDrop.appendChild(sep);
+    const b1=document.createElement('button');b1.textContent='Print Preview';b1.onclick=printPreview;fileDrop.appendChild(b1);
+    const b2=document.createElement('button');b2.textContent='Export SVG';b2.onclick=exportSVG;fileDrop.appendChild(b2);
+  }
+
+  /* Ruler visual */
+  const rs=document.createElement('style');
+  rs.textContent=`.ruler-on .canvas-area{background-image:linear-gradient(90deg,#9aa4aa 1px,transparent 1px),linear-gradient(#9aa4aa 1px,transparent 1px);background-size:10px 10px}`;
+  document.head.appendChild(rs);
+
+  /* Ensure page starts in A4 and editor remains editable. */
+  setPage('A4');
+  setLanguage(lang||'ur');
+  updateStatus();
+  updatePageIndicator();
+})();
+</script>
+
+</body></html>');dirty=false;document.getElementById('saveStatus').textContent='Saved'}
+function saveAs(){const n=prompt('Enter file name:','My_Urdu_Document.html');if(n){download(n,n.toLowerCase().endsWith('.html')?'<!DOCTYPE html><html><meta charset="UTF-8"><body><div dir="'+editor.dir+'">'+editor.innerHTML+'</div>
+<script id="rekhta-v2-enhancements">
+/* REKHTA V2 — practical offline enhancements */
+(function(){
+  const $ = id => document.getElementById(id);
+  const designLayer = () => $('designDrawLayer');
+
+  function setSaved(msg){
+    const s=$('saveStatus');
+    if(s) s.textContent=msg;
+  }
+
+  /* Better local project save: keeps text, page settings and design objects. */
+  window.saveDoc = function(){
+    const project = {
+      version: 2,
+      name: currentFile || 'REKHTA Project',
+      html: editor.innerHTML,
+      designs: designLayer() ? designLayer().innerHTML : '',
+      page: {
+        width: page.style.width || page.offsetWidth + 'px',
+        minHeight: page.style.minHeight || page.offsetHeight + 'px',
+        height: page.style.height || 'auto',
+        background: page.style.background || '',
+        border: page.style.border || ''
+      },
+      lang: lang,
+      pageSize: pageSize,
+      savedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=(currentFile||'REKHTA_Project').replace(/\.[^.]+$/,'')+'.rekhta.json';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    dirty=false; setSaved('Saved');
+  };
+
+  window.saveAs = function(){
+    const n=prompt('Project file name:','My_REKHTA_Design.rekhta.json');
+    if(!n) return;
+    const project={
+      version:2,name:n,html:editor.innerHTML,
+      designs:designLayer()?.innerHTML||'',
+      page:{width:page.style.width,minHeight:page.style.minHeight,height:page.style.height,background:page.style.background,border:page.style.border},
+      lang,pageSize,savedAt:new Date().toISOString()
+    };
+    const filename=n.toLowerCase().endsWith('.rekhta.json')?n:n+'.rekhta.json';
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(project,null,2)],{type:'application/json'}));
+    a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    dirty=false;setSaved('Saved As');
+  };
+
+  /* Open now accepts REKHTA project JSON, HTML and text. */
+  window.openDoc = function(){
+    const input=$('fileInput');
+    if(input) input.accept='.rekhta.json,.json,.html,.txt,.rtf';
+    input?.click();
+  };
+
+  window.loadFile = function(e){
+    const f=e.target.files[0]; if(!f)return;
+    currentFile=f.name;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const raw=String(r.result);
+        if(f.name.toLowerCase().endsWith('.rekhta.json') || f.name.toLowerCase().endsWith('.json')){
+          const p=JSON.parse(raw);
+          editor.innerHTML=p.html||'';
+          if(designLayer()) designLayer().innerHTML=p.designs||'';
+          if(p.page){
+            page.style.width=p.page.width||'';
+            page.style.minHeight=p.page.minHeight||'';
+            page.style.height=p.page.height||'auto';
+            page.style.background=p.page.background||'';
+            page.style.border=p.page.border||'';
+          }
+          if(p.pageSize) pageSize=p.pageSize;
+          if(p.lang) setLanguage(p.lang);
+          document.querySelectorAll('.design-object').forEach(el=>makeMovableDesignObject(el));
+          setSaved('Project Opened');
+        }else if(f.name.toLowerCase().endsWith('.html')){
+          const d=new DOMParser().parseFromString(raw,'text/html');
+          editor.innerHTML=d.body.innerHTML||raw;
+          setSaved('HTML Opened');
+        }else{
+          editor.innerText=raw;
+          setSaved('Text Opened');
+        }
+        dirty=false;updateStatus();updatePageIndicator();
+      }catch(err){
+        alert('Could not open this file. Please choose a valid REKHTA project, HTML or text file.');
+      }
+    };
+    r.readAsText(f); e.target.value='';
+  };
+
+  /* Export a clean SVG as an additional reliable offline format. */
+  window.exportSVG = function(){
+    const w=page.offsetWidth,h=page.offsetHeight;
+    const clone=page.cloneNode(true);
+    clone.style.transform='none';clone.style.margin='0';clone.style.boxShadow='none';
+    clone.querySelectorAll('[contenteditable]').forEach(x=>x.removeAttribute('contenteditable'));
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+<foreignObject width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml">${clone.outerHTML}</div>
+</foreignObject></svg>`;
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
+    a.download=(currentFile||'REKHTA_Design').replace(/\.[^.]+$/,'')+'.svg';
+    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  };
+
+  /* True print preview window, with the current page only. */
+  window.printPreview = function(){
+    const w=window.open('','_blank','width=1000,height=800');
+    if(!w){alert('Please allow pop-ups for REKHTA print preview.');return;}
+    const styles=[...document.querySelectorAll('style')].map(s=>s.outerHTML).join('');
+    w.document.write(`<!doctype html><html><head><meta charset="UTF-8"><title>REKHTA Print Preview</title>${styles}
+<style>
+body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!important;margin:0 auto!important;box-shadow:0 2px 12px #0004!important}
+@media print{body{background:#fff}.preview-wrap{padding:0}.page{box-shadow:none!important}}
+</style></head><body><div class="preview-wrap">${page.outerHTML}</div></body></html>`);
+    w.document.close();
+    w.focus();
+  };
+
+  /* Make dashboard quick buttons also reset the page cleanly. */
+  const oldStartMode=window.startMode;
+  window.startMode=function(mode){
+    oldStartMode(mode);
+    setTimeout(()=>{ editor.focus(); updateStatus(); updatePageIndicator(); },60);
+  };
+
+  /* Real ruler toggle instead of an alert. */
+  let rulerOn=false;
+  window.toggleRuler=function(){
+    rulerOn=!rulerOn;
+    document.body.classList.toggle('ruler-on',rulerOn);
+    setSaved(rulerOn?'Ruler ON':'Ruler OFF');
+  };
+
+  /* Font upload: installs a local font for this browser session. */
+  window.installFont=function(){
+    const input=$('fontInput'); if(input) input.click();
+  };
+  const fontInput=$('fontInput');
+  if(fontInput){
+    fontInput.addEventListener('change',e=>{
+      const f=e.target.files[0]; if(!f)return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const family='RKUploadedFont';
+        const st=document.createElement('style');
+        st.textContent=`@font-face{font-family:'${family}';src:url('${reader.result}') format('truetype');font-display:swap}`;
+        document.head.appendChild(st);
+        const sel=$('fontName');
+        if(sel && ![...sel.options].some(o=>o.value===family)){
+          const opt=document.createElement('option');opt.value=family;opt.textContent=f.name;sel.appendChild(opt);
+        }
+        setFont(family);setSaved('Font Installed');
+      };
+      reader.readAsDataURL(f);
+      e.target.value='';
+    });
+  }
+
+  /* Insert a selected image as a movable design object instead of only inline text. */
+  window.insertSelectedPicture=function(e){
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{
+      const el=document.createElement('div');
+      el.className='design-object';
+      el.style.cssText='position:absolute;left:80px;top:80px;width:260px;cursor:move;z-index:25;';
+      el.innerHTML=`<img src="${r.result}" style="display:block;width:100%;height:auto;max-width:none">`;
+      designLayer().appendChild(el);
+      makeDesignElement(el);selectDesignObject(el);changed();
+    };
+    r.readAsDataURL(f);e.target.value='';
+  };
+
+  /* Template restore */
+  window.loadDesignTemplate=function(){
+    const t=localStorage.getItem('rekhta_design_template');
+    if(!t){alert('No saved design template found on this computer.');return;}
+    editor.innerHTML=t;changed();setSaved('Template Loaded');
+  };
+
+  /* Better project autosave with page/design data. */
+  setInterval(()=>{
+    if(typeof dirty!=='undefined' && dirty){
+      localStorage.setItem('rekhta_project_autosave',JSON.stringify({
+        html:editor.innerHTML,designs:designLayer()?.innerHTML||'',
+        width:page.style.width,minHeight:page.style.minHeight,
+        background:page.style.background,border:page.style.border,lang,pageSize
+      }));
+    }
+  },5000);
+
+  /* Add useful buttons to the sidebar without removing any existing option. */
+  const side=document.querySelector('.sidebar');
+  if(side && !document.getElementById('v2-extra-tools')){
+    const box=document.createElement('div');
+    box.id='v2-extra-tools';
+    box.innerHTML=`<div class="side-title">EXTRA TOOLS</div>
+      <button class="sidebtn" onclick="printPreview()">Print Preview</button>
+      <button class="sidebtn" onclick="exportSVG()">Export SVG</button>
+      <button class="sidebtn" onclick="installFont()">Install Local Font</button>
+      <button class="sidebtn" onclick="loadDesignTemplate()">Load Saved Template</button>`;
+    side.appendChild(box);
+  }
+
+  /* Extra menu item for SVG and preview. */
+  const menus=[...document.querySelectorAll('.menu .dropdown')];
+  const fileDrop=menus.find(x=>x.parentElement.querySelector('button')?.textContent.trim()==='File');
+  if(fileDrop){
+    const sep=document.createElement('div');sep.className='sep';fileDrop.appendChild(sep);
+    const b1=document.createElement('button');b1.textContent='Print Preview';b1.onclick=printPreview;fileDrop.appendChild(b1);
+    const b2=document.createElement('button');b2.textContent='Export SVG';b2.onclick=exportSVG;fileDrop.appendChild(b2);
+  }
+
+  /* Ruler visual */
+  const rs=document.createElement('style');
+  rs.textContent=`.ruler-on .canvas-area{background-image:linear-gradient(90deg,#9aa4aa 1px,transparent 1px),linear-gradient(#9aa4aa 1px,transparent 1px);background-size:10px 10px}`;
+  document.head.appendChild(rs);
+
+  /* Ensure page starts in A4 and editor remains editable. */
+  setPage('A4');
+  setLanguage(lang||'ur');
+  updateStatus();
+  updatePageIndicator();
+})();
+</script>
+
+</body></html>':editor.innerText);dirty=false}}
 function download(name,data){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/html;charset=utf-8'}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
 function exportTxt(){const n=prompt('Enter text file name:','Urdu_Text.txt');if(n)download(n,editor.innerText)}
 function importText(){openDoc()}
@@ -711,5 +1187,243 @@ document.addEventListener('keydown', function(e){
   }
 });
 </script>
+
+<script id="rekhta-v2-enhancements">
+/* REKHTA V2 — practical offline enhancements */
+(function(){
+  const $ = id => document.getElementById(id);
+  const designLayer = () => $('designDrawLayer');
+
+  function setSaved(msg){
+    const s=$('saveStatus');
+    if(s) s.textContent=msg;
+  }
+
+  /* Better local project save: keeps text, page settings and design objects. */
+  window.saveDoc = function(){
+    const project = {
+      version: 2,
+      name: currentFile || 'REKHTA Project',
+      html: editor.innerHTML,
+      designs: designLayer() ? designLayer().innerHTML : '',
+      page: {
+        width: page.style.width || page.offsetWidth + 'px',
+        minHeight: page.style.minHeight || page.offsetHeight + 'px',
+        height: page.style.height || 'auto',
+        background: page.style.background || '',
+        border: page.style.border || ''
+      },
+      lang: lang,
+      pageSize: pageSize,
+      savedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(project,null,2)], {type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=(currentFile||'REKHTA_Project').replace(/\.[^.]+$/,'')+'.rekhta.json';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    dirty=false; setSaved('Saved');
+  };
+
+  window.saveAs = function(){
+    const n=prompt('Project file name:','My_REKHTA_Design.rekhta.json');
+    if(!n) return;
+    const project={
+      version:2,name:n,html:editor.innerHTML,
+      designs:designLayer()?.innerHTML||'',
+      page:{width:page.style.width,minHeight:page.style.minHeight,height:page.style.height,background:page.style.background,border:page.style.border},
+      lang,pageSize,savedAt:new Date().toISOString()
+    };
+    const filename=n.toLowerCase().endsWith('.rekhta.json')?n:n+'.rekhta.json';
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([JSON.stringify(project,null,2)],{type:'application/json'}));
+    a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    dirty=false;setSaved('Saved As');
+  };
+
+  /* Open now accepts REKHTA project JSON, HTML and text. */
+  window.openDoc = function(){
+    const input=$('fileInput');
+    if(input) input.accept='.rekhta.json,.json,.html,.txt,.rtf';
+    input?.click();
+  };
+
+  window.loadFile = function(e){
+    const f=e.target.files[0]; if(!f)return;
+    currentFile=f.name;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const raw=String(r.result);
+        if(f.name.toLowerCase().endsWith('.rekhta.json') || f.name.toLowerCase().endsWith('.json')){
+          const p=JSON.parse(raw);
+          editor.innerHTML=p.html||'';
+          if(designLayer()) designLayer().innerHTML=p.designs||'';
+          if(p.page){
+            page.style.width=p.page.width||'';
+            page.style.minHeight=p.page.minHeight||'';
+            page.style.height=p.page.height||'auto';
+            page.style.background=p.page.background||'';
+            page.style.border=p.page.border||'';
+          }
+          if(p.pageSize) pageSize=p.pageSize;
+          if(p.lang) setLanguage(p.lang);
+          document.querySelectorAll('.design-object').forEach(el=>makeMovableDesignObject(el));
+          setSaved('Project Opened');
+        }else if(f.name.toLowerCase().endsWith('.html')){
+          const d=new DOMParser().parseFromString(raw,'text/html');
+          editor.innerHTML=d.body.innerHTML||raw;
+          setSaved('HTML Opened');
+        }else{
+          editor.innerText=raw;
+          setSaved('Text Opened');
+        }
+        dirty=false;updateStatus();updatePageIndicator();
+      }catch(err){
+        alert('Could not open this file. Please choose a valid REKHTA project, HTML or text file.');
+      }
+    };
+    r.readAsText(f); e.target.value='';
+  };
+
+  /* Export a clean SVG as an additional reliable offline format. */
+  window.exportSVG = function(){
+    const w=page.offsetWidth,h=page.offsetHeight;
+    const clone=page.cloneNode(true);
+    clone.style.transform='none';clone.style.margin='0';clone.style.boxShadow='none';
+    clone.querySelectorAll('[contenteditable]').forEach(x=>x.removeAttribute('contenteditable'));
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+<foreignObject width="100%" height="100%">
+<div xmlns="http://www.w3.org/1999/xhtml">${clone.outerHTML}</div>
+</foreignObject></svg>`;
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
+    a.download=(currentFile||'REKHTA_Design').replace(/\.[^.]+$/,'')+'.svg';
+    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  };
+
+  /* True print preview window, with the current page only. */
+  window.printPreview = function(){
+    const w=window.open('','_blank','width=1000,height=800');
+    if(!w){alert('Please allow pop-ups for REKHTA print preview.');return;}
+    const styles=[...document.querySelectorAll('style')].map(s=>s.outerHTML).join('');
+    w.document.write(`<!doctype html><html><head><meta charset="UTF-8"><title>REKHTA Print Preview</title>${styles}
+<style>
+body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!important;margin:0 auto!important;box-shadow:0 2px 12px #0004!important}
+@media print{body{background:#fff}.preview-wrap{padding:0}.page{box-shadow:none!important}}
+</style></head><body><div class="preview-wrap">${page.outerHTML}</div></body></html>`);
+    w.document.close();
+    w.focus();
+  };
+
+  /* Make dashboard quick buttons also reset the page cleanly. */
+  const oldStartMode=window.startMode;
+  window.startMode=function(mode){
+    oldStartMode(mode);
+    setTimeout(()=>{ editor.focus(); updateStatus(); updatePageIndicator(); },60);
+  };
+
+  /* Real ruler toggle instead of an alert. */
+  let rulerOn=false;
+  window.toggleRuler=function(){
+    rulerOn=!rulerOn;
+    document.body.classList.toggle('ruler-on',rulerOn);
+    setSaved(rulerOn?'Ruler ON':'Ruler OFF');
+  };
+
+  /* Font upload: installs a local font for this browser session. */
+  window.installFont=function(){
+    const input=$('fontInput'); if(input) input.click();
+  };
+  const fontInput=$('fontInput');
+  if(fontInput){
+    fontInput.addEventListener('change',e=>{
+      const f=e.target.files[0]; if(!f)return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const family='RKUploadedFont';
+        const st=document.createElement('style');
+        st.textContent=`@font-face{font-family:'${family}';src:url('${reader.result}') format('truetype');font-display:swap}`;
+        document.head.appendChild(st);
+        const sel=$('fontName');
+        if(sel && ![...sel.options].some(o=>o.value===family)){
+          const opt=document.createElement('option');opt.value=family;opt.textContent=f.name;sel.appendChild(opt);
+        }
+        setFont(family);setSaved('Font Installed');
+      };
+      reader.readAsDataURL(f);
+      e.target.value='';
+    });
+  }
+
+  /* Insert a selected image as a movable design object instead of only inline text. */
+  window.insertSelectedPicture=function(e){
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{
+      const el=document.createElement('div');
+      el.className='design-object';
+      el.style.cssText='position:absolute;left:80px;top:80px;width:260px;cursor:move;z-index:25;';
+      el.innerHTML=`<img src="${r.result}" style="display:block;width:100%;height:auto;max-width:none">`;
+      designLayer().appendChild(el);
+      makeDesignElement(el);selectDesignObject(el);changed();
+    };
+    r.readAsDataURL(f);e.target.value='';
+  };
+
+  /* Template restore */
+  window.loadDesignTemplate=function(){
+    const t=localStorage.getItem('rekhta_design_template');
+    if(!t){alert('No saved design template found on this computer.');return;}
+    editor.innerHTML=t;changed();setSaved('Template Loaded');
+  };
+
+  /* Better project autosave with page/design data. */
+  setInterval(()=>{
+    if(typeof dirty!=='undefined' && dirty){
+      localStorage.setItem('rekhta_project_autosave',JSON.stringify({
+        html:editor.innerHTML,designs:designLayer()?.innerHTML||'',
+        width:page.style.width,minHeight:page.style.minHeight,
+        background:page.style.background,border:page.style.border,lang,pageSize
+      }));
+    }
+  },5000);
+
+  /* Add useful buttons to the sidebar without removing any existing option. */
+  const side=document.querySelector('.sidebar');
+  if(side && !document.getElementById('v2-extra-tools')){
+    const box=document.createElement('div');
+    box.id='v2-extra-tools';
+    box.innerHTML=`<div class="side-title">EXTRA TOOLS</div>
+      <button class="sidebtn" onclick="printPreview()">Print Preview</button>
+      <button class="sidebtn" onclick="exportSVG()">Export SVG</button>
+      <button class="sidebtn" onclick="installFont()">Install Local Font</button>
+      <button class="sidebtn" onclick="loadDesignTemplate()">Load Saved Template</button>`;
+    side.appendChild(box);
+  }
+
+  /* Extra menu item for SVG and preview. */
+  const menus=[...document.querySelectorAll('.menu .dropdown')];
+  const fileDrop=menus.find(x=>x.parentElement.querySelector('button')?.textContent.trim()==='File');
+  if(fileDrop){
+    const sep=document.createElement('div');sep.className='sep';fileDrop.appendChild(sep);
+    const b1=document.createElement('button');b1.textContent='Print Preview';b1.onclick=printPreview;fileDrop.appendChild(b1);
+    const b2=document.createElement('button');b2.textContent='Export SVG';b2.onclick=exportSVG;fileDrop.appendChild(b2);
+  }
+
+  /* Ruler visual */
+  const rs=document.createElement('style');
+  rs.textContent=`.ruler-on .canvas-area{background-image:linear-gradient(90deg,#9aa4aa 1px,transparent 1px),linear-gradient(#9aa4aa 1px,transparent 1px);background-size:10px 10px}`;
+  document.head.appendChild(rs);
+
+  /* Ensure page starts in A4 and editor remains editable. */
+  setPage('A4');
+  setLanguage(lang||'ur');
+  updateStatus();
+  updatePageIndicator();
+})();
+</script>
+
 </body>
 </html>
