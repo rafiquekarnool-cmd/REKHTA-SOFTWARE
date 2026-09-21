@@ -1,6 +1,6 @@
 {
   "name": "rekhta-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "REKHTA Desktop Wedding Card Editor - RK Solution",
   "main": "main.js",
   "author": "RK Solution",
@@ -10,8 +10,8 @@
     "dist": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
-    "electron": "^38.1.2",
-    "electron-builder": "^26.0.12"
+    "electron": "22.3.27",
+    "electron-builder": "24.13.3"
   },
   "build": {
     "appId": "com.rksolution.rekhta",
