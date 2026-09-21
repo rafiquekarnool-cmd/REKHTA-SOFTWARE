@@ -499,7 +499,124 @@ function saveDoc(){download('REKHTA_Project.html','<!DOCTYPE html><html><head><m
 <style>
 body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!important;margin:0 auto!important;box-shadow:0 2px 12px #0004!important}
 @media print{body{background:#fff}.preview-wrap{padding:0}.page{box-shadow:none!important}}
-</style></head><body><div class="preview-wrap">${page.outerHTML}</div></body></html>`);
+</style></head><body><div class="preview-wrap">${page.outerHTML}</div>
+<style id="rekhta-final-stability">
+/* Free Cursor Text: click anywhere on the white page and type there. No visible textbox. */
+.free-cursor-text{position:absolute;min-width:2px;min-height:1.4em;padding:0;margin:0;border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;white-space:pre-wrap;z-index:60;cursor:text;line-height:1.8}
+.free-cursor-text:focus{border:0!important;outline:0!important;box-shadow:none!important}
+#page.free-cursor-ready{cursor:text}
+</style>
+<script id="rekhta-final-stability-script">
+(function(){
+  const pg=document.getElementById('page');
+  const ed=document.getElementById('editor');
+  const layer=document.getElementById('designDrawLayer');
+  if(!pg||!ed)return;
+
+  let activeFreeText=null;
+  window.rekhtaActiveFreeText=()=>activeFreeText;
+
+  function selectedFont(){
+    const x=document.getElementById('fontName');
+    return x&&x.value ? x.value : (lang==='ur'?'Jameel Noori Nastaleeq':'Arial');
+  }
+  function selectedSize(){
+    const x=document.getElementById('fontSize');
+    return (x&&x.value?x.value:22)+'px';
+  }
+  function activate(el){
+    activeFreeText=el;
+    document.querySelectorAll('.free-cursor-text').forEach(x=>x.dataset.active='0');
+    el.dataset.active='1';
+    el.focus();
+    const r=document.createRange(); r.selectNodeContents(el); r.collapse(false);
+    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  }
+  function makeFreeText(x,y){
+    const el=document.createElement('div');
+    el.className='free-cursor-text';
+    el.contentEditable='true';
+    el.spellcheck=false;
+    el.dir=(typeof lang!=='undefined'&&lang==='ur')?'rtl':'ltr';
+    el.lang=(typeof lang!=='undefined'?lang:'ur');
+    el.style.left=Math.max(0,x)+'px';
+    el.style.top=Math.max(0,y)+'px';
+    el.style.fontFamily="'"+selectedFont()+"', Tahoma, sans-serif";
+    el.style.fontSize=selectedSize();
+    el.addEventListener('focus',()=>activeFreeText=el);
+    el.addEventListener('mousedown',e=>e.stopPropagation());
+    el.addEventListener('input',()=>{try{changed()}catch(_){}});
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){e.preventDefault();el.blur();activeFreeText=null}
+      if((e.key==='Backspace'||e.key==='Delete') && !el.innerText.length){e.preventDefault();el.remove();activeFreeText=null;try{changed()}catch(_){}}
+    });
+    pg.appendChild(el); activate(el); return el;
+  }
+
+  pg.classList.add('free-cursor-ready');
+  pg.addEventListener('mousedown',function(e){
+    if(e.button!==0)return;
+    if(e.target.closest('button,input,select,.design-object,.free-cursor-text'))return;
+    if(document.body.classList.contains('shape-draw-mode'))return;
+    // A click directly on blank page/editor area starts typing at the exact click point.
+    if(e.target===pg || e.target===ed || e.target===layer){
+      e.preventDefault(); e.stopPropagation();
+      const rect=pg.getBoundingClientRect();
+      const scale=(typeof zoom!=='undefined'?zoom:100)/100;
+      makeFreeText((e.clientX-rect.left)/scale,(e.clientY-rect.top)/scale);
+    }
+  },true);
+
+  // Formatting now also works on free-position text.
+  const oldSetFont=window.setFont;
+  window.setFont=function(v){
+    if(activeFreeText){
+      activeFreeText.style.fontFamily="'"+v+"', Tahoma, sans-serif";
+      try{changed()}catch(_){}; return;
+    }
+    return oldSetFont(v);
+  };
+  const oldSetSize=window.setSize;
+  window.setSize=function(v){
+    if(activeFreeText){activeFreeText.style.fontSize=v+'px';try{changed()}catch(_){};return}
+    return oldSetSize(v);
+  };
+  const oldFormat=window.format;
+  window.format=function(cmd){
+    if(activeFreeText){activeFreeText.focus();document.execCommand(cmd);try{changed()}catch(_){};return}
+    return oldFormat(cmd);
+  };
+  const oldAlign=window.align;
+  window.align=function(v){
+    if(activeFreeText){activeFreeText.style.textAlign=v;try{changed()}catch(_){};return}
+    return oldAlign(v);
+  };
+  const oldSetLanguage=window.setLanguage;
+  window.setLanguage=function(v){
+    oldSetLanguage(v);
+    if(activeFreeText){activeFreeText.dir=v==='ur'?'rtl':'ltr';activeFreeText.lang=v;activeFreeText.focus()}
+  };
+
+  // Do not pretend Jameel is loaded: use it when Windows has it; otherwise offer the existing Install Local Font option.
+  const fontSelect=document.getElementById('fontName');
+  if(fontSelect){
+    fontSelect.addEventListener('change',function(){
+      if(this.value==='Jameel Noori Nastaleeq' && document.fonts && !document.fonts.check('20px "Jameel Noori Nastaleeq"')){
+        const st=document.getElementById('saveStatus'); if(st)st.textContent='Jameel font not installed — use Install Local Font';
+      }
+    });
+  }
+
+  // Rebind restored free cursor objects.
+  document.querySelectorAll('.free-cursor-text').forEach(el=>{
+    el.contentEditable='true';el.addEventListener('focus',()=>activeFreeText=el);
+    el.addEventListener('mousedown',e=>e.stopPropagation());
+    el.addEventListener('input',()=>{try{changed()}catch(_){}});
+  });
+})();
+</script>
+
+</body></html>`);
     w.document.close();
     w.focus();
   };
