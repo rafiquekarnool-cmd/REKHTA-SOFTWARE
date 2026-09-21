@@ -616,6 +616,103 @@ body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!im
 })();
 </script>
 
+
+<script id="rekhta-function-repair">
+(function(){
+  const $=id=>document.getElementById(id);
+  function target(){return window.rekhtaActiveFreeText&&window.rekhtaActiveFreeText() || $('editor')}
+  function focusTarget(){const t=target();if(t)t.focus();return t}
+  function mark(){try{changed()}catch(e){}}
+
+  // Keep selection/caret when toolbar buttons are clicked.
+  document.addEventListener('selectionchange',()=>{
+    const sel=window.getSelection(); if(!sel||!sel.rangeCount)return;
+    const n=sel.anchorNode; const el=n&&(n.nodeType===1?n:n.parentElement);
+    if(el && (el.closest('#editor')||el.closest('.free-cursor-text'))) window.__rekhtaRange=sel.getRangeAt(0).cloneRange();
+  });
+  function restore(){
+    const t=focusTarget(); const r=window.__rekhtaRange;
+    if(r && t && (t.contains(r.commonAncestorContainer)||t===r.commonAncestorContainer)){
+      const sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+    }
+  }
+
+  window.rekhtaCommand=function(cmd,val){
+    restore(); try{document.execCommand(cmd,false,val||null)}catch(e){} mark();
+  };
+  window.format=function(cmd){window.rekhtaCommand(cmd)};
+  window.align=function(v){const t=target();if(t&&t.classList.contains('free-cursor-text')){t.style.textAlign=v;mark();return}window.rekhtaCommand('justify'+v[0].toUpperCase()+v.slice(1))};
+  window.setFont=function(v){
+    const t=target(); restore();
+    if(t&&t.classList.contains('free-cursor-text'))t.style.fontFamily='"'+v+'",Tahoma,sans-serif';
+    else {try{document.execCommand('fontName',false,v)}catch(e){}}
+    mark();
+  };
+  window.setSize=function(v){
+    const t=target();restore();
+    if(t&&t.classList.contains('free-cursor-text'))t.style.fontSize=v+'px';
+    else {try{document.execCommand('fontSize',false,'7');document.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute('size');x.style.fontSize=v+'px'})}catch(e){}}
+    mark();
+  };
+
+  // Clipboard commands: Electron/Windows 8-safe fallback.
+  window.copyAll=function(){
+    const t=target();if(!t)return;
+    const r=document.createRange();r.selectNodeContents(t);const sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+    try{document.execCommand('copy')}catch(e){}
+  };
+  window.pasteText=async function(){
+    restore();
+    try{
+      if(navigator.clipboard&&navigator.clipboard.readText){const x=await navigator.clipboard.readText();document.execCommand('insertText',false,x);mark();return}
+    }catch(e){}
+    alert('Press Ctrl+V to paste.');
+  };
+  window.pasteSpecial=window.pasteText;
+  window.pasteDuplicate=function(){try{document.execCommand('copy')}catch(e){};window.pasteText()};
+  window.clearSelection=function(){restore();try{document.execCommand('delete')}catch(e){}mark()};
+
+  // Make design alignment affect selected objects too.
+  window.designAlign=function(v){
+    const el=window.selectedDesign||document.querySelector('.design-object.selected');
+    if(el){el.style.textAlign=v;mark();return}
+    window.align(v);
+  };
+
+  // Previously placeholder commands now do useful work.
+  window.placeFile=function(){const fi=$('fileInput');if(fi)fi.click()};
+  window.collectOutput=function(){try{saveDoc()}catch(e){}};
+  window.quotePage=function(){try{printPreview()}catch(e){try{printDoc()}catch(_){window.print()}}};
+  window.exportSVG=function(){
+    const pg=$('page');if(!pg)return;
+    const w=pg.offsetWidth,h=pg.offsetHeight;
+    const clone=pg.cloneNode(true);clone.querySelectorAll('[contenteditable]').forEach(x=>x.removeAttribute('contenteditable'));
+    const html=new XMLSerializer().serializeToString(clone);
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">'+html+'</div></foreignObject></svg>';
+    const blob=new Blob([svg],{type:'image/svg+xml'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='REKHTA_Design.svg';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  };
+
+  // Undo/redo and direct execCommand toolbar buttons work on active free text too.
+  document.querySelectorAll('button[onclick*="document.execCommand"]').forEach(btn=>{
+    const code=btn.getAttribute('onclick')||'';const m=code.match(/execCommand\(['"]([^'"]+)/);
+    if(m){btn.onclick=function(e){e.preventDefault();window.rekhtaCommand(m[1])}}
+  });
+
+  // Keyboard shortcuts.
+  document.addEventListener('keydown',e=>{
+    if(!(e.ctrlKey||e.metaKey))return;
+    const k=e.key.toLowerCase();
+    if(k==='s'){e.preventDefault();try{saveDoc()}catch(_){}}
+    else if(k==='p'){e.preventDefault();try{printDoc()}catch(_){window.print()}}
+    else if(k==='b'){e.preventDefault();window.format('bold')}
+    else if(k==='i'){e.preventDefault();window.format('italic')}
+    else if(k==='u'){e.preventDefault();window.format('underline')}
+    else if(k==='z'){e.preventDefault();window.rekhtaCommand(e.shiftKey?'redo':'undo')}
+    else if(k==='y'){e.preventDefault();window.rekhtaCommand('redo')}
+  });
+})();
+</script>
+
 </body></html>`);
     w.document.close();
     w.focus();
