@@ -1,6 +1,6 @@
 {
   "name": "rekhta-desktop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "REKHTA Desktop Wedding Card Editor - RK Solution",
   "main": "main.js",
   "author": "RK Solution",
@@ -17,9 +17,24 @@
     "appId": "com.rksolution.rekhta",
     "productName": "REKHTA",
     "asar": true,
-    "files": ["index.html", "main.js", "package.json"],
-    "directories": {"output": "dist"},
-    "win": {"target": [{"target":"nsis","arch":["x64"]}]},
+    "files": [
+      "index.html",
+      "main.js",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
