@@ -713,6 +713,59 @@ body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!im
 })();
 </script>
 
+
+<style id="rk-latest-correction">
+/* REKHTA latest correction: direct page typing without visible textbox */
+#editor{position:relative!important;min-height:950px!important;overflow:visible!important}
+.rekhta-free-text{position:absolute;min-height:34px;padding:0!important;margin:0!important;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;white-space:pre-wrap;word-wrap:break-word;overflow:visible;line-height:1.45;color:#111;cursor:text;z-index:40;unicode-bidi:plaintext}
+.rekhta-free-text:focus,.rekhta-free-text.selected{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
+.rekhta-free-text[dir="rtl"]{direction:rtl;text-align:right}
+.rekhta-free-text[dir="ltr"]{direction:ltr;text-align:left}
+</style>
+<script id="rk-latest-correction-js">
+(function(){
+  const ed=document.getElementById('editor'), pg=document.getElementById('page');
+  if(!ed||!pg)return;
+  function currentLang(){return (window.lang||document.documentElement.lang||'en').toLowerCase();}
+  function applyDir(el){
+    const ur=currentLang()==='ur';
+    el.dir=ur?'rtl':'ltr'; el.lang=ur?'ur':currentLang();
+    el.style.direction=ur?'rtl':'ltr'; el.style.textAlign=ur?'right':'left'; el.style.unicodeBidi='plaintext';
+    if(ur) el.style.fontFamily="'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif";
+  }
+  function createFreeText(x,y){
+    const el=document.createElement('div'); el.className='rekhta-free-text'; el.contentEditable='true';
+    applyDir(el);
+    const ur=currentLang()==='ur';
+    if(ur){
+      const bw=Math.max(80,Math.min(500,x));
+      el.style.width=bw+'px'; el.style.minWidth=bw+'px'; el.style.maxWidth=bw+'px';
+      el.style.left=Math.max(0,x-bw)+'px';
+    }else{
+      const aw=Math.max(80,ed.clientWidth-x);
+      el.style.width=aw+'px'; el.style.minWidth=aw+'px'; el.style.maxWidth=aw+'px'; el.style.left=x+'px';
+    }
+    el.style.top=y+'px'; el.style.fontSize=(document.getElementById('fontSize')?.value||22)+'px';
+    ed.appendChild(el);
+    el.addEventListener('input',()=>{if(typeof changed==='function')changed()});
+    el.addEventListener('blur',()=>{if(!el.textContent.trim())el.remove()});
+    setTimeout(()=>{el.focus();const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)},0);
+    return el;
+  }
+  ed.addEventListener('mousedown',function(e){
+    if(document.body.classList.contains('shape-draw-mode'))return;
+    if(e.target.closest('.rekhta-free-text,.design-object'))return;
+    if(e.button!==0)return;
+    e.preventDefault();
+    const r=ed.getBoundingClientRect(), scale=(window.zoom||100)/100;
+    createFreeText(Math.max(0,(e.clientX-r.left)/scale),Math.max(0,(e.clientY-r.top)/scale));
+  },true);
+  document.querySelectorAll('.toolbar button').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));
+  const oldSetLanguage=window.setLanguage;
+  if(typeof oldSetLanguage==='function')window.setLanguage=function(v){oldSetLanguage(v);document.querySelectorAll('.rekhta-free-text').forEach(applyDir)};
+})();
+</script>
+
 </body></html>`);
     w.document.close();
     w.focus();
