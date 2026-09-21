@@ -87,7 +87,7 @@ body{background:#fff;overflow:visible}.titlebar,.menubar,.toolbar,.sidebar,.stat
 .back-dashboard:hover{background:#f1dfc6!important; transform:translateY(-1px)}
 </style>
 </head>
-<body>
+<body><button id="rkTtpLauncher" onclick="rkOpenTtp()" style="position:fixed;right:12px;top:43px;z-index:10000;background:#6a32c9;color:#fff;border:1px solid #a875ff;border-radius:6px;padding:7px 12px;font-weight:700;cursor:pointer">Text → Picture</button>
 <div class="app">
   <div class="titlebar"><div class="logo">REKHTA</div><div class="docname">Digital Graphic Design Studio • R.K. Solution</div><div class="docname" id="docTitle">Untitled Document</div></div>
 
@@ -763,6 +763,47 @@ body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!im
   document.querySelectorAll('.toolbar button').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));
   const oldSetLanguage=window.setLanguage;
   if(typeof oldSetLanguage==='function')window.setLanguage=function(v){oldSetLanguage(v);document.querySelectorAll('.rekhta-free-text').forEach(applyDir)};
+})();
+</script>
+
+
+<style id="rk-text-picture-module">
+#rkTtp{display:none;position:fixed;inset:0;background:#020812ee;z-index:99999;color:#eefbff;font-family:Segoe UI,Arial,sans-serif}
+#rkTtp.open{display:flex}.rkTtpPanel{width:360px;padding:18px;background:#071827;border-right:1px solid #25506a;overflow:auto}.rkTtpWork{flex:1;padding:22px;display:flex;flex-direction:column}
+#rkTtp textarea,#rkTtp select,#rkTtp input{width:100%;margin:4px 0 10px;padding:8px;border:1px solid #28516a;border-radius:7px;background:#041321;color:#eefbff}
+#rkTtp textarea{height:130px;font-size:22px}.rkTtpRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rkTtpBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#rkTtp button{padding:10px;border:1px solid #2b5c78;border-radius:8px;background:#123854;color:#fff;font-weight:700;cursor:pointer}.rkTtpClose{float:right;background:#8b2434!important}
+#rkTtpStage{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;background:#dfe7ef;border-radius:14px;padding:25px}#rkTtpCanvas{max-width:100%;max-height:70vh}
+.rkTtpTitle{font-size:20px;font-weight:900;margin-bottom:14px;color:#75e9ff}.rkTtpLabel{font-size:11px;color:#91afc5}
+</style>
+<div id="rkTtp">
+ <div class="rkTtpPanel"><button class="rkTtpClose" onclick="rkCloseTtp()">Close</button><div class="rkTtpTitle">RK TEXT TO PICTURE</div>
+ <div class="rkTtpLabel">Text</div><textarea id="rkTtpText" dir="auto">بسم اللہ الرحمن الرحیم</textarea>
+ <div class="rkTtpRow"><div><div class="rkTtpLabel">Direction</div><select id="rkTtpDir"><option value="rtl">Urdu / RTL</option><option value="ltr">English / LTR</option></select></div><div><div class="rkTtpLabel">Alignment</div><select id="rkTtpAlign"><option value="center">Center</option><option value="start">Start</option><option value="end">End</option></select></div></div>
+ <div class="rkTtpLabel">Font</div><select id="rkTtpFont"><option>Jameel Noori Nastaleeq</option><option>Arial</option><option>Times New Roman</option><option>Noto Nastaliq Urdu</option></select>
+ <input id="rkTtpFontFile" type="file" accept=".ttf,.otf,.woff,.woff2">
+ <div class="rkTtpRow"><div><div class="rkTtpLabel">Font size</div><input id="rkTtpSize" type="number" value="92"></div><div><div class="rkTtpLabel">Line height</div><input id="rkTtpLh" type="number" step=".05" value="1.65"></div></div>
+ <div class="rkTtpRow"><div><div class="rkTtpLabel">Text colour</div><input id="rkTtpFill" type="color" value="#5b2116"></div><div><div class="rkTtpLabel">Outline</div><input id="rkTtpStroke" type="color" value="#ffffff"></div></div>
+ <div class="rkTtpLabel">Outline width</div><input id="rkTtpSw" type="range" min="0" max="30" value="0">
+ <label><input id="rkTtpTransparent" type="checkbox" checked style="width:auto"> Transparent background</label>
+ <div class="rkTtpRow"><div><div class="rkTtpLabel">Width</div><input id="rkTtpW" type="number" value="1600"></div><div><div class="rkTtpLabel">Height</div><input id="rkTtpH" type="number" value="700"></div></div>
+ <div class="rkTtpBtns"><button onclick="rkTtpPng()">Download PNG</button><button onclick="rkTtpCopy()">Copy Picture</button><button onclick="rkTtpFit()">Auto-fit</button><button onclick="rkTtpInsert()">Insert in REKHTA</button></div>
+ </div><div class="rkTtpWork"><div class="rkTtpTitle">CorelDRAW Ready • Live Preview</div><div id="rkTtpStage"><canvas id="rkTtpCanvas"></canvas></div></div>
+</div>
+<script>
+(function(){
+ const ids=['rkTtpText','rkTtpDir','rkTtpAlign','rkTtpFont','rkTtpSize','rkTtpLh','rkTtpFill','rkTtpStroke','rkTtpSw','rkTtpTransparent','rkTtpW','rkTtpH'];
+ const $=id=>document.getElementById(id);
+ window.rkOpenTtp=()=>{$('rkTtp').classList.add('open');rkTtpRender()};
+ window.rkCloseTtp=()=>$('rkTtp').classList.remove('open');
+ window.rkTtpRender=function(){const c=$('rkTtpCanvas'),x=c.getContext('2d'),w=+$('rkTtpW').value||1600,h=+$('rkTtpH').value||700,s=2;c.width=w*s;c.height=h*s;c.style.aspectRatio=w+'/'+h;x.setTransform(s,0,0,s,0,0);x.clearRect(0,0,w,h);if(!$('rkTtpTransparent').checked){x.fillStyle='#fff';x.fillRect(0,0,w,h)}const fs=+$('rkTtpSize').value||92,dir=$('rkTtpDir').value,al=$('rkTtpAlign').value;x.direction=dir;x.textAlign=al==='center'?'center':al;x.textBaseline='middle';x.font=fs+'px "'+$('rkTtpFont').value+'",serif';const lines=$('rkTtpText').value.split('\n'),lh=fs*(+$('rkTtpLh').value||1.65),total=(lines.length-1)*lh,px=al==='center'?w/2:(al==='start'?(dir==='rtl'?w-80:80):(dir==='rtl'?80:w-80));lines.forEach((t,i)=>{const y=h/2-total/2+i*lh;if(+$('rkTtpSw').value){x.strokeStyle=$('rkTtpStroke').value;x.lineWidth=+$('rkTtpSw').value;x.strokeText(t,px,y)}x.fillStyle=$('rkTtpFill').value;x.fillText(t,px,y)})};
+ ids.forEach(id=>$(id).addEventListener('input',rkTtpRender));
+ $('rkTtpFontFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const face=new FontFace('RK_TTP_Custom',await f.arrayBuffer());await face.load();document.fonts.add(face);let o=new Option(f.name,'RK_TTP_Custom');$('rkTtpFont').add(o);$('rkTtpFont').value='RK_TTP_Custom';rkTtpRender()}catch(e){alert('Font could not be loaded')}});
+ function dl(blob,n){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+ window.rkTtpPng=()=>$('rkTtpCanvas').toBlob(b=>dl(b,'RK_Text_Transparent.png'),'image/png');
+ window.rkTtpCopy=async()=>{try{const b=await new Promise(ok=>$('rkTtpCanvas').toBlob(ok));await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);alert('Picture copied — paste in CorelDRAW')}catch(e){rkTtpPng()}};
+ window.rkTtpFit=()=>{const c=$('rkTtpCanvas').getContext('2d'),fs=+$('rkTtpSize').value||92;c.font=fs+'px "'+$('rkTtpFont').value+'",serif';const ls=$('rkTtpText').value.split('\n');$('rkTtpW').value=Math.ceil(Math.max(...ls.map(t=>c.measureText(t).width))+160);$('rkTtpH').value=Math.ceil(ls.length*fs*(+$('rkTtpLh').value||1.65)+160);rkTtpRender()};
+ window.rkTtpInsert=()=>{$('rkTtpCanvas').toBlob(b=>{const r=new FileReader();r.onload=()=>{const el=document.createElement('div');el.className='design-object';el.style.cssText='position:absolute;left:80px;top:80px;width:400px;cursor:move;z-index:25';el.innerHTML='<img src="'+r.result+'" style="width:100%;height:auto;display:block">';document.getElementById('designDrawLayer').appendChild(el);if(typeof makeDesignElement==='function')makeDesignElement(el);if(typeof changed==='function')changed();rkCloseTtp()};r.readAsDataURL(b)},'image/png')};
 })();
 </script>
 
