@@ -1,5 +1,16 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, shell, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
+
+const logFile = path.join(app.getPath('userData'), 'rekhta-startup.log');
+function log(msg) {
+  try { fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`); } catch (_) {}
+}
+
+process.on('uncaughtException', (err) => {
+  log(`uncaughtException: ${err && err.stack ? err.stack : err}`);
+  try { dialog.showErrorBox('REKHTA Startup Error', String(err && err.message ? err.message : err)); } catch (_) {}
+});
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -17,16 +28,39 @@ function createWindow() {
     }
   });
 
-  win.loadFile('index.html');
-  win.once('ready-to-show', () => { win.maximize(); win.show(); });
+  win.webContents.on('render-process-gone', (_event, details) => log(`render-process-gone: ${JSON.stringify(details)}`));
+  win.webContents.on('did-fail-load', (_event, code, desc, url) => {
+    log(`did-fail-load: ${code} ${desc} ${url}`);
+    dialog.showErrorBox('REKHTA Load Error', `REKHTA could not load.\n\n${desc} (${code})\n\nLog: ${logFile}`);
+  });
+  win.webContents.on('console-message', (_event, level, message, line, sourceId) => log(`console[${level}] ${message} @ ${sourceId}:${line}`));
+
+  const indexPath = path.join(__dirname, 'index.html');
+  log(`Loading ${indexPath}`);
+  win.loadFile(indexPath).catch(err => {
+    log(`loadFile error: ${err.stack || err}`);
+    dialog.showErrorBox('REKHTA Startup Error', `index.html could not be opened.\n\n${err.message}\n\nLog: ${logFile}`);
+  });
+
+  win.once('ready-to-show', () => { win.maximize(); win.show(); log('Window shown'); });
+
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:/i.test(url)) shell.openExternal(url);
+    if (/^https?:/i.test(url)) {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    if (url === 'about:blank' || url === '') return { action: 'allow' };
     return { action: 'deny' };
   });
 }
 
 app.whenReady().then(() => {
+  log(`REKHTA starting. Electron ${process.versions.electron}; Chrome ${process.versions.chrome}; Node ${process.versions.node}; ${process.platform} ${process.arch}`);
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+}).catch(err => {
+  log(`whenReady error: ${err.stack || err}`);
+  dialog.showErrorBox('REKHTA Startup Error', String(err.message || err));
 });
+
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
