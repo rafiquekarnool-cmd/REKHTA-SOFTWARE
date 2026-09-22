@@ -807,6 +807,42 @@ body{margin:0;background:#ddd}.preview-wrap{padding:20px}.page{transform:none!im
 })();
 </script>
 
+
+<style id="rekhta-final-light-grey-ui">
+:root{--rk-bg:#d9dde1;--rk-panel:#eef0f2;--rk-panel2:#e4e7ea;--rk-line:#b9c0c7;--rk-ink:#26323b;--rk-muted:#66727c;--rk-blue:#1877c9;--rk-blue2:#0d5f9f}
+body{background:var(--rk-bg)!important;color:var(--rk-ink)!important}
+.titlebar{background:linear-gradient(#f7f8f9,#dfe3e7)!important;color:#26323b!important;border-bottom:1px solid #aeb6bd!important;box-shadow:0 1px 3px #0002!important}
+.menubar,.toolbar{background:linear-gradient(#f8f9fa,#e4e7ea)!important;border-color:#b8c0c7!important}
+.menu>button,.toolbar button,.toolbar select,.toolbar input,.back-dashboard{color:#26323b!important;background:#f7f8f9!important;border-color:#b7bec5!important}
+.menu>button:hover,.toolbar button:hover,.back-dashboard:hover{background:#dbeafa!important}
+.sidebar{background:#e8ebee!important;border-color:#b8c0c7!important}
+.side-title{color:#52616c!important}.sidebtn{background:#f7f8f9!important;border-color:#bdc4ca!important;color:#26323b!important}.sidebtn:hover{background:#dcecf9!important;border-color:#78acd3!important}
+.canvas-area{background:#c9ced3!important}
+.statusbar{background:#dfe3e7!important;color:#33414b!important;border-top:1px solid #b1b8bf!important}
+.dropdown{background:#f7f8f9!important;border-color:#adb5bc!important}.dropdown button{background:#f7f8f9!important;color:#26323b!important}.dropdown button:hover{background:#dcecf9!important}
+.page{background:#fff!important}
+#rkTtp{background:#d6daddf5!important;color:#26323b!important}
+.rkTtpPanel{background:#e9ecef!important;border-color:#b5bdc4!important}.rkTtpWork{background:#dfe3e6!important}
+#rkTtp textarea,#rkTtp select,#rkTtp input{background:#f9fafb!important;color:#26323b!important;border-color:#aeb8c0!important}
+#rkTtpStage{background:#c9ced3!important}.rkTtpTitle{color:#145f98!important}.rkTtpLabel{color:#5f6d77!important}
+#rkTtp button{background:linear-gradient(#f8f9fa,#dce2e7)!important;color:#26323b!important;border-color:#aab5bd!important}
+#rkTtp .rkTtpClose{background:#d9e7f2!important;color:#21445e!important}
+#rkTtpLauncher{background:linear-gradient(#2f8dcc,#1769a5)!important;border-color:#0d5f9f!important;color:white!important}
+.rekhta-free-text[dir="rtl"]{font-family:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif!important}
+</style>
+<script id="rekhta-final-font-behavior">
+(function(){
+ function enforceUrduFont(el){
+   if(!el)return;
+   const isUrdu=(el.dir==='rtl'||el.lang==='ur'||(window.lang||'').toLowerCase()==='ur');
+   if(isUrdu)el.style.fontFamily='"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif';
+ }
+ document.addEventListener('focusin',e=>{if(e.target.matches('[contenteditable="true"],.rekhta-free-text'))enforceUrduFont(e.target)});
+ document.addEventListener('input',e=>{if(e.target.matches('[contenteditable="true"],.rekhta-free-text'))enforceUrduFont(e.target)});
+ const obs=new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){if(n.matches?.('[contenteditable="true"],.rekhta-free-text'))enforceUrduFont(n);n.querySelectorAll?.('[contenteditable="true"],.rekhta-free-text').forEach(enforceUrduFont)}})));
+ obs.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
 </body></html>`);
     w.document.close();
     w.focus();
