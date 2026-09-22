@@ -843,6 +843,61 @@ body{background:var(--rk-bg)!important;color:var(--rk-ink)!important}
  obs.observe(document.body,{childList:true,subtree:true});
 })();
 </script>
+
+<style id="rk-urdu-caret-page-lock-fix">
+#editor{overflow:hidden!important;max-width:100%!important;box-sizing:border-box!important}
+#page{overflow:hidden!important;position:relative!important}
+.rekhta-free-text{box-sizing:border-box!important;overflow:hidden!important;contain:layout style!important}
+.rekhta-free-text.rk-urdu-caret{
+ direction:ltr!important;
+ text-align:right!important;
+ unicode-bidi:plaintext!important;
+ white-space:pre-wrap!important;
+ overflow-wrap:break-word!important;
+ word-break:normal!important;
+}
+</style>
+<script id="rk-urdu-caret-page-lock-fix-js">
+(function(){
+ const ed=document.getElementById('editor'), pg=document.getElementById('page');
+ if(!ed||!pg)return;
+ // Prevent the old full-page contenteditable from competing with click-anywhere typing.
+ ed.contentEditable='false';
+ function lockPage(){
+   const w=pg.getBoundingClientRect().width;
+   if(w>0){pg.style.maxWidth=w+'px';pg.style.overflow='hidden';}
+ }
+ lockPage(); window.addEventListener('resize',lockPage);
+ function fixUrdu(el){
+   if(!el||!el.classList?.contains('rekhta-free-text'))return;
+   const ur=el.lang==='ur'||el.getAttribute('dir')==='rtl';
+   if(ur){
+     el.classList.add('rk-urdu-caret');
+     // Keep Urdu shaping/font but do not let RTL layout push the document/page horizontally.
+     el.setAttribute('dir','ltr');
+     el.style.direction='ltr';
+     el.style.textAlign='right';
+     el.style.fontFamily='"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif';
+   }
+ }
+ document.querySelectorAll('.rekhta-free-text').forEach(fixUrdu);
+ const mo=new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{
+   if(n.nodeType!==1)return;
+   if(n.matches?.('.rekhta-free-text'))fixUrdu(n);
+   n.querySelectorAll?.('.rekhta-free-text').forEach(fixUrdu);
+ })));
+ mo.observe(ed,{childList:true,subtree:true});
+ // Fix newly focused Urdu objects immediately and keep caret inside the fixed text object.
+ document.addEventListener('focusin',e=>fixUrdu(e.target),true);
+ document.addEventListener('input',e=>{
+   const el=e.target;
+   if(!el.classList?.contains('rekhta-free-text'))return;
+   fixUrdu(el);
+   const max=Math.max(40,ed.clientWidth-(parseFloat(el.style.left)||0));
+   if(el.offsetWidth>max){el.style.width=max+'px';el.style.maxWidth=max+'px'}
+ },true);
+})();
+</script>
 </body></html>`);
     w.document.close();
     w.focus();
