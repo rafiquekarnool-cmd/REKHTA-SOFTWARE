@@ -41,6 +41,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "REKHTA"
-    }
+    },
+    "publish": null
   }
 }
