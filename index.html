@@ -86,6 +86,24 @@ body{background:#fff;overflow:visible}.titlebar,.menubar,.toolbar,.sidebar,.stat
 }
 .back-dashboard:hover{background:#f1dfc6!important; transform:translateY(-1px)}
 </style>
+
+<style id="rk-light-grey-final">
+:root{--rk-blue:#1976d2;--rk-blue2:#0d6efd;--rk-bg:#e7ebef;--rk-panel:#f7f9fb;--rk-line:#c8d0d8}
+body{background:var(--rk-bg)!important;color:#1f2933!important}
+.titlebar{background:linear-gradient(#f8fafc,#e8edf2)!important;color:#17324d!important;border-bottom:1px solid #c4ccd4!important}
+.menubar,.toolbar{background:linear-gradient(#fafbfc,#edf1f4)!important;border-color:var(--rk-line)!important}
+.sidebar{background:#f2f5f7!important;border-color:var(--rk-line)!important}
+.canvas-area{background:#cfd5da!important}
+.statusbar{background:#eef2f5!important;color:#314354!important;border-top:1px solid #c5cdd4!important}
+.menu>button:hover,.toolbar button:hover,.sidebtn:hover{background:#e2eefb!important}
+.toolbar button:active,.sidebtn:active{background:#cfe4fb!important}
+.sidebtn{border-color:#cbd3da!important}
+.design-object.selected{outline-color:var(--rk-blue)!important}
+#editor{position:relative!important;min-height:950px!important;overflow:visible!important}
+.rekhta-free-text{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;unicode-bidi:plaintext}
+.rekhta-free-text[dir="rtl"]{direction:rtl!important;text-align:right}
+.rekhta-free-text[dir="ltr"]{direction:ltr!important;text-align:left}
+</style>
 </head>
 <body><button id="rkTtpLauncher" onclick="rkOpenTtp()" style="position:fixed;right:12px;top:43px;z-index:10000;background:#6a32c9;color:#fff;border:1px solid #a875ff;border-radius:6px;padding:7px 12px;font-weight:700;cursor:pointer">Text → Picture</button>
 <div class="app">
@@ -896,6 +914,42 @@ body{background:var(--rk-bg)!important;color:var(--rk-ink)!important}
    const max=Math.max(40,ed.clientWidth-(parseFloat(el.style.left)||0));
    if(el.offsetWidth>max){el.style.width=max+'px';el.style.maxWidth=max+'px'}
  },true);
+})();
+</script>
+
+<script id="rk-final-stability-patch">
+(function(){
+'use strict';
+const JAMEEL='"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif';
+function isUrdu(v){return /urdu|rtl|اردو/i.test(String(v||''));}
+function applyUrdu(el){
+ if(!el)return;
+ el.dir='rtl'; el.style.direction='rtl'; el.style.textAlign='right'; el.style.fontFamily=JAMEEL;
+}
+function normalizeLanguage(){
+ const sels=[...document.querySelectorAll('select')];
+ sels.forEach(s=>{
+   const txt=(s.value+' '+(s.options[s.selectedIndex]?.text||''));
+   if(isUrdu(txt)){
+     const ed=document.getElementById('editor'); if(ed)applyUrdu(ed);
+     document.querySelectorAll('.rekhta-free-text[contenteditable="true"]').forEach(applyUrdu);
+   }
+ });
+}
+document.addEventListener('change',e=>{if(e.target&&e.target.tagName==='SELECT')setTimeout(normalizeLanguage,0);},true);
+document.addEventListener('focusin',e=>{
+ const el=e.target;
+ if(el&&(el.id==='editor'||el.classList?.contains('rekhta-free-text'))){
+   const lang=[...document.querySelectorAll('select')].find(s=>isUrdu(s.value+' '+(s.options[s.selectedIndex]?.text||'')));
+   if(lang)applyUrdu(el);
+ }
+},true);
+document.querySelectorAll('button').forEach(b=>{
+ b.addEventListener('mousedown',e=>{
+   if(document.activeElement?.isContentEditable && !/input|textarea|select/i.test(e.target.tagName)) e.preventDefault();
+ },true);
+});
+window.addEventListener('load',()=>{normalizeLanguage();document.body.classList.add('rk-ready');});
 })();
 </script>
 </body></html>`);
