@@ -104,7 +104,41 @@ body{background:var(--rk-bg)!important;color:#1f2933!important}
 .rekhta-free-text[dir="rtl"]{direction:rtl!important;text-align:right}
 .rekhta-free-text[dir="ltr"]{direction:ltr!important;text-align:left}
 </style>
-</head>
+
+<style id="rk-figma-light-ui-v3">
+:root{--blue:#1769aa;--blue2:#2185d0;--ink:#263746;--line:#bfc9d2;--panel:#f5f7f9;--chrome:#e9edf1;--hover:#dcebf8}
+body{background:#d5dbe0!important;font-family:"Segoe UI",Arial,sans-serif!important}
+.app{background:#d5dbe0!important}
+.titlebar{height:34px!important;background:linear-gradient(#f9fafb,#e5eaee)!important;color:#17324d!important;border-bottom:1px solid #b8c3cc!important;box-shadow:0 1px 2px #0001!important}
+.logo{font-size:17px!important;color:#1769aa!important;font-weight:800!important;letter-spacing:1.4px!important}
+.docname{color:#566b7c!important;opacity:1!important}
+.menubar{height:40px!important;background:#f7f9fb!important;border-bottom:1px solid #bfc9d2!important;align-items:center!important;padding:0 8px!important}
+.menu{height:39px!important}.menu>button{height:39px!important;color:#253b4b!important;font-weight:600!important}
+.menu>button:hover{background:#dcebf8!important;color:#0f5e9c!important}
+.file-shortcuts{display:none!important}
+.toolbar{height:auto!important;min-height:72px!important;padding:7px 10px!important;gap:6px!important;flex-wrap:wrap!important;background:linear-gradient(#f8fafb,#e7ecef)!important;border-bottom:1px solid #b8c3cc!important;box-shadow:0 2px 5px #00000012!important}
+.toolbar button,.toolbar select,.toolbar input{height:31px!important;border:1px solid #b8c3cc!important;border-radius:4px!important;background:#fff!important;color:#263746!important}
+.toolbar button{padding:0 9px!important;box-shadow:0 1px 1px #0000000d!important}
+.toolbar button:hover,.sidebtn:hover{background:#dcebf8!important;border-color:#7eadd2!important}
+.toolbar select{min-width:84px!important}
+.workspace{background:#cbd2d8!important}
+.sidebar{width:150px!important;min-width:150px!important;background:#f4f6f8!important;border-right:1px solid #b7c1ca!important;padding:8px!important;box-shadow:2px 0 4px #0000000b!important;overflow:auto!important}
+.side-title{color:#536a7b!important;font-size:10px!important;letter-spacing:.8px!important;margin:7px 4px!important}
+.sidebtn{height:34px!important;padding:6px 8px!important;margin-bottom:4px!important;border:1px solid #c7d0d7!important;border-radius:4px!important;background:#fff!important;color:#273b49!important;font-size:12px!important}
+.canvas-area{background:#c9d0d6!important;padding:34px 210px 34px 34px!important;position:relative!important}
+.page{background:#fff!important;box-shadow:0 4px 18px #00000035!important;border:1px solid #adb8c1!important}
+#editor{caret-color:#1769aa!important}
+.rekhta-free-text{border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important}
+.rekhta-free-text[dir="rtl"]{direction:rtl!important;text-align:right!important;font-family:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif!important}
+.statusbar{height:26px!important;background:#edf1f4!important;color:#405566!important;border-top:1px solid #b8c3cc!important}
+#rkRightPanel{position:absolute;right:0;top:0;bottom:0;width:196px;background:#f7f9fb;border-left:1px solid #b7c1ca;z-index:70;display:flex;flex-direction:column;box-shadow:-2px 0 5px #0000000d}
+.rk-tabs{display:flex;height:35px;border-bottom:1px solid #c5ced5;background:#e8edf1}.rk-tabs button{flex:1;border:0;border-right:1px solid #c5ced5;background:transparent;font-size:11px;font-weight:700;color:#536777}.rk-tabs button.active{background:#fff;color:#1769aa;border-bottom:2px solid #1769aa}
+.rk-pane{padding:10px;overflow:auto;font-size:11px}.rk-section{border-bottom:1px solid #d6dde2;padding:0 0 10px;margin-bottom:10px}.rk-section b{display:block;color:#314b5e;margin-bottom:7px}.rk-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}.rk-pane input,.rk-pane select{width:100%;height:27px;border:1px solid #c2ccd4;border-radius:3px;background:#fff;padding:3px;font-size:11px}.rk-wide{width:100%;height:29px;border:1px solid #b9c6d0;background:#fff;border-radius:3px;margin:3px 0;cursor:pointer}.rk-wide:hover{background:#dcebf8}
+#rkTtpLauncher{background:#1769aa!important;color:#fff!important;border-color:#105d98!important}
+.dashboard{display:none!important}
+.editor-shell{display:flex!important}
+@media(max-width:1000px){#rkRightPanel{display:none}.canvas-area{padding-right:34px!important}}
+</style></head>
 <body><button id="rkTtpLauncher" onclick="rkOpenTtp()" style="position:fixed;right:12px;top:43px;z-index:10000;background:#6a32c9;color:#fff;border:1px solid #a875ff;border-radius:6px;padding:7px 12px;font-weight:700;cursor:pointer">Text → Picture</button>
 <div class="app">
   <div class="titlebar"><div class="logo">REKHTA</div><div class="docname">Digital Graphic Design Studio • R.K. Solution</div><div class="docname" id="docTitle">Untitled Document</div></div>
@@ -952,7 +986,46 @@ document.querySelectorAll('button').forEach(b=>{
 window.addEventListener('load',()=>{normalizeLanguage();document.body.classList.add('rk-ready');});
 })();
 </script>
-</body></html>`);
+
+<script id="rk-figma-light-ui-v3-js">
+(function(){
+function byText(t){return [...document.querySelectorAll('button')].find(b=>b.textContent.trim().toLowerCase().includes(t.toLowerCase()));}
+function clickText(t){const b=byText(t);if(b)b.click();}
+function fmt(cmd){try{document.execCommand(cmd,false,null)}catch(e){}}
+function makeRight(){
+ const area=document.querySelector('.canvas-area'); if(!area||document.getElementById('rkRightPanel'))return;
+ const p=document.createElement('aside');p.id='rkRightPanel';
+ p.innerHTML='<div class="rk-tabs"><button class="active">PROPERTIES</button><button>LAYERS</button><button>PAGES</button></div>'+
+ '<div class="rk-pane">'+
+ '<div class="rk-section"><b>POSITION & SIZE</b><div class="rk-grid"><input id="rkX" placeholder="X"><input id="rkY" placeholder="Y"><input id="rkW" placeholder="W"><input id="rkH" placeholder="H"></div></div>'+
+ '<div class="rk-section"><b>TEXT</b><button class="rk-wide" id="rkUrdu">Urdu RTL • Jameel Nastaleeq</button><div class="rk-grid"><button class="rk-wide" id="rkBold"><b>B</b></button><button class="rk-wide" id="rkItalic"><i>I</i></button></div></div>'+
+ '<div class="rk-section"><b>ARRANGE</b><button class="rk-wide" id="rkFront">Bring to Front</button><button class="rk-wide" id="rkBack">Send to Back</button><button class="rk-wide" id="rkDup">Duplicate</button><button class="rk-wide" id="rkDel">Delete</button></div>'+
+ '<div class="rk-section"><b>EXPORT</b><button class="rk-wide" id="rkPic">Text → Picture</button><button class="rk-wide" id="rkPrint">Print / Preview</button></div>'+
+ '<div class="rk-section"><b>REKHTA</b><div style="color:#657786;line-height:1.5">Urdu • Hindi • Marathi • English<br>Developed by RK Solution</div></div></div>';
+ area.appendChild(p);
+ p.querySelector('#rkBold').onclick=()=>fmt('bold');p.querySelector('#rkItalic').onclick=()=>fmt('italic');
+ p.querySelector('#rkFront').onclick=()=>clickText('front');p.querySelector('#rkBack').onclick=()=>clickText('back');
+ p.querySelector('#rkDup').onclick=()=>clickText('duplicate');p.querySelector('#rkDel').onclick=()=>clickText('delete');
+ p.querySelector('#rkPic').onclick=()=>{const x=document.getElementById('rkTtpLauncher')||byText('text → picture')||byText('text to picture');if(x)x.click()};
+ p.querySelector('#rkPrint').onclick=()=>{if(typeof printPreview==='function')printPreview();else window.print()};
+ p.querySelector('#rkUrdu').onclick=()=>{if(typeof setLanguage==='function')setLanguage('ur');const e=document.getElementById('editor');if(e){e.dir='rtl';e.style.direction='rtl';e.style.textAlign='right';e.style.fontFamily='"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif';e.focus()}};
+}
+function polish(){
+ document.querySelectorAll('.dashboard').forEach(x=>x.classList.add('hidden'));
+ const es=document.querySelector('.editor-shell');if(es)es.style.display='flex';
+ const logo=document.querySelector('.logo');if(logo)logo.textContent='REKHTA';
+ const tb=document.querySelector('.toolbar');
+ if(tb&&!document.getElementById('rkTtpLauncher')){
+  const b=document.createElement('button');b.id='rkTtpLauncher';b.textContent='Text → Picture';
+  b.onclick=()=>{const old=[...document.querySelectorAll('button')].find(x=>x!==b&&/text.*picture/i.test(x.textContent));if(old)old.click();else if(typeof openRKTextToPicture==='function')openRKTextToPicture()};
+  tb.appendChild(b);
+ }
+ makeRight();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
+window.addEventListener('load',polish);
+})();
+</script></body></html>`);
     w.document.close();
     w.focus();
   };
