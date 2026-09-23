@@ -1025,7 +1025,107 @@ function polish(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',polish);else polish();
 window.addEventListener('load',polish);
 })();
-</script></body></html>`);
+</script>
+<style id="rk-error-fix-20260923">
+/* Stable Urdu direct typing: horizontal RTL line, never a one-character column. */
+.rekhta-free-text,[data-rk-free-text="1"]{
+  min-width:180px!important;
+  max-width:none!important;
+  width:auto;
+  white-space:pre-wrap!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+}
+.rekhta-free-text[dir="rtl"],[data-rk-free-text="1"][dir="rtl"]{
+  direction:rtl!important;
+  text-align:right!important;
+  unicode-bidi:plaintext!important;
+}
+.rekhta-free-text[dir="ltr"],[data-rk-free-text="1"][dir="ltr"]{
+  direction:ltr!important;
+  text-align:left!important;
+}
+#rkRightPanel .rk-tab-active{background:#dbeafe!important;color:#174ea6!important;font-weight:700!important}
+</style>
+<script id="rk-error-fix-20260923">
+(function(){
+'use strict';
+const pageEl=()=>document.getElementById('page')||document.querySelector('.page');
+const editorEl=()=>document.getElementById('editor');
+function isUrdu(){
+  const l=(window.lang||document.documentElement.lang||'').toLowerCase();
+  const sel=document.getElementById('language')||document.getElementById('langSelect');
+  return l==='ur'||l.startsWith('ur-')||(sel&&String(sel.value).toLowerCase()==='ur');
+}
+function normalizeFreeText(el){
+  if(!el||!el.classList||!el.classList.contains('rekhta-free-text'))return;
+  el.dataset.rkFreeText='1';
+  el.style.writingMode='horizontal-tb';
+  el.style.textOrientation='mixed';
+  el.style.whiteSpace='pre-wrap';
+  el.style.wordBreak='normal';
+  el.style.overflowWrap='normal';
+  const p=pageEl(); if(!p)return;
+  const ur=(el.getAttribute('dir')==='rtl')||isUrdu();
+  if(ur){
+    el.setAttribute('dir','rtl');
+    el.style.direction='rtl'; el.style.textAlign='right';
+    el.style.fontFamily='"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif';
+    const left=Math.max(18,parseFloat(el.style.left)||18);
+    const rightEdge=Math.min(p.clientWidth-18,Math.max(220,left));
+    el.style.left='18px';
+    el.style.right=Math.max(18,p.clientWidth-rightEdge)+'px';
+    el.style.width='auto';
+    el.style.minWidth='180px';
+  }else{
+    el.setAttribute('dir','ltr'); el.style.direction='ltr'; el.style.textAlign='left';
+    el.style.right='auto';
+    const left=Math.max(18,parseFloat(el.style.left)||18);
+    el.style.left=left+'px';
+    el.style.width=Math.max(180,p.clientWidth-left-18)+'px';
+  }
+}
+function normalizeAll(){document.querySelectorAll('.rekhta-free-text').forEach(normalizeFreeText)}
+document.addEventListener('focusin',e=>normalizeFreeText(e.target),true);
+document.addEventListener('input',e=>normalizeFreeText(e.target),true);
+const mo=new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{
+  if(n.nodeType!==1)return;
+  if(n.matches?.('.rekhta-free-text'))normalizeFreeText(n);
+  n.querySelectorAll?.('.rekhta-free-text').forEach(normalizeFreeText);
+})));
+mo.observe(document.documentElement,{childList:true,subtree:true});
+
+/* Keep toolbar/menu clicks from destroying the active text selection/caret. */
+document.addEventListener('mousedown',e=>{
+  if(e.target.closest('.toolbar,.menubar,#rkRightPanel,.sidebar') && !e.target.matches('input,textarea,select,[contenteditable="true"]')) e.preventDefault();
+},true);
+
+/* Right panel tabs now actually switch their panes when panes exist. */
+function wireRightPanel(){
+ const panel=document.getElementById('rkRightPanel'); if(!panel)return;
+ const tabs=[...panel.querySelectorAll('button,[role="tab"],.tab')].filter(x=>/^(PROPERTIES|LAYERS|PAGES)$/i.test(x.textContent.trim()));
+ tabs.forEach(t=>{ if(t.dataset.rkWired)return; t.dataset.rkWired='1'; t.addEventListener('click',()=>{
+   const name=t.textContent.trim().toLowerCase();
+   tabs.forEach(x=>x.classList.toggle('rk-tab-active',x===t));
+   panel.querySelectorAll('[data-tab],[data-panel],.properties-panel,.layers-panel,.pages-panel').forEach(p=>{
+     const key=(p.dataset.tab||p.dataset.panel||p.className||'').toLowerCase();
+     if(/properties|layers|pages/.test(key)) p.style.display=key.includes(name)?'':'none';
+   });
+ });});
+}
+setTimeout(()=>{normalizeAll();wireRightPanel()},100);
+window.addEventListener('resize',normalizeAll);
+
+/* Visible runtime error reporting instead of silent dead buttons. */
+window.addEventListener('error',e=>{
+ const s=document.getElementById('saveStatus')||document.getElementById('statusText');
+ if(s) s.textContent='Error: '+(e.message||'button action failed');
+});
+})();
+</script>
+</body></html>`);
     w.document.close();
     w.focus();
   };
