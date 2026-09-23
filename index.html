@@ -1512,7 +1512,7 @@ function download(name,data){const a=document.createElement('a');a.href=URL.crea
 function exportTxt(){const n=prompt('Enter text file name:','Urdu_Text.txt');if(n)download(n,editor.innerText)}
 function importText(){openDoc()}
 function collectOutput(){alert('Collect for Output: document content is prepared for export/printing in this offline version.')}
-function placeFile(){alert('Place: use the Open/Import workflow to place a text or HTML file. Image placement can be added in the next module.')}
+function placeFile(){const input=document.getElementById('pictureInput');if(input)input.click();else insertPicture();}
 function quotePage(){alert('Quote Page: current page is ready for quotation/printing.')}
 async function exportAsPicture(){
   try{
@@ -1665,7 +1665,7 @@ function createQuestionPaper(){
 }
 function showFind(replace=false){document.getElementById('findbox').style.display='block';document.getElementById('findInput').focus()}
 function hideFind(){document.getElementById('findbox').style.display='none'}
-function findNext(){const q=document.getElementById('findInput').value;if(!q)return;const text=editor.innerText;const i=text.toLowerCase().indexOf(q.toLowerCase());if(i<0)alert('Text not found.');else alert('Text found in document. Use browser selection/search for exact navigation.')}
+function findNext(){const q=document.getElementById('findInput').value;if(!q)return;const text=editor.innerText;const i=text.toLowerCase().indexOf(q.toLowerCase());if(i<0)alert('Text not found.');else{const walker=document.createTreeWalker(editor,NodeFilter.SHOW_TEXT);let pos=0,n;while(n=walker.nextNode()){const end=pos+n.nodeValue.length;if(i>=pos&&i<end){const r=document.createRange();r.setStart(n,i-pos);r.setEnd(n,Math.min(n.nodeValue.length,i-pos+q.length));const sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);n.parentElement?.scrollIntoView({block:'center'});break}pos=end}}}
 function replaceAll(){const a=document.getElementById('findInput').value,b=document.getElementById('replaceInput').value;if(!a)return;editor.innerText=editor.innerText.split(a).join(b);changed()}
 function insertDate(){focusEd();document.execCommand('insertText',false,new Date().toLocaleString());changed()}
 function insertPageNumber(){focusEd();document.execCommand('insertText',false,'[Page 1]');changed()}
@@ -1712,7 +1712,7 @@ function fitToWindow(){
 }
 function setZoom(v){zoom=Math.max(25,Math.min(200,Number(v)||100));page.style.transform='scale('+zoom/100+')';page.style.transformOrigin='top center';document.getElementById('zoomStatus').textContent=zoom+'%';updatePageIndicator()}
 function toggleSidebar(){const s=document.getElementById('sidebar');s.style.display=s.style.display==='none'?'block':'none'}
-function toggleRuler(){alert('Ruler view can be enabled in the next layout module.')}
+function toggleRuler(){document.body.classList.toggle('ruler-on');const s=document.getElementById('saveStatus');if(s)s.textContent=document.body.classList.contains('ruler-on')?'Ruler ON':'Ruler OFF';}
 function setPage(v){
   pageSize=v;
   const sizes={
