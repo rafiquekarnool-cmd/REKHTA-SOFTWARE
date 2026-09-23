@@ -1,23 +1,23 @@
-# REKHTA — Digital Graphic Design Studio
+# REKHTA Desktop
 
-Offline Urdu / English writing and graphic-layout web application.
+Windows desktop Urdu & graphic design editor by RK Solution.
 
-## GitHub Pages
+## Runtime
+- Electron 22.3.27 (kept for Windows 8/8.1 compatibility)
+- Offline-first single-page editor
+- Embedded Jameel Noori Nastaleeq font data remains inside index.html
 
-This project is a static web app. Upload the repository to GitHub and enable **Settings → Pages → Deploy from branch** using the `main` branch and `/ (root)` folder.
+## Development test
+1. npm install
+2. npm start
 
-## Included
-- Urdu / English editor
-- RTL Urdu support
-- Embedded Urdu font in the HTML
-- Dashboard / editor modes
-- Page sizing and print layout
-- Shapes and design objects
-- Question paper module
-- Find / replace
-- Local autosave
-- Keyboard shortcuts
-- Responsive layout
+## Final installer
+Run npm run dist only after editor testing is complete.
 
-## Local use
-Open `index.html` in a modern browser.
+## Package files
+- index.html — complete editor UI and embedded fonts
+- main.js — Electron desktop shell
+- package.json — pinned Electron/build configuration
+- .github/workflows/build-exe.yml — Windows installer workflow
+
+Do not remove the embedded Urdu font block from index.html.
