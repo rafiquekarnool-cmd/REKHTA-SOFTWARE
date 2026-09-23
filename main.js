@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, dialog } = require('electron');
+const { app, BrowserWindow, shell, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -16,7 +16,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1440, height: 900, minWidth: 1024, minHeight: 700,
     show: false, backgroundColor: '#0b2f5b', autoHideMenuBar: true,
-    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true }
+    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: false }
   });
 
   win.webContents.on('render-process-gone', (_event, details) => log(`render-process-gone: ${JSON.stringify(details)}`));
@@ -26,50 +26,9 @@ function createWindow() {
   });
   win.webContents.on('console-message', (_event, level, message, line, sourceId) => log(`console[${level}] ${message} @ ${sourceId}:${line}`));
 
-  // Windows 8 safety fix: dashboard navigation works even if an inline page handler fails.
-  win.webContents.on('did-finish-load', async () => {
-    try {
-      await win.webContents.executeJavaScript(`
-        (() => {
-          const dash = document.getElementById('dashboard');
-          const shell = document.getElementById('editorShell');
-          const title = document.getElementById('docTitle');
-          const editorEl = document.getElementById('editor');
-          if (!dash || !shell) return;
-
-          function openEditor(mode) {
-            window.currentMode = mode;
-            dash.classList.add('hidden');
-            dash.style.display = 'none';
-            shell.style.display = 'flex';
-            if (title) title.textContent = (mode === 'booklet' ? 'Booklet' : 'Regular') + ' — Untitled Document';
-            try { if (typeof setZoom === 'function') setZoom(100); } catch(e) {}
-            try { if (typeof updatePageIndicator === 'function') updatePageIndicator(); } catch(e) {}
-            if (editorEl) setTimeout(() => editorEl.focus(), 50);
-          }
-
-          window.rekhtaOpenEditor = openEditor;
-          const buttons = [...dash.querySelectorAll('button')];
-          buttons.forEach((btn, i) => {
-            btn.addEventListener('click', (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const text = (btn.textContent || '').toLowerCase();
-              const mode = text.includes('booklet') ? 'booklet' : 'regular';
-              openEditor(mode);
-              if (text.includes('a4')) try { setPage('A4'); } catch(e) {}
-              if (text.includes('a3')) try { setPage('A3'); } catch(e) {}
-              if (text.includes('a5')) try { setPage('A5'); } catch(e) {}
-              if (text.includes('a6')) try { setPage('A6'); } catch(e) {}
-            }, true);
-          });
-        })();
-      `, true);
-      log('Dashboard navigation safety fix installed');
-    } catch (err) {
-      log(`Dashboard fix error: ${err.stack || err}`);
-    }
-  });
+  // Renderer bridge: keep desktop-only actions reliable without Node access in the page.
+  ipcMain.removeHandler('rekhta:close-window');
+  ipcMain.handle('rekhta:close-window', () => { if (!win.isDestroyed()) win.close(); return true; });
 
   const indexPath = path.join(__dirname, 'index.html');
   log(`Loading ${indexPath}`);
