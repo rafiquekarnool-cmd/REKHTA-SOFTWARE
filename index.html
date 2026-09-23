@@ -152,13 +152,11 @@ body{background:#d5dbe0!important;font-family:"Segoe UI",Arial,sans-serif!import
       <div class="brand-tools">
         <button onclick="startMode('regular')"><span>✦</span><b>Digital Design</b><small>Posters • Banners • Invitations • Social Graphics</small></button>
         <button onclick="startMode('regular')"><span>▣</span><b>Regular Layout</b><small>Page-by-page design, typing and printing</small></button>
-        <button onclick="startMode('booklet')"><span>▤</span><b>Booklet</b><small>Book pages, duplex and fold-ready workflow</small></button>
       </div>
       <div class="quick-designs">
         <button onclick="startMode('regular');setTimeout(()=>setPage('A4'),100)">A4 Poster</button>
         <button onclick="startMode('regular');setTimeout(()=>setPage('A3'),100)">A3 Banner</button>
         <button onclick="startMode('regular');setTimeout(()=>setPage('A5'),100)">A5 Card</button>
-        <button onclick="startMode('regular');setTimeout(()=>setPage('A6'),100)">A6 Invitation</button>
       </div>
       <div class="brand-footer"><b>REKHTA</b> — Digital Graphic Design Software <span>Developed by R.K. Solution</span></div>
     </div>
@@ -397,7 +395,7 @@ function startMode(mode){
   currentMode=mode;
   document.getElementById('dashboard').classList.add('hidden');
   document.getElementById('editorShell').style.display='flex';
-  document.getElementById('docTitle').textContent=(mode==='booklet'?'Booklet':'Regular')+' — Untitled Document';
+  document.getElementById('docTitle').textContent='Regular'+' — Untitled Document';
   setZoom(100);
   updatePageIndicator();
   editor.focus();
@@ -422,7 +420,7 @@ function setFont(v){focusEd();document.execCommand('fontName',false,v);changed()
 function setSize(v){focusEd();document.execCommand('fontSize',false,'7');document.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute('size');x.style.fontSize=v+'px'});changed()}
 function setLanguage(v){lang=v;editor.dir=v==='ur'?'rtl':'ltr';editor.lang=v;document.getElementById('langMode').value=v;document.getElementById('langStatus').textContent=v==='ur'?'Urdu RTL':'English LTR';focusEd()}
 function toggleDirection(){setLanguage(lang==='ur'?'en':'ur')}
-function newDoc(){if(dirty){if(!confirm('Discard unsaved changes and create a new document?'))return}editor.innerHTML='';currentFile='Untitled REKHTA Design';document.getElementById('docTitle').textContent=(currentMode==='booklet'?'Booklet':'Regular')+' — '+currentFile;dirty=false;document.getElementById('saveStatus').textContent='Ready';updateStatus();editor.focus()}
+function newDoc(){if(dirty){if(!confirm('Discard unsaved changes and create a new document?'))return}editor.innerHTML='';currentFile='Untitled REKHTA Design';document.getElementById('docTitle').textContent='Regular'+' — '+currentFile;dirty=false;document.getElementById('saveStatus').textContent='Ready';updateStatus();editor.focus()}
 function closeDoc(){newDoc()}
 function openDoc(){document.getElementById('fileInput').click()}
 function loadFile(e){const f=e.target.files[0];if(!f)return;currentFile=f.name;document.getElementById('docTitle').textContent=currentFile;const r=new FileReader();r.onload=()=>{if(f.name.toLowerCase().endsWith('.html')){const d=new DOMParser().parseFromString(r.result,'text/html');editor.innerHTML=d.body.innerHTML||r.result}else editor.innerText=r.result;dirty=false;document.getElementById('saveStatus').textContent='Opened';updateStatus()};r.readAsText(f);e.target.value=''}
@@ -1699,7 +1697,7 @@ function updatePageIndicator(){
   const current=getCurrentPageNumber();
   const el=document.getElementById('pageStatus');
   if(!el)return;
-  el.textContent=currentMode==='booklet' ? ('Page '+current+' of '+total) : ('Page '+current);
+  el.textContent='Page '+current;
 }
 function fitToWindow(){
   const area=document.querySelector('.canvas-area');
@@ -1834,7 +1832,7 @@ window.addEventListener('keydown',function(e){
   }
   // Backspace acts as a safe Back/Dashboard key only when the text editor is not focused.
   if(e.key==='Backspace' && document.activeElement!==editor && !e.target.matches('input,textarea,[contenteditable="true"]')){
-    e.preventDefault(); if(currentMode==='regular'||currentMode==='booklet')showDashboard(); return;
+    e.preventDefault(); if(currentMode==='regular')showDashboard(); return;
   }
 });
 // Language toggle shortcut: Ctrl+Shift+U
