@@ -1125,7 +1125,39 @@ window.addEventListener('error',e=>{
 });
 })();
 </script>
-</body></html>`);
+
+<script id="rk-controls-stability-20260923">
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let lastRange=null,lastEditable=null;
+function editable(){const a=document.activeElement;if(a&&(a.isContentEditable||a.matches?.('textarea,input[type="text"]')))return a;return lastEditable||$('editor')}
+document.addEventListener('selectionchange',()=>{const s=getSelection();if(!s.rangeCount)return;const r=s.getRangeAt(0),n=r.commonAncestorContainer.nodeType===1?r.commonAncestorContainer:r.commonAncestorContainer.parentElement,e=n?.closest?.('[contenteditable="true"]');if(e){lastRange=r.cloneRange();lastEditable=e}});
+function restore(){if(lastRange){const s=getSelection();s.removeAllRanges();s.addRange(lastRange)}else editable()?.focus?.()}
+function mark(){try{if(typeof changed==='function')changed();if(typeof updateStatus==='function')updateStatus()}catch(e){}}
+function cmd(name,value=null){restore();try{document.execCommand(name,false,value);mark()}catch(e){}}
+window.format=cmd;
+window.align=v=>cmd('justify'+v[0].toUpperCase()+v.slice(1));
+window.setFont=v=>cmd('fontName',v);
+window.setSize=v=>{cmd('fontSize','7');document.querySelectorAll('font[size="7"]').forEach(x=>{x.removeAttribute('size');x.style.fontSize=(Number(v)||18)+'px'});mark()};
+window.copyAll=function(){const t=editable();if(!t)return;const r=document.createRange();r.selectNodeContents(t);const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy')}catch(e){}};
+window.pasteSpecial=window.pasteText;
+window.pasteDuplicate=function(){restore();try{document.execCommand('copy')}catch(e){};setTimeout(()=>window.pasteText?.(),20)};
+window.clearSelection=function(){restore();try{document.execCommand('delete')}catch(e){}mark()};
+window.newDoc=function(){if(typeof dirty!=='undefined'&&dirty&&!confirm('Discard unsaved changes and create a new document?'))return;const ed=$('editor'),dl=$('designDrawLayer');if(ed)ed.innerHTML='';if(dl)dl.innerHTML='';try{window.selectedDesign=null}catch(e){};if(typeof currentFile!=='undefined')currentFile='Untitled REKHTA Design';if(typeof dirty!=='undefined')dirty=false;const dt=$('docTitle');if(dt)dt.textContent='REKHTA — Untitled';const ss=$('saveStatus');if(ss)ss.textContent='Ready';ed?.focus();try{updateStatus();updatePageIndicator()}catch(e){}};
+window.closeDoc=window.newDoc;
+window.exitApp=function(){if(!confirm('Close REKHTA?'))return;try{window.close()}catch(e){}};
+window.findNext=function(){const q=$('findInput')?.value||'';if(!q)return;const root=$('editor');if(!root)return;const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n,found=null,idx=-1;while(n=walker.nextNode()){idx=n.nodeValue.toLocaleLowerCase().indexOf(q.toLocaleLowerCase());if(idx>=0){found=n;break}}if(!found){alert('Text not found.');return}const r=document.createRange();r.setStart(found,idx);r.setEnd(found,idx+q.length);const s=getSelection();s.removeAllRanges();s.addRange(r);lastRange=r.cloneRange();lastEditable=root;found.parentElement?.scrollIntoView?.({block:'center'})};
+window.replaceAll=function(){const a=$('findInput')?.value||'',b=$('replaceInput')?.value||'';if(!a)return;const root=$('editor');if(!root)return;const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];let n,count=0;while(n=walker.nextNode())nodes.push(n);nodes.forEach(x=>{let pos=0,low=x.nodeValue.toLocaleLowerCase(),needle=a.toLocaleLowerCase(),parts=[],i;while((i=low.indexOf(needle,pos))>=0){parts.push(x.nodeValue.slice(pos,i),b);pos=i+a.length;count++}if(parts.length){parts.push(x.nodeValue.slice(pos));x.nodeValue=parts.join('')}});if(count)mark();else alert('Text not found.')};
+window.insertPageNumber=function(){let n=1;try{n=typeof getCurrentPageNumber==='function'?getCurrentPageNumber():1}catch(e){}cmd('insertText',String(n))};
+const oldSetLang=window.setLanguage;
+window.setLanguage=function(v){try{if(oldSetLang)oldSetLang(v)}catch(e){}const t=editable();if(t){const ur=v==='ur';t.setAttribute('dir',ur?'rtl':'ltr');t.style.direction=ur?'rtl':'ltr';t.style.textAlign=ur?'right':'left';if(ur)t.style.fontFamily='"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif'}};
+window.rkBringFront=function(){const el=window.selectedDesign||document.querySelector('.design-object.selected');if(!el)return alert('Select an object first.');const zs=[...document.querySelectorAll('.design-object')].map(x=>parseInt(x.style.zIndex)||1);el.style.zIndex=Math.max(1,...zs)+1;mark()};
+window.rkSendBack=function(){const el=window.selectedDesign||document.querySelector('.design-object.selected');if(!el)return alert('Select an object first.');el.style.zIndex='1';mark()};
+function wire(){document.querySelectorAll('button').forEach(b=>{const t=b.textContent.trim().toLowerCase();if(/bring.*front/.test(t))b.onclick=window.rkBringFront;if(/send.*back/.test(t))b.onclick=window.rkSendBack;if(t==='duplicate')b.onclick=()=>window.duplicateDesignElement?.();if(t==='delete')b.onclick=()=>window.deleteDesignElement?.();if(/text.*picture|as picture/.test(t)&&!b.closest('#rkTtp'))b.onclick=()=>window.rkOpenTtp?.()})}
+setTimeout(wire,150);
+})();
+</script>\n</body></html>`);
     w.document.close();
     w.focus();
   };
