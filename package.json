@@ -1,7 +1,7 @@
 {
   "name": "rekhta-desktop",
   "version": "1.0.2",
-  "description": "REKHTA Desktop Wedding Card Editor - RK Solution",
+  "description": "REKHTA Desktop Urdu & Graphic Design Editor - RK Solution",
   "main": "main.js",
   "author": "RK Solution",
   "license": "UNLICENSED",
@@ -20,7 +20,8 @@
     "files": [
       "index.html",
       "main.js",
-      "package.json"
+      "package.json",
+      "rekhta.ico"
     ],
     "directories": {
       "output": "dist"
@@ -33,7 +34,8 @@
             "x64"
           ]
         }
-      ]
+      ],
+      "icon": "rekhta.ico"
     },
     "nsis": {
       "oneClick": false,
