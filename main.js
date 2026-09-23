@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, shell, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -15,7 +15,7 @@ process.on('uncaughtException', (err) => {
 function createWindow() {
   const win = new BrowserWindow({
     width: 1440, height: 900, minWidth: 1024, minHeight: 700,
-    show: false, backgroundColor: '#0b2f5b', autoHideMenuBar: true,
+    show: false, backgroundColor: '#dfe3e8', autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: false }
   });
 
@@ -26,9 +26,6 @@ function createWindow() {
   });
   win.webContents.on('console-message', (_event, level, message, line, sourceId) => log(`console[${level}] ${message} @ ${sourceId}:${line}`));
 
-  // Renderer bridge: keep desktop-only actions reliable without Node access in the page.
-  ipcMain.removeHandler('rekhta:close-window');
-  ipcMain.handle('rekhta:close-window', () => { if (!win.isDestroyed()) win.close(); return true; });
 
   const indexPath = path.join(__dirname, 'index.html');
   log(`Loading ${indexPath}`);
@@ -38,6 +35,8 @@ function createWindow() {
   });
 
   win.once('ready-to-show', () => { win.maximize(); win.show(); log('Window shown'); });
+  win.on('unresponsive', () => log('window-unresponsive'));
+  win.on('responsive', () => log('window-responsive'));
 
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:/i.test(url)) { shell.openExternal(url); return { action: 'deny' }; }
