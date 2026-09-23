@@ -8,7 +8,8 @@
   "scripts": {
     "start": "electron .",
     "test": "electron .",
-    "dist": "electron-builder --win nsis --x64 --publish never"
+    "dist": "electron-builder --win nsis --x64 --publish never",
+    "portable": "electron-builder --win portable --x64 --publish never"
   },
   "devDependencies": {
     "electron": "22.3.27",
@@ -30,6 +31,12 @@
       "target": [
         {
           "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
           "arch": [
             "x64"
           ]
