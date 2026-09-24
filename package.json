@@ -1,13 +1,14 @@
 {
   "name": "rekhta-desktop",
-  "version": "1.0.2",
-  "description": "REKHTA Desktop Wedding Card Editor - RK Solution",
+  "version": "1.0.0",
+  "description": "REKHTA Urdu & English Digital Graphic Design Studio",
   "main": "main.js",
-  "author": "RK Solution",
+  "author": "RK SOLUTION - Rafique Karnool",
   "license": "UNLICENSED",
+  "private": true,
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis --x64 --publish never"
+    "dist": "electron-builder --win nsis --x64"
   },
   "devDependencies": {
     "electron": "22.3.27",
@@ -16,31 +17,23 @@
   "build": {
     "appId": "com.rksolution.rekhta",
     "productName": "REKHTA",
+    "directories": {"output": "dist", "buildResources": "build"},
+    "files": ["main.js","preload.js","REKHTA.html","build/icon.png"],
     "asar": true,
-    "files": [
-      "index.html",
-      "main.js",
-      "package.json"
-    ],
-    "directories": {
-      "output": "dist"
-    },
+    "compression": "maximum",
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
+      "icon": "build/icon.png",
+      "target": [{"target":"nsis","arch":["x64"]}],
+      "artifactName": "REKHTA-Setup-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "REKHTA"
+      "shortcutName": "REKHTA",
+      "perMachine": false,
+      "runAfterFinish": true
     }
   }
 }
