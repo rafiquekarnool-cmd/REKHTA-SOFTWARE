@@ -997,7 +997,8 @@ let pageAllSelected=false;
 function selectAllPageMatter(){
   pageAllSelected=true;
   document.querySelectorAll('.design-object').forEach(x=>x.classList.add('page-selected'));
-  if(editor && (document.activeElement===editor || editor.contains(document.activeElement))){    const r=document.createRange(); r.selectNodeContents(editor);
+  if(editor && (document.activeElement===editor || editor.contains(document.activeElement))){
+    const r=document.createRange(); r.selectNodeContents(editor);
     const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
   }
   document.getElementById('saveStatus').textContent='All page matter selected';
