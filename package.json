@@ -1,6 +1,6 @@
 {
   "name": "rekhta-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "REKHTA Urdu & English Digital Graphic Design Studio",
   "main": "main.js",
   "author": "RK SOLUTION - Rafique Karnool",
@@ -17,13 +17,28 @@
   "build": {
     "appId": "com.rksolution.rekhta",
     "productName": "REKHTA",
-    "directories": {"output": "dist", "buildResources": "build"},
-    "files": ["main.js","preload.js","REKHTA.html","build/icon.png"],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "REKHTA.html",
+      "build/icon.png"
+    ],
     "asar": true,
     "compression": "maximum",
     "win": {
       "icon": "build/icon.png",
-      "target": [{"target":"nsis","arch":["x64"]}],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "artifactName": "REKHTA-Setup-${version}.${ext}"
     },
     "nsis": {
