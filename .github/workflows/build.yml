@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -16,6 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+
       - name: Install dependencies
         shell: pwsh
         run: |
@@ -25,15 +29,26 @@ jobs:
             npm install
           }
 
-      - name: Build Windows installer
+      - name: Build Windows 8 compatible x64 installer
         run: npm run dist -- --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
-      - name: Upload REKHTA installer
+      - name: Upload REKHTA installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: REKHTA-Windows-Setup
-          path: |
-            dist/*.exe
+          path: dist/*.exe
           if-no-files-found: error
+
+      - name: Publish latest installer release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "rekhta-latest"
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title "REKHTA Latest Windows Setup" --notes "Latest Windows 8 x64 compatible REKHTA installer."
+          }
+          gh release upload $tag dist/*.exe --clobber
