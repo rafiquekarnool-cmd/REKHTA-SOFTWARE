@@ -116,7 +116,7 @@ body{background:#fff;overflow:visible}.titlebar,.menubar,.toolbar,.sidebar,.stat
 </style>
 
 <style id="rekhta-jameel-stability-fix">
-@font-face{font-family:'Jameel Noori Nastaleeq';src:local('Jameel Noori Nastaleeq'),local('Jameel Noori Nastaleeq Regular'),local('Jameel Noori Nastaleeq Kasheeda'),local('JameelNooriNastaleeq'),url('Jameel Noori Nastaleeq Regular.ttf') format('truetype'),url('JameelNooriNastaleeq.ttf') format('truetype');font-style:normal;font-weight:400;font-display:block}
+@font-face{font-family:'Jameel Noori Nastaleeq';src:local('Jameel Noori Nastaleeq'),local('Jameel Noori Nastaleeq Regular'),url('JAMEEL NOORI NASTALEEQ.TTF') format('truetype'),url('Jameel Noori Nastaleeq Regular.ttf') format('truetype'),url('JameelNooriNastaleeq.ttf') format('truetype');font-style:normal;font-weight:400;font-display:block}
 #editor[lang="ur"],#editor .rekhta-jameel,.rekhta-jameel{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',Tahoma,serif}
 .design-object{box-sizing:border-box;transform-origin:top left}
 .resize-handle{box-sizing:border-box;touch-action:none}
@@ -209,8 +209,200 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
 .rk-auth-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.rk-auth-btn{width:100%;height:40px;border:0;border-radius:9px;background:#1769d1;color:#fff;font-weight:700;margin-top:15px;cursor:pointer}.rk-auth-btn:hover{background:#0f58b4}
 .rk-auth-test{margin-top:13px;padding:9px;border-radius:8px;background:#f1f5f9;color:#66727e;font-size:10px;line-height:1.5}.rk-auth-error{min-height:16px;margin-top:8px;color:#b13b31;font-size:11px;text-align:center}
 </style>
+
+<style id="rk-exit-dialog-css">
+#rkExitOverlay{position:fixed;inset:0;z-index:9999999;background:rgba(25,35,45,.34);display:none;align-items:center;justify-content:center}
+#rkExitOverlay.show{display:flex}
+.rk-exit-box{width:390px;max-width:92vw;background:#fff;border:1px solid #d2dae3;border-radius:14px;box-shadow:0 24px 70px rgba(25,35,45,.28);padding:22px;font-family:Segoe UI,Arial;color:#33404c}
+.rk-exit-box h3{margin:0 0 8px;font-size:17px}.rk-exit-box p{font-size:12px;line-height:1.55;color:#66727e}
+.rk-exit-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}.rk-exit-actions button{height:34px;padding:0 14px;border-radius:7px;border:1px solid #cbd5df;background:#fff;cursor:pointer}
+.rk-exit-actions .primary{background:#1769d1;color:#fff;border-color:#1769d1}
+</style>
+
+
+<style id="rk-full-keyboard-css">
+button:focus,select:focus,input:focus,[tabindex]:focus{
+  outline:2px solid #1769d1!important;
+  outline-offset:2px!important;
+}
+.rk-kbd-focus{
+  box-shadow:0 0 0 2px rgba(23,105,209,.28)!important;
+}
+</style>
+
+
+<style id="rk-canvas-no-textbox-css">
+#editor{
+  border:none!important;
+  outline:none!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  border-radius:0!important;
+}
+#editor:focus,#editor:focus-visible{
+  border:none!important;
+  outline:none!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+#page{cursor:text}
+.design-object[contenteditable="true"]{
+  outline:none!important;
+}
+</style>
+
+
+<style id="rk-urdu-space-css">
+#editor[lang="ur"], #editor [lang="ur"], #editor [dir="rtl"]{
+  word-spacing:0.14em!important;
+}
+</style>
+
+
+<style id="rk-custom-page-css">
+.rk-custom-page-overlay{position:fixed;inset:0;z-index:9999998;background:rgba(20,30,40,.35);display:none;align-items:center;justify-content:center}
+.rk-custom-page-overlay.show{display:flex}
+.rk-custom-page-box{width:430px;max-width:92vw;background:#fff;border:1px solid #d0d7df;border-radius:14px;box-shadow:0 22px 65px rgba(20,30,40,.25);padding:22px;font-family:Segoe UI,Arial;color:#33404c}
+.rk-custom-page-box h3{margin:0 0 16px;font-size:17px}
+.rk-custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rk-custom-grid label{font-size:11px;font-weight:700;color:#64717d}
+.rk-custom-grid input,.rk-custom-grid select{width:100%;height:36px;box-sizing:border-box;margin-top:5px;border:1px solid #cbd5df;border-radius:7px;padding:6px 9px;background:#fff}
+.rk-custom-note{margin-top:12px;padding:9px 10px;background:#f4f7fa;border-radius:8px;font-size:10px;color:#687580}
+.rk-custom-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.rk-custom-actions button{height:34px;padding:0 14px;border:1px solid #c8d1da;border-radius:7px;background:#fff;cursor:pointer}
+.rk-custom-actions .primary{background:#1769d1;color:#fff;border-color:#1769d1}
+</style>
+
+
+<style id="rk-help-css">
+#rkHelpOverlay{position:fixed;inset:0;z-index:10000020;background:rgba(18,28,40,.48);display:none;align-items:center;justify-content:center;padding:18px;font-family:Segoe UI,Arial,sans-serif}
+#rkHelpOverlay.show{display:flex}.rk-help-box{width:min(980px,96vw);height:min(760px,92vh);background:#f8fafc;border:1px solid #cbd5df;border-radius:16px;box-shadow:0 28px 80px rgba(15,25,35,.34);display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;color:#263442}
+.rk-help-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:#e9eef4;border-bottom:1px solid #ced7e0}.rk-help-head h2{margin:0;font-size:20px;color:#184f86}.rk-help-head small{display:block;color:#6b7784;font-size:11px;margin-top:2px}.rk-help-close{border:1px solid #bcc8d4;background:white;border-radius:7px;padding:7px 12px;cursor:pointer}
+.rk-help-main{display:grid;grid-template-columns:210px 1fr;min-height:0}.rk-help-nav{padding:12px;background:#eef3f7;border-right:1px solid #d4dce5;overflow:auto}.rk-help-nav button{width:100%;text-align:left;margin:0 0 6px;padding:9px 10px;border:1px solid transparent;border-radius:8px;background:transparent;cursor:pointer;color:#344554;font-weight:600}.rk-help-nav button:hover,.rk-help-nav button.active{background:#fff;border-color:#c9d6e2;color:#155fa8}
+.rk-help-content{padding:20px 24px;overflow:auto;line-height:1.55;background:#fff}.rk-help-content h3{margin:0 0 10px;color:#155fa8;font-size:18px}.rk-help-content h4{margin:18px 0 7px;color:#33485b}.rk-help-content p{margin:7px 0}.rk-help-content ul{margin:7px 0 12px 20px;padding:0}.rk-help-content kbd{background:#edf1f5;border:1px solid #cbd4de;border-bottom-width:2px;border-radius:5px;padding:2px 6px;font:11px Consolas,monospace}.rk-help-note{background:#f2f7fc;border-left:4px solid #4b8fcf;padding:10px 12px;margin:12px 0;border-radius:6px}.rk-help-foot{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 16px;background:#f1f4f7;border-top:1px solid #d5dde5;font-size:11px;color:#65717d}.rk-help-foot button{border:1px solid #bcc8d4;background:white;border-radius:7px;padding:7px 12px;cursor:pointer}
+@media(max-width:700px){.rk-help-main{grid-template-columns:1fr}.rk-help-nav{display:flex;gap:6px;overflow:auto;border-right:0;border-bottom:1px solid #d4dce5}.rk-help-nav button{min-width:max-content}.rk-help-box{height:94vh}}
+</style>
+
+<style id="rk-print-page-only-fix">
+@media print{
+  @page{margin:0!important;}
+  html,body{margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important;width:auto!important;height:auto!important;}
+  body *{visibility:hidden!important;}
+  #page,#page *{visibility:visible!important;}
+  #page{
+    position:absolute!important;left:0!important;top:0!important;
+    margin:0!important;transform:none!important;box-shadow:none!important;
+    overflow:visible!important;background:#fff!important;
+  }
+  #rkPropertiesPanel,.sidebar,.titlebar,.menubar,.toolbar,.statusbar,.findbox,
+  .page-ruler,.non-output,.resize-handle,.shape-hint,#insertPanel,#shapePanel,
+  #questionPanel,#rkExitOverlay,#rkExportOverlay,.dashboard{
+    display:none!important;visibility:hidden!important;
+  }
+  #editor{overflow:visible!important;height:auto!important;max-height:none!important;}
+  .design-object.selected,.design-object.page-selected{outline:none!important;box-shadow:none!important;}
+}
+</style>
+
+
+<style id="rk-stable-menu-runtime-style">
+.menubar .menu.rk-kb-open > .dropdown{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+</style>
+
+
+<style id="rk-picture-trace-style">
+#rkPictureTraceOverlay{position:fixed;inset:0;z-index:10000060;background:rgba(15,25,36,.58);display:none;align-items:center;justify-content:center;padding:16px;font-family:Segoe UI,Arial,sans-serif}
+#rkPictureTraceOverlay.show{display:flex}
+#rkPictureTraceBox{width:min(980px,96vw);max-height:94vh;overflow:auto;background:#f6f8fb;border:1px solid #aebdcb;border-radius:14px;box-shadow:0 25px 80px rgba(0,0,0,.38)}
+.rk-tr-head{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;background:#e6edf4;border-bottom:1px solid #c5d1dc;position:sticky;top:0;z-index:2}
+.rk-tr-head h3{margin:0;color:#263c52;font-size:17px}.rk-tr-head small{display:block;color:#65788b;margin-top:2px}
+.rk-tr-head button,.rk-tr-actions button,.rk-tr-controls button{border:1px solid #adbac7;background:white;border-radius:7px;padding:8px 11px;cursor:pointer;font-weight:600}
+.rk-tr-body{padding:13px}.rk-tr-controls{display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:12px}
+.rk-tr-controls label{font-size:11px;font-weight:700;color:#4e6275;display:flex;flex-direction:column;gap:4px}
+.rk-tr-controls input[type=range]{width:100%}
+.rk-tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rk-tr-pane{background:white;border:1px solid #d1dae3;border-radius:9px;overflow:auto;min-height:330px}
+.rk-tr-pane b{display:block;padding:6px 9px;background:#edf2f6;border-bottom:1px solid #d1dae3;font-size:12px}
+.rk-tr-pane canvas{display:block;max-width:100%;height:auto;margin:auto;background:white}
+.rk-tr-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}.rk-tr-actions .primary{background:#295d8f;color:#fff;border-color:#295d8f}
+.rk-tr-note{font-size:11px;color:#65778a;margin-top:8px}
+@media(max-width:760px){.rk-tr-controls{grid-template-columns:1fr 1fr}.rk-tr-grid{grid-template-columns:1fr}}
+@media print{#rkPictureTraceOverlay{display:none!important}}
+</style>
+
 </head>
 <body>
+<div id="rkPictureTraceOverlay" aria-hidden="true">
+  <div id="rkPictureTraceBox" role="dialog" aria-modal="true" aria-labelledby="rkPictureTraceTitle">
+    <div class="rk-tr-head">
+      <div><h3 id="rkPictureTraceTitle">Picture Trace → Outline / SVG</h3><small>Offline • Selected Picture or File • CorelDRAW</small></div>
+      <button type="button" onclick="rkClosePictureTrace()">✕ Close</button>
+    </div>
+    <div class="rk-tr-body">
+      <div class="rk-tr-controls">
+        <label>Choose another image<input id="rkPictureTraceFile" type="file" accept="image/png,image/jpeg,image/webp,image/bmp"></label>
+        <label>Threshold <span id="rkPictureTraceThresholdValue">170</span><input id="rkPictureTraceThreshold" type="range" min="20" max="245" value="170"></label>
+        <label>Detail<select id="rkPictureTraceMax"><option value="600">Normal</option><option value="900" selected>High</option><option value="1200">Very High</option></select></label>
+        <button type="button" onclick="rkTraceUseSelected()">Use Selected Picture</button>
+      </div>
+      <div class="rk-tr-grid">
+        <div class="rk-tr-pane"><b>Original</b><canvas id="rkPictureTraceOriginal"></canvas></div>
+        <div class="rk-tr-pane"><b>Trace Preview</b><canvas id="rkPictureTracePreview"></canvas></div>
+      </div>
+      <div class="rk-tr-note">Black areas vector paths में export होंगी. Urdu artwork, logo और line-art पर best result मिलेगा.</div>
+      <div class="rk-tr-actions">
+        <button type="button" onclick="rkPictureTracePreview()">Refresh Preview</button>
+        <button type="button" class="primary" onclick="rkExportPictureTraceSVG()">Export SVG Outline → CorelDRAW</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="rkExitOverlay" aria-hidden="true">
+  <div class="rk-exit-box">
+    <h3>Save changes before exit?</h3>
+    <p id="rkExitMessage">Document में किए गए changes save करना है?</p>
+    <div class="rk-exit-actions">
+      <button type="button" onclick="rkCancelExit()">Cancel</button>
+      <button type="button" onclick="rkExitWithoutSave()">Don't Save</button>
+      <button type="button" onclick="rkSaveAsAndExit()">Save As</button>
+      <button type="button" class="primary" onclick="rkSaveAndExit()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="rkCustomPageOverlay" class="rk-custom-page-overlay" aria-hidden="true">
+  <div class="rk-custom-page-box" role="dialog" aria-modal="true" aria-labelledby="rkCustomPageTitle">
+    <h3 id="rkCustomPageTitle">Customize Page Size</h3>
+    <div class="rk-custom-grid">
+      <label>Width<input id="rkCustomW" type="number" min="1" step="0.1" value="210"></label>
+      <label>Height<input id="rkCustomH" type="number" min="1" step="0.1" value="297"></label>
+      <label>Unit<select id="rkCustomUnit"><option value="mm">mm</option><option value="in">inch</option><option value="px">px</option></select></label>
+      <label>Orientation<select id="rkCustomOrientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></label>
+    </div>
+    <div class="rk-custom-note">Examples: 7 × 7 inch, 6.5 × 6.5 inch, 210 × 297 mm (A4)</div>
+    <div class="rk-custom-actions">
+      <button type="button" onclick="rkCloseCustomPage()">Cancel</button>
+      <button type="button" class="primary" onclick="rkApplyCustomPage()">Apply</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="rkHelpOverlay" aria-hidden="true">
+  <div class="rk-help-box" role="dialog" aria-modal="true" aria-labelledby="rkHelpTitle">
+    <div class="rk-help-head"><div><h2 id="rkHelpTitle">REKHTA — About Us & Complete Help</h2><small>Urdu + English Design Software • RK Solution</small></div><button class="rk-help-close" onclick="rkCloseHelp()">✕ Close</button></div>
+    <div class="rk-help-main">
+      <nav class="rk-help-nav" id="rkHelpNav">
+        <button data-help="about" onclick="rkHelpSection('about')">About REKHTA</button><button data-help="quick" onclick="rkHelpSection('quick')">Quick Start</button><button data-help="urdu" onclick="rkHelpSection('urdu')">Urdu / Phonetic</button><button data-help="design" onclick="rkHelpSection('design')">Design Tools</button><button data-help="save" onclick="rkHelpSection('save')">Save / Open</button><button data-help="export" onclick="rkHelpSection('export')">SVG / Export</button><button data-help="keyboard" onclick="rkHelpSection('keyboard')">Keyboard & Mouse</button><button data-help="esc" onclick="rkHelpSection('esc')">ESC / Exit</button><button data-help="license" onclick="rkHelpSection('license')">Login / License</button><button data-help="trouble" onclick="rkHelpSection('trouble')">Troubleshooting</button><button data-help="contact" onclick="rkHelpSection('contact')">Contact</button>
+      </nav><section class="rk-help-content" id="rkHelpContent"></section>
+    </div>
+    <div class="rk-help-foot"><span>Developed by RK Solution • Rafique Karnool</span><button onclick="shortcuts()">Keyboard Shortcuts</button></div>
+  </div>
+</div>
 
 <div id="rkAuthOverlay" aria-label="Customer Login">
   <div class="rk-auth-card">
@@ -232,31 +424,21 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
   </div>
 </div>
 
-<div id="rkSplash" aria-label="REKHTA loading">
-  <div class="rk-splash-card">
-    <div class="rk-mark">R</div><h1>REKHTA</h1>
-    <div class="rk-sub">Digital Graphic Design Studio</div><div class="rk-line"></div>
-    <div class="rk-dev"><b>Rafique Karnool</b><span>RK SOLUTION</span></div>
-    <div class="rk-loader" aria-hidden="true"></div>
-  </div>
-</div>
-
 <div class="app">
-  <div class="titlebar"><div class="logo">REKHTA <span style="font-size:10px;opacity:.8">v1.0.1 SMART FULL</span></div><div class="docname">Digital Graphic Design Studio • R.K. Solution</div><div class="docname" id="docTitle">Untitled Document</div></div>
+  <div class="titlebar"><div class="logo">REKHTA <span style="font-size:10px;opacity:.8">v1.0.23 FINAL CHECK</span></div><div class="docname">Digital Graphic Design Studio • R.K. Solution</div><div class="docname" id="docTitle">Untitled Document</div></div>
 
   <section class="dashboard rk-light-dashboard" id="dashboard">
     <div class="rk-light-shell">
       <aside class="rk-light-side">
         <div class="rk-light-logo"><div class="rk-logo-mark">R</div><b>REKHTA</b><small>Digital Graphic<br>Design Studio</small></div>
-        <button class="active" onclick="startMode('regular')">⌂ <span>Home</span></button>
-        <button onclick="startMode('regular');setTimeout(()=>newDoc(),80)">＋ <span>New Design</span></button>
+        <button class="active" onclick="rkOpenEditorSafely()">⌂ <span>Home</span></button>
+        <button onclick="rkOpenEditorSafely();setTimeout(()=>newDoc(),80)">＋ <span>New Design</span></button>
         <button onclick="openDoc()">▱ <span>Open File</span></button>
         <div class="rk-side-sep"></div>
-        <button onclick="startMode('regular')">▤ <span>All Designs</span></button>
-        <button onclick="startMode('regular')">▦ <span>Templates</span></button>
-        <button onclick="startMode('regular')">A̲ <span>Fonts</span></button>
-        <button onclick="startMode('regular')">⚙ <span>Settings</span></button>
-        <div class="rk-side-bottom"><b>LIGHT GREY PRO</b><small>REKHTA v1.0.1</small></div>
+        <button onclick="rkOpenEditorSafely()">▤ <span>Design Editor</span></button>
+        <button onclick="rkOpenEditorSafely()">A̲ <span>Fonts</span></button>
+        <button onclick="rkOpenEditorSafely()">⚙ <span>Settings</span></button>
+        <div class="rk-side-bottom"><b>LIGHT GREY PRO</b><small>REKHTA v1.0.23</small></div>
       </aside>
       <main class="rk-light-main">
         <header class="rk-light-head">
@@ -265,38 +447,29 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
         </header>
         <section class="rk-welcome">
           <small>WELCOME TO REKHTA</small>
-          <h2>What would you like to design today?</h2>
+          <h2>Choose your work</h2>
         </section>
-        <section class="rk-primary-grid rk-smart-grid">
-          <button class="rk-design-card rk-smart-card" onclick="startMode('regular')">
+        <section class="rk-primary-grid rk-smart-grid" style="grid-template-columns:repeat(2,minmax(230px,1fr))!important;max-width:760px">
+          <button class="rk-design-card rk-smart-card" onclick="rkOpenEditorSafely()">
             <div class="rk-card-art sheets"><span>▧</span><i></i><i></i></div>
-            <b>New Design</b><small>Posters, cards, banners and general print layouts.</small><em>→</em>
+            <b>Design Editor</b><small>Regular design, wedding card, invitation, poster, banner and print layout — all in one editor.</small><em>→</em>
           </button>
-          <button class="rk-design-card rk-smart-card" onclick="startMode('regular');setTimeout(()=>setPage('A6'),100)">
-            <div class="rk-card-art wedding"><span>♡</span><i></i></div>
-            <b>Wedding Card</b><small>Nikah, Walima, engagement and invitation layouts.</small><em>→</em>
-          </button>
-          <button class="rk-design-card rk-smart-card" onclick="startMode('regular');setTimeout(()=>openQuestionPaper(),120)">
+          <button class="rk-design-card rk-smart-card" onclick="rkOpenEditorSafely();setTimeout(()=>openQuestionPaper(),120)">
             <div class="rk-card-art question"><span>▤</span><i></i></div>
-            <b>Question Paper</b><small>Create a compact professional question paper header.</small><em>→</em>
-          </button>
-          <button class="rk-design-card rk-smart-card" onclick="startMode('regular')">
-            <div class="rk-card-art digital"><span>✦</span><i></i></div>
-            <b>Continue Designing</b><small>Open the main editor and continue your current work.</small><em>→</em>
+            <b>Question Paper</b><small>Open the Question Paper module inside the same editor.</small><em>→</em>
           </button>
         </section>
         <section class="rk-action-row">
-          <button onclick="startMode('regular');setTimeout(()=>newDoc(),80)"><span class="mint">＋</span><b>New Design</b><small>Start a new blank design</small><em>→</em></button>
+          <button onclick="rkOpenEditorSafely();setTimeout(()=>newDoc(),80)"><span class="mint">＋</span><b>New Design</b><small>Start a new blank design</small><em>→</em></button>
           <button onclick="openDoc()"><span class="blue">▰</span><b>Open Existing File</b><small>Open and continue saved design</small><em>→</em></button>
-          <button onclick="startMode('regular')"><span class="violet">◷</span><b>Continue Designing</b><small>Go to the main editor</small><em>→</em></button>
         </section>
         <section class="rk-quick">
-          <div class="rk-quick-title"><b>Quick Page Sizes</b><small>Start directly with a common print size</small></div>
+          <div class="rk-quick-title"><b>Quick Page Sizes</b><small>Same editor, selected page size</small></div>
           <div class="rk-quick-grid">
-            <button onclick="startMode('regular');setTimeout(()=>setPage('A4'),100)"><b>A4</b><small>Poster / Letter</small></button>
-            <button onclick="startMode('regular');setTimeout(()=>setPage('A3'),100)"><b>A3</b><small>Large Layout</small></button>
-            <button onclick="startMode('regular');setTimeout(()=>setPage('A5'),100)"><b>A5</b><small>Card / Flyer</small></button>
-            <button onclick="startMode('regular');setTimeout(()=>setPage('A6'),100)"><b>A6</b><small>Invitation</small></button>
+            <button onclick="rkOpenEditorSafely();setTimeout(()=>setPage('A4'),100)"><b>A4</b><small>Poster / Letter</small></button>
+            <button onclick="rkOpenEditorSafely();setTimeout(()=>setPage('A3'),100)"><b>A3</b><small>Large Layout</small></button>
+            <button onclick="rkOpenEditorSafely();setTimeout(()=>setPage('A5'),100)"><b>A5</b><small>Card / Flyer</small></button>
+            <button onclick="rkOpenEditorSafely();setTimeout(()=>setPage('A6'),100)"><b>A6</b><small>Invitation</small></button>
           </div>
         </section>
       </main>
@@ -401,18 +574,18 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
       <button onclick="insertPageNumber()">Page Number</button>
       <button onclick="insertDate()">Date & Time</button>
       <button onclick="insertPicture()">Picture</button>
-      <button onclick="insertTable()">Table</button>
+      <button onclick="insertTable()">Table</button><button onclick="textAsPicture()">Export As Picture <span>Ctrl+Shift+P</span></button><button onclick="textAsSvgCurves()">Text as SVG Curves <span>CorelDRAW</span></button>
       <div class="sep"></div>
       <button onclick="openSymbols()">Symbols</button>
       <button onclick="openMathSymbols()">Mathematics Symbols</button>
       <button onclick="openGeometrySymbols()">Geometry Symbols (Angle / ∠ / Shapes)</button>
       <button onclick="openShapes()">Shapes — Draw + Resize Nodes</button>
       <div class="sep"></div>
-      <button onclick="textAsPicture()">Text as Picture <span class="shortcut">Ctrl+Shift+P</span></button>
+      <button onclick="textAsPicture()">Export As Picture <span class="shortcut">Ctrl+Shift+P</span></button><button onclick="textAsSvgCurves()">Text as SVG Curves <span class="shortcut">CorelDRAW</span></button>
     </div></div>
 
     <div class="menu"><button accesskey="d"><u>D</u>esign</button><div class="dropdown">
-      <button onclick="addDesignText()">Add Text</button>
+      <button onclick="addDesignText()">Text / Type on Page</button>
       <button onclick="insertPicture()">Add Picture / Logo</button>
       <button onclick="openShapes()">Shapes</button>
       <button onclick="setBackground()">Background</button>
@@ -422,6 +595,7 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
       <button onclick="designAlign('right')">Align Right</button>
       <button onclick="duplicateDesignElement()">Duplicate Element</button>
       <button onclick="deleteDesignElement()">Delete Element</button>
+      <button onclick="rkOpenPictureTrace()">Trace Selected Picture → SVG</button>
       <button onclick="exportAsPicture()">Export Design PNG</button>
       <button onclick="saveDesignTemplate()">Save Design as Template</button>
     </div></div>
@@ -429,7 +603,8 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
     <div class="menu"><button accesskey="t"><u>T</u>ools</button><div class="dropdown">
       <button onclick="countWords()">Word Count</button><button onclick="cleanText()">Clean Text</button>
       <button onclick="toggleDirection()">Toggle RTL / LTR</button>
-      <div class="sep"></div><button onclick="textAsPicture()">Text as Picture <span class="menu-shortcut">Ctrl+Shift+P</span></button>
+      <div class="sep"></div><button onclick="textAsPicture()">Export As Picture <span class="menu-shortcut">Ctrl+Shift+P</span></button><button onclick="textAsSvgCurves()">Text as SVG Curves <span class="menu-shortcut">CorelDRAW</span></button>
+      <button onclick="rkOpenPictureTrace()">Picture Trace → SVG <span class="menu-shortcut">CorelDRAW</span></button>
       <button onclick="shortcuts()">Keyboard Shortcuts <span class="menu-shortcut">F1</span></button>
     </div></div>
 
@@ -438,21 +613,30 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
     </div></div>
 
     <div class="menu"><button accesskey="l"><u>L</u>anguage</button><div class="dropdown">
-      <button onclick="setLanguage('ur')">Urdu Typing <span class="menu-shortcut">Ctrl+Alt+U</span></button>
-      <button onclick="setLanguage('en')">English Typing <span class="menu-shortcut">Ctrl+Alt+E</span></button>
+      <button onclick="setLanguage('ur')">Urdu Typing <span class="menu-shortcut">Ctrl+Alt+U / Ctrl+Space</span></button>
+      <button onclick="setLanguage('en')">English Typing <span class="menu-shortcut">Ctrl+Alt+E / Ctrl+Space</span></button>
+      <button onclick="togglePhonetic()">Urdu Phonetic Keyboard <span class="menu-shortcut">Ctrl+Alt+P</span></button>
+      <div class="sep"></div>
+      <button onclick="setTextDirection('rtl')">Text Direction — RTL <span class="menu-shortcut">Ctrl+Alt+R</span></button>
+      <button onclick="setTextDirection('ltr')">Text Direction — LTR <span class="menu-shortcut">Ctrl+Alt+L</span></button>
+      <button onclick="setTextDirection('auto')">Text Direction — Auto</button>
       <div class="sep"></div><button onclick="toggleDirection()">Switch Urdu / English <span class="menu-shortcut">Ctrl+Shift+L</span></button>
     </div></div>
 
     <div class="menu"><button accesskey="h"><u>H</u>elp</button><div class="dropdown">
-      <button onclick="about()">About REKHTA</button><button onclick="shortcuts()">Keyboard Shortcuts</button>
+      <button onclick="about()">About Us & Complete Help</button>
+      <button onclick="rkOpenHelp('quick')">Quick Start</button>
+      <button onclick="rkOpenHelp('urdu')">Urdu / Phonetic Help</button>
+      <button onclick="rkOpenHelp('export')">Save / Export Help</button>
+      <button onclick="shortcuts()">Keyboard Shortcuts</button>
     </div></div>
   </div>
 
-  <div class="shortcut-line" aria-label="Keyboard shortcuts"><b>SHORTCUTS</b> &nbsp; Ctrl+N New &nbsp;|&nbsp; Ctrl+O Open &nbsp;|&nbsp; Ctrl+S Save &nbsp;|&nbsp; Ctrl+Shift+S Save As &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Ctrl+Z/Y Undo/Redo &nbsp;|&nbsp; Ctrl+B/I/U &nbsp;|&nbsp; Ctrl+Alt+U Urdu &nbsp;|&nbsp; Ctrl+Alt+E English &nbsp;|&nbsp; Ctrl+Shift+L Language &nbsp;|&nbsp; Ctrl+Shift+P Text as Picture &nbsp;|&nbsp; Ctrl+Shift+E Export Page &nbsp;|&nbsp; Ctrl+D Duplicate &nbsp;|&nbsp; Ctrl+G Group &nbsp;|&nbsp; Ctrl+Shift+G Ungroup &nbsp;|&nbsp; Ctrl+L Lock &nbsp;|&nbsp; F1 Help</div>
+  <div class="shortcut-line" aria-label="Keyboard shortcuts"><b>SHORTCUTS</b> &nbsp; Ctrl+N New &nbsp;|&nbsp; Ctrl+O Open &nbsp;|&nbsp; Ctrl+S Save &nbsp;|&nbsp; Ctrl+Shift+S Save As &nbsp;|&nbsp; Ctrl+P Print &nbsp;|&nbsp; Ctrl+Z/Y Undo/Redo &nbsp;|&nbsp; Ctrl+B/I/U &nbsp;|&nbsp; Ctrl+Alt+U Urdu &nbsp;|&nbsp; Ctrl+Alt+E English &nbsp;|&nbsp; Ctrl+Alt+P Phonetic &nbsp;|&nbsp; Ctrl+Space Urdu/English &nbsp;|&nbsp; Ctrl+Shift+L Language &nbsp;|&nbsp; Ctrl+Shift+M Custom Page &nbsp;|&nbsp; Ctrl+Alt+R RTL &nbsp;|&nbsp; Ctrl+Alt+L LTR &nbsp;|&nbsp; Esc Back/Exit &nbsp;|&nbsp; F6 Next Panel &nbsp;|&nbsp; Ctrl+Shift+P Text as SVG &nbsp;|&nbsp; Ctrl+Shift+E Export Page &nbsp;|&nbsp; Ctrl+D Duplicate &nbsp;|&nbsp; Ctrl+G Group &nbsp;|&nbsp; Ctrl+Shift+G Ungroup &nbsp;|&nbsp; Ctrl+L Lock &nbsp;|&nbsp; F1 Help</div>
 
   <div class="editor-shell" id="editorShell" style="display:none">
   <div class="toolbar">
-    <button class="back-dashboard" onclick="showDashboard()" title="Return to Dashboard">← Dashboard</button><span class="rekhta-badge">REKHTA DESIGN</span><button class="page-size-toolbar" onclick="togglePageSizeList(event)" title="Page Size">Page Size ▾</button><button onclick="newDoc()" title="New">＋</button>
+    <button id="rkTextPictureQuick" class="back-dashboard" onclick="textAsPicture()" title="Export As Picture / CorelDRAW (Ctrl+Shift+P)">Export As Picture</button><button class="back-dashboard" onclick="showDashboard()" title="Return to Dashboard">← Dashboard</button><span class="rekhta-badge">REKHTA DESIGN</span><button class="page-size-toolbar" onclick="togglePageSizeList(event)" title="Page Size">Page Size ▾</button><button onclick="newDoc()" title="New">＋</button>
     <button onclick="openDoc()" title="Open">📂</button>
     <button onclick="saveDoc()" title="Save">💾</button>
     <button onclick="undoDoc()">↶</button><button onclick="redoDoc()">↷</button>
@@ -461,15 +645,22 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
     <select id="fontName" onchange="setFont(this.value)">
       <option value="Arial">Arial</option><option value="Times New Roman">Times New Roman</option>
       <option value="Georgia">Georgia</option><option value="Tahoma">Tahoma</option>
-      <option value="Noto Nastaliq Urdu">Noto Nastaliq Urdu</option><option value="Jameel Noori Nastaleeq" selected>Jameel Noori Nastaleeq</option>
+      <option value="Noto Nastaliq Urdu">Noto Nastaliq Urdu</option><option value="MUHAMMADI QURANIC FONT">MUHAMMADI QURANIC FONT</option><option value="Jameel Noori Nastaleeq">Jameel Noori Nastaleeq</option>
     </select>
     <select id="fontSize" onchange="setSize(this.value)">
       <option>16</option><option>18</option><option selected>22</option><option>24</option><option>28</option><option>32</option><option>36</option><option>48</option>
     </select>
     <button onclick="align('right')">→</button><button onclick="align('center')">↔</button><button onclick="align('left')">←</button>
-    <button onclick="showFind()">🔎</button><button onclick="fitToWindow()" title="Fit to Window">⛶</button><button onclick="exportAsPicture()" title="As a Picture">🖼</button><button onclick="printDoc()">🖨</button>
+    <button onclick="customPageSize()" title="Customize Page">↔ Page</button><button onclick="showFind()">🔎</button><button onclick="fitToWindow()" title="Fit to Window">⛶</button><button onclick="exportAsPicture()" title="As a Picture">🖼</button><button onclick="printDoc()">🖨</button>
     <div class="mode">Typing:
       <select id="langMode" onchange="setLanguage(this.value)"><option value="ur">Urdu</option><option value="en">English</option></select>
+      <button id="rkPhoneticBtn" type="button" onclick="togglePhonetic()" title="Urdu Phonetic Keyboard (Ctrl+Alt+P)">Phonetic OFF</button>
+      <span style="margin-left:8px">Direction:</span>
+      <select id="textDirection" onchange="setTextDirection(this.value)" title="Text Direction">
+        <option value="auto">Auto</option>
+        <option value="rtl">RTL</option>
+        <option value="ltr">LTR</option>
+      </select>
       <span style="margin-left:8px">Mouse + Keyboard</span>
     </div>
   </div>
@@ -489,13 +680,17 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
       <button class="sidebtn" onclick="setPage('Legal')">Legal</button>
       <button class="sidebtn" onclick="setPage('Executive')">Executive</button>
       <button class="sidebtn" onclick="setPage('Tabloid')">Tabloid</button>
-      <button class="sidebtn" onclick="customPageSize()">Custom Size</button>
+      <button class="sidebtn" onclick="customPageSize()" title="Ctrl+Shift+M">Custom Size</button>
       <button class="sidebtn" onclick="toggleOrientation()">Portrait / Landscape</button>
       <div class="side-title">TYPING</div>
       <button class="sidebtn" onclick="setLanguage('ur')">Urdu RTL</button>
       <button class="sidebtn" onclick="setLanguage('en')">English LTR</button>
+      <button class="sidebtn" id="rkPhoneticSideBtn" onclick="togglePhonetic()">Urdu Phonetic: OFF</button>
+      <button class="sidebtn" onclick="setTextDirection('rtl')">Text Direction: RTL</button>
+      <button class="sidebtn" onclick="setTextDirection('ltr')">Text Direction: LTR</button>
+      <button class="sidebtn" onclick="setTextDirection('auto')">Text Direction: Auto</button>
       <div class="side-title">GRAPHIC DESIGN</div>
-      <button class="sidebtn" onclick="addDesignText()">＋ Add Text</button>
+      <button class="sidebtn" onclick="addDesignText()">T Text / Type on Page</button>
       <button class="sidebtn" onclick="insertPicture()">▧ Add Picture / Logo</button>
       <button class="sidebtn" onclick="openShapes()">◇ Shapes</button>
       <button class="sidebtn" onclick="setBackground()">◩ Background</button>
@@ -591,7 +786,7 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
     <div class="rk-export-title" id="rkExportTitle">Export As Picture</div>
     <div class="rk-export-body">
       <div class="rk-export-row"><label for="rkExportName">File Name:</label><input id="rkExportName" type="text" value="REKHTA_Page"><button type="button" onclick="rkSuggestExportName()">Browse...</button></div>
-      <div class="rk-export-row"><label for="rkExportFormat">Save as type:</label><select id="rkExportFormat"><option value="png">PNG Image (*.png)</option><option value="jpg">JPEG Image (*.jpg)</option><option value="svg">Scalable Vector Graphics (*.svg)</option><option value="eps">Encapsulated PostScript (*.eps)</option><option value="pdf">PDF Document (*.pdf)</option><option value="gif">CompuServe Bitmap (*.gif)</option></select><span></span></div>
+      <div class="rk-export-row"><label for="rkExportFormat">Save as type:</label><select id="rkExportFormat"><option value="png">PNG Image (*.png)</option><option value="jpg">JPEG Image (*.jpg)</option><option value="svg">SVG Editable Text / Page (*.svg)</option><option value="svgcurves">SVG Curves / Outlines — CorelDRAW (Final EXE)</option><option value="eps">EPS Picture (*.eps)</option><option value="pdf">PDF Document (*.pdf)</option><option value="gif">CompuServe Bitmap (*.gif)</option></select><span></span></div>
       <fieldset class="rk-export-group"><legend>Export Range</legend>
         <label class="rk-radio"><input type="radio" name="rkExportRange" value="selected"> Selected Objects</label>
         <label class="rk-radio"><input type="radio" name="rkExportRange" value="all" checked> All Pages</label>
@@ -599,7 +794,7 @@ body{background:#e8edf2!important;color:var(--rk-text)!important;font-family:"Se
         <div class="rk-page-range">From <input id="rkExportFrom" type="number" min="1" value="1"> To <input id="rkExportTo" type="number" min="1" value="1"></div>
       </fieldset>
       <fieldset class="rk-export-group"><legend>Scaling</legend><div class="rk-scale"><input id="rkExportScale" type="number" min="25" max="400" step="25" value="100"> %</div></fieldset>
-      <div class="rk-export-note">Export में menu, ruler, selection border और resize nodes शामिल नहीं होंगे.</div>
+      <div class="rk-export-note">Export As Picture — InPage style workflow. Selected text के लिए SVG Editable और EPS Picture सीधे CorelDRAW में import किए जा सकते हैं. EPS Picture exact visual रखता है लेकिन curves नहीं होता. True SVG Curves/Outlines final EXE में font-outline engine के साथ बनेगा.</div>
     </div>
     <div class="rk-export-actions"><button type="button" onclick="runExportPage()">OK</button><button type="button" onclick="closeExportPageDialog()">Cancel</button><button type="button" onclick="rkExportHelp()">Help</button></div>
   </div>
@@ -612,15 +807,52 @@ const editor=document.getElementById('editor'), page=document.getElementById('pa
 let currentFile='Untitled REKHTA Design', zoom=100, lang='ur', pageSize='A4', dirty=false, savedRange=null;
 let currentMode='regular';
 function startMode(mode){
-  currentMode=mode;
-  document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('editorShell').style.display='flex';
-  document.getElementById('docTitle').textContent=(mode==='booklet'?'Booklet':'Digital Design')+' — Untitled Document';
-  setZoom(100);
-  updatePageIndicator();
-  editor.focus();
+  currentMode=mode||'regular';
+  const dash=document.getElementById('dashboard');
+  const shell=document.getElementById('editorShell');
+  const splash=document.getElementById('rkSplash');
+  const auth=document.getElementById('rkAuthOverlay');
+
+  if(splash){splash.classList.add('rk-hide');splash.style.pointerEvents='none'}
+  if(auth&&sessionStorage.getItem('rk_test_login')==='1'){auth.classList.add('rk-auth-ok')}
+
+  if(dash){
+    dash.classList.add('hidden');
+    dash.style.display='none';
+    dash.style.pointerEvents='none';
+  }
+  if(shell){
+    shell.style.display='flex';
+    shell.style.visibility='visible';
+    shell.style.opacity='1';
+    shell.style.pointerEvents='auto';
+  }
+
+  const title=document.getElementById('docTitle');
+  if(title)title.textContent='REKHTA DESIGN — '+currentFile;
+
+  try{setZoom(100)}catch(e){console.warn(e)}
+  try{updatePageIndicator()}catch(e){console.warn(e)}
+  setTimeout(function(){
+    try{editor.focus()}catch(e){}
+  },40);
 }
-function showDashboard(){document.getElementById('dashboard').classList.remove('hidden');document.getElementById('editorShell').style.display='none';closePageSizeList();hideFind();closePanel();closeShapePanel();}
+
+function showDashboard(){
+  const dash=document.getElementById('dashboard');
+  const shell=document.getElementById('editorShell');
+  if(shell){shell.style.display='none'}
+  if(dash){
+    dash.classList.remove('hidden');
+    dash.style.display='flex';
+    dash.style.pointerEvents='auto';
+  }
+  try{closePageSizeList()}catch(e){}
+  try{hideFind()}catch(e){}
+  try{closePanel()}catch(e){}
+  try{closeShapePanel()}catch(e){}
+}
+
 function switchEditorMode(mode){currentMode=mode==='booklet'?'booklet':'regular';const label=currentMode==='booklet'?'Booklet':'Digital Design';document.getElementById('docTitle').textContent=label+' — '+currentFile;document.getElementById('saveStatus').textContent=label+' Mode';updatePageIndicator();editor.focus();}
 
 
@@ -715,40 +947,58 @@ function setLanguage(v){
   const langSel=document.getElementById('langMode');
   const fontSel=document.getElementById('fontName');
   const defaultFont=v==='ur'?'Jameel Noori Nastaleeq':'Times New Roman';
+
   if(langSel)langSel.value=v;
   if(fontSel)fontSel.value=defaultFont;
-  document.getElementById('langStatus').textContent=v==='ur'?'Urdu RTL • Jameel Noori Nastaleeq':'English LTR • Times New Roman';
 
-  const dir=v==='ur'?'rtl':'ltr', align=v==='ur'?'right':'left';
+  const dir=v==='ur'?'rtl':'ltr';
+  const status=document.getElementById('langStatus');
+  if(status)status.textContent=v==='ur'
+    ?'Urdu RTL • Jameel Noori Nastaleeq'
+    :'English LTR • Times New Roman';
+
   focusEd();
-  const sel=window.getSelection();
 
-  if(editor.innerText.trim()==='' && !editor.querySelector('img,table')){
-    editor.dir=dir; editor.lang=v; editor.style.textAlign=align;
-    editor.style.direction=dir; editor.style.unicodeBidi='plaintext';
-    editor.style.wordSpacing='normal';
-    editor.style.fontFamily='"'+defaultFont+'"';
-    if(v==='ur')editor.classList.add('rekhta-jameel'); else editor.classList.remove('rekhta-jameel');
-    changed();
-    return;
+  let sel=window.getSelection();
+  if((!sel || !sel.rangeCount || !editor.contains(sel.anchorNode)) && savedRange){
+    try{
+      sel=window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedRange.cloneRange());
+    }catch(e){}
   }
 
-  const line=document.createElement('div');
-  line.setAttribute('dir',dir); line.setAttribute('lang',v);
-  line.style.textAlign=align; line.style.direction=dir; line.style.unicodeBidi='plaintext';
-  line.style.wordSpacing='normal'; line.style.fontFamily='"'+defaultFont+'"';
-  if(v==='ur')line.classList.add('rekhta-jameel');
-  line.appendChild(document.createElement('br'));
+  if(!sel || !sel.rangeCount || !editor.contains(sel.anchorNode)){
+    const r=document.createRange();
+    r.selectNodeContents(editor);
+    r.collapse(false);
+    sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
 
-  if(sel&&sel.rangeCount&&editor.contains(sel.anchorNode)){
-    let block=sel.anchorNode.nodeType===1?sel.anchorNode:sel.anchorNode.parentElement;
-    block=block&&block.closest?block.closest('div,p'):null;
-    if(block&&block!==editor&&block.parentNode===editor)block.after(line);
-    else editor.appendChild(line);
-  }else editor.appendChild(line);
+  const range=sel.getRangeAt(0);
+  range.collapse(false);
 
-  const r=document.createRange();r.selectNodeContents(line);r.collapse(false);
-  sel.removeAllRanges();sel.addRange(r);savedRange=r.cloneRange();
+  const span=document.createElement('span');
+  span.setAttribute('lang',v);
+  span.setAttribute('dir',dir);
+  span.style.direction=dir;
+  span.style.unicodeBidi='isolate';
+  span.style.fontFamily='"'+defaultFont+'"';
+  span.style.wordSpacing=v==='ur'?'0.14em':'normal';
+
+  const marker=document.createTextNode('\u200B');
+  span.appendChild(marker);
+  range.insertNode(span);
+
+  const nr=document.createRange();
+  nr.setStart(marker,1);
+  nr.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(nr);
+  savedRange=nr.cloneRange();
+
   editor.focus();
   changed();
 }
@@ -869,9 +1119,49 @@ function exportSVG(){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${w}px;height:${h}px;background:#fff;">${clone.outerHTML}</div></foreignObject></svg>`;
   download((currentFile.replace(/\.[^.]+$/,'')||'REKHTA_Page')+'.svg',svg,'image/svg+xml;charset=utf-8');
 }
-function exportPDF(){alert('PDF export: Print dialog खुलेगा। Destination में “Save as PDF” चुनें।');window.print()}
+function exportPDF(){alert('PDF export: Print dialog खुलेगा। Destination में “Save as PDF” चुनें।');printDoc()}
 function exportEPS(){alert('EPS export browser checking mode में direct नहीं बनता। Final EXE में EPS converter/export module जोड़ा जाएगा। अभी SVG/PDF export से CorelDRAW में खोल सकते हैं।')}
-function printDoc(){window.print()}
+function printDoc(){
+  try{
+    const sourcePage=document.getElementById('page');
+    if(!sourcePage){window.print();return;}
+    const clone=sourcePage.cloneNode(true);
+    clone.querySelectorAll('.non-output,.page-ruler,.resize-handle,.shape-hint').forEach(el=>el.remove());
+    clone.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));
+    clone.querySelectorAll('.selected,.page-selected,.rk-menu-key-focus').forEach(el=>el.classList.remove('selected','page-selected','rk-menu-key-focus'));
+    clone.style.margin='0';
+    clone.style.transform='none';
+    clone.style.boxShadow='none';
+    clone.style.overflow='visible';
+    clone.style.width=sourcePage.offsetWidth+'px';
+    clone.style.minHeight=sourcePage.offsetHeight+'px';
+    clone.style.height='auto';
+
+    const styles=[...document.head.querySelectorAll('style')].map(x=>x.outerHTML).join('\n');
+    const w=window.open('','_blank','width=980,height=760');
+    if(!w){alert('Print window blocked. Please allow pop-ups for this file, then Print again.');return;}
+    w.document.open();
+    w.document.write(`<!doctype html><html><head><meta charset="UTF-8"><title>REKHTA Print</title>${styles}
+<style>
+@page{margin:0}
+html,body{margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important;}
+body{display:block!important;}
+#page{position:relative!important;left:auto!important;top:auto!important;margin:0!important;transform:none!important;box-shadow:none!important;overflow:visible!important;background:#fff!important;}
+#page .non-output,#page .page-ruler,#page .resize-handle,#page .shape-hint{display:none!important;}
+#editor{overflow:visible!important;height:auto!important;max-height:none!important;}
+.design-object.selected,.design-object.page-selected{outline:none!important;box-shadow:none!important;}
+</style></head><body>${clone.outerHTML}<script>
+window.addEventListener('load',function(){
+  var go=function(){setTimeout(function(){window.focus();window.print();},180)};
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(go).catch(go)}else{go()}
+});
+<\/script></body></html>`);
+    w.document.close();
+  }catch(e){
+    console.error(e);
+    window.print();
+  }
+}
 function exitApp(){
   if(!confirm('Exit REKHTA Software?'))return;
   try{window.close()}catch(e){}
@@ -983,8 +1273,35 @@ function makeDesignElement(el){makeMovableDesignObject(el)}
 function insertPage(){focusEd();document.execCommand('insertHTML',false,'<div style="page-break-before:always"></div>');changed()}
 function insertPicture(){document.getElementById('pictureInput').click()}
 function insertSelectedPicture(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();r.onload=()=>{focusEd();document.execCommand('insertHTML',false,'<img src="'+r.result+'" style="max-width:100%;height:auto">');changed()};r.readAsDataURL(f);e.target.value='';
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const data=r.result, layer=document.getElementById('designDrawLayer');
+    const probe=new Image();
+    probe.onload=function(){
+      const maxW=Math.min(360,Math.max(80,(page.clientWidth||794)-60));
+      const naturalW=probe.naturalWidth||300,naturalH=probe.naturalHeight||200;
+      const w=Math.min(maxW,naturalW);
+      const h=Math.max(40,w*(naturalH/naturalW));
+      const box=document.createElement('div');
+      box.className='design-object rk-picture-object';
+      box.dataset.kind='picture';
+      box.style.cssText='position:absolute;left:60px;top:70px;width:'+w+'px;height:'+h+'px;z-index:25;cursor:move;';
+      const img=document.createElement('img');
+      img.src=data; img.alt=f.name||'Picture';
+      img.draggable=false;
+      img.style.cssText='display:block;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none;';
+      box.appendChild(img);
+      layer.appendChild(box);
+      makeMovableDesignObject(box);
+      selectDesignObject(box);
+      if(typeof rkUpdateSmartProperties==='function')rkUpdateSmartProperties(box);
+      changed();
+    };
+    probe.src=data;
+  };
+  r.readAsDataURL(f);
+  e.target.value='';
 }
 function insertTable(){
   const rows=Math.max(1,parseInt(prompt('Number of rows:','3'))||3);
@@ -1089,14 +1406,47 @@ function setPage(v){
   updatePageIndicator();
 }
 function customPageSize(){
-  const w=parseInt(prompt('Page width in pixels:','794'))||794;
-  const h=parseInt(prompt('Page height in pixels:','1123'))||1123;
+  var ov=document.getElementById('rkCustomPageOverlay');
+  if(!ov)return;
+  ov.classList.add('show');
+  ov.setAttribute('aria-hidden','false');
+  var w=document.getElementById('rkCustomW');
+  if(w){w.focus();w.select();}
+}
+function rkCloseCustomPage(){
+  var ov=document.getElementById('rkCustomPageOverlay');
+  if(ov){ov.classList.remove('show');ov.setAttribute('aria-hidden','true');}
+  try{editor.focus()}catch(e){}
+}
+function rkApplyCustomPage(){
+  var w=parseFloat(document.getElementById('rkCustomW').value)||210;
+  var h=parseFloat(document.getElementById('rkCustomH').value)||297;
+  var unit=document.getElementById('rkCustomUnit').value||'mm';
+  var orientation=document.getElementById('rkCustomOrientation').value||'portrait';
+
+  if(orientation==='landscape' && h>w){var t=w;w=h;h=t;}
+  if(orientation==='portrait' && w>h){var t2=w;w=h;h=t2;}
+
+  var pxW,pxH;
+  if(unit==='mm'){pxW=w*96/25.4;pxH=h*96/25.4;}
+  else if(unit==='in'){pxW=w*96;pxH=h*96;}
+  else {pxW=w;pxH=h;}
+
+  pxW=Math.max(150,Math.round(pxW));
+  pxH=Math.max(150,Math.round(pxH));
+
   pageSize='Custom';
-  page.style.width=Math.max(200,w)+'px';
-  page.style.minHeight=Math.max(200,h)+'px';
+  page.style.width=pxW+'px';
+  page.style.minHeight=pxH+'px';
   page.style.height='auto';
-  document.getElementById('pageStatus').textContent='Custom Page';renderPageRulers();
-  updatePageIndicator();
+
+  var ps=document.getElementById('pageStatus');
+  if(ps)ps.textContent='Custom '+w+' × '+h+' '+unit;
+
+  try{renderPageRulers()}catch(e){}
+  try{updatePageIndicator()}catch(e){}
+  try{changed()}catch(e){}
+  rkCloseCustomPage();
 }
 function toggleOrientation(){
   const w=page.offsetWidth, h=page.offsetHeight;
@@ -1121,22 +1471,274 @@ function insertTab(reverse){
   else{ document.execCommand('insertText',false,'\t'); }
   changed();
 }
-function textAsPicture(){
-  const sel=window.getSelection();
-  if(!sel||sel.rangeCount===0||sel.isCollapsed){alert('पहले text select करें, फिर Text as Picture चलाएँ।');return;}
-  const range=sel.getRangeAt(0), txt=sel.toString();if(!txt.trim()){alert('Text select करें।');return;}
-  const host=(range.commonAncestorContainer.nodeType===1?range.commonAncestorContainer:range.commonAncestorContainer.parentElement);
-  const cs=getComputedStyle(host||editor), size=parseFloat(cs.fontSize)||22, family=cs.fontFamily||'Arial', weight=cs.fontWeight||'400', style=cs.fontStyle||'normal';
-  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=`${style} ${weight} ${size}px ${family}`;
-  const lines=txt.split(/\n/), pad=14, lh=Math.ceil(size*1.65), widths=lines.map(x=>ctx.measureText(x||' ').width);canvas.width=Math.max(40,Math.ceil(Math.max(...widths)+pad*2));canvas.height=Math.max(lh+pad*2,lines.length*lh+pad*2);
-  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.font=`${style} ${weight} ${size}px ${family}`;ctx.fillStyle=cs.color||'#000';ctx.textBaseline='top';ctx.direction=(host&&getComputedStyle(host).direction)||editor.dir||'ltr';ctx.textAlign=ctx.direction==='rtl'?'right':'left';
-  lines.forEach((line,i)=>ctx.fillText(line,ctx.direction==='rtl'?canvas.width-pad:pad,pad+i*lh));
-  const img=document.createElement('img');img.src=canvas.toDataURL('image/png');img.alt=txt;img.style.cssText='display:block;width:'+canvas.width+'px;height:'+canvas.height+'px;pointer-events:none';
-  const box=document.createElement('div');box.className='design-object';box.style.cssText='position:absolute;left:90px;top:90px;width:'+canvas.width+'px;height:'+canvas.height+'px;z-index:25;cursor:move';box.appendChild(img);
-  document.getElementById('designDrawLayer').appendChild(box);makeMovableDesignObject(box);selectDesignObject(box);changed();
+function rkLegacyTextAsSvgEditable(){
+  var sel=window.getSelection(), range=null;
+
+  if(sel && sel.rangeCount && !sel.isCollapsed && editor.contains(sel.anchorNode)){
+    range=sel.getRangeAt(0).cloneRange();
+    savedRange=range.cloneRange();
+  }else if(savedRange){
+    try{
+      range=savedRange.cloneRange();
+      if(!editor.contains(range.commonAncestorContainer)) range=null;
+    }catch(e){ range=null; }
+  }
+
+  if(!range || range.collapsed){
+    alert('पहले page पर text select करें, फिर Text as SVG चलाएँ।');
+    return;
+  }
+
+  var txt=range.toString();
+  if(!txt || !txt.trim()){
+    alert('Text select करें।');
+    return;
+  }
+
+  var host=(range.commonAncestorContainer.nodeType===1
+    ? range.commonAncestorContainer
+    : range.commonAncestorContainer.parentElement);
+
+  var cs=getComputedStyle(host||editor);
+  var size=parseFloat(cs.fontSize)||22;
+  var family=cs.fontFamily||'Arial';
+  var weight=cs.fontWeight||'400';
+  var fontStyle=cs.fontStyle||'normal';
+  var direction=(host&&getComputedStyle(host).direction)||editor.dir||'ltr';
+  var color=cs.color||'#000000';
+
+  function esc(v){
+    return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  }
+
+  function safeName(base){
+    base=(base||'TextAsSVG').replace(/[\\\/:*?"<>|]+/g,'').replace(/\s+/g,' ').trim();
+    if(!base)base='TextAsSVG';
+    if(base.length>28)base=base.slice(0,28).trim();
+    var d=new Date();
+    var pad=function(n){return String(n).padStart(2,'0')};
+    var stamp=d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'_'+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds());
+    return base.replace(/\s+/g,'_')+'_'+stamp+'.svg';
+  }
+
+  function makeSVG(){
+    // Measure with canvas so the SVG canvas fits the text closely.
+    var c=document.createElement('canvas');
+    var ctx=c.getContext('2d');
+    ctx.font=fontStyle+' '+weight+' '+size+'px '+family;
+
+    var lines=txt.split(/\r?\n/);
+    var pad=Math.max(12,Math.ceil(size*.5));
+    var lineH=Math.ceil(size*1.65);
+    var widths=lines.map(function(line){return ctx.measureText(line||' ').width});
+    var w=Math.max(60,Math.ceil(Math.max.apply(null,widths)+pad*2));
+    var h=Math.max(lineH+pad*2,lines.length*lineH+pad*2);
+
+    var anchor=direction==='rtl'?'end':'start';
+    var x=direction==='rtl'?w-pad:pad;
+
+    var tspans=lines.map(function(line,i){
+      return '<tspan x="'+x+'" y="'+(pad+size+i*lineH)+'">'+esc(line||' ')+'</tspan>';
+    }).join('');
+
+    var svg='<?xml version="1.0" encoding="UTF-8"?>'
+      +'<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">'
+      +'<rect width="100%" height="100%" fill="none"/>'
+      +'<text xml:space="preserve" direction="'+direction+'" unicode-bidi="plaintext" '
+      +'text-anchor="'+anchor+'" fill="'+esc(color)+'" '
+      +'font-family="'+esc(family)+'" font-size="'+size+'" '
+      +'font-weight="'+esc(weight)+'" font-style="'+esc(fontStyle)+'">'
+      +tspans+'</text></svg>';
+
+    var blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var fileName=safeName(lines[0]||'TextAsSVG');
+
+    // Download the SVG file for CorelDRAW.
+    var a=document.createElement('a');
+    a.href=url;
+    a.download=fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // Also place the SVG as an image object on the page.
+    var img=document.createElement('img');
+    img.src=url;
+    img.alt=txt;
+    img.draggable=false;
+    img.style.cssText='display:block;width:'+w+'px;height:'+h+'px;pointer-events:none;user-select:none';
+
+    var box=document.createElement('div');
+    box.className='design-object';
+    box.dataset.kind='text-svg';
+    box.style.cssText='position:absolute;left:90px;top:90px;width:'+w+'px;height:'+h+'px;z-index:25;cursor:move;background:transparent;border:none;outline:none;box-shadow:none';
+    box.appendChild(img);
+
+    var layer=document.getElementById('designDrawLayer');
+    if(layer){
+      layer.appendChild(box);
+      if(typeof makeMovableDesignObject==='function')makeMovableDesignObject(box);
+      if(typeof selectDesignObject==='function')selectDesignObject(box);
+    }
+
+    if(typeof changed==='function')changed();
+    var st=document.getElementById('saveStatus');
+    if(st)st.textContent='Text as SVG created: '+fileName;
+
+    // Revoke only after browser has had enough time to load the image object.
+    setTimeout(function(){try{URL.revokeObjectURL(url)}catch(e){}},60000);
+  }
+
+  try{
+    if(document.fonts && document.fonts.load){
+      document.fonts.load(fontStyle+' '+weight+' '+size+'px '+family).then(makeSVG).catch(makeSVG);
+    }else makeSVG();
+  }catch(e){
+    makeSVG();
+  }
 }
+
+let rkTextExportRange=null;
+let rkTextExportStyle=null;
+let rkTextExportText='';
+let rkTextExportMode=false;
+
+function rkCaptureSelectedText(){
+  var sel=window.getSelection(), range=null;
+  if(sel && sel.rangeCount && !sel.isCollapsed && editor.contains(sel.anchorNode)){
+    range=sel.getRangeAt(0).cloneRange();
+    savedRange=range.cloneRange();
+  }else if(savedRange){
+    try{ range=savedRange.cloneRange(); if(!editor.contains(range.commonAncestorContainer))range=null; }catch(e){range=null;}
+  }
+  if(!range || range.collapsed)return null;
+  var txt=range.toString();
+  if(!txt || !txt.trim())return null;
+  var host=(range.commonAncestorContainer.nodeType===1?range.commonAncestorContainer:range.commonAncestorContainer.parentElement);
+  var cs=getComputedStyle(host||editor);
+  return {
+    range:range,
+    text:txt,
+    size:parseFloat(cs.fontSize)||22,
+    family:cs.fontFamily||'Jameel Noori Nastaleeq',
+    weight:cs.fontWeight||'400',
+    fontStyle:cs.fontStyle||'normal',
+    direction:(host&&getComputedStyle(host).direction)||editor.dir||'rtl',
+    color:cs.color||'#000000'
+  };
+}
+
+function textAsPicture(){
+  var d=rkCaptureSelectedText();
+  if(!d){ alert('पहले page पर Urdu / English text select करें, फिर Export As Picture चुनें।'); return; }
+  rkTextExportRange=d.range;
+  rkTextExportStyle=d;
+  rkTextExportText=d.text;
+  rkTextExportMode=true;
+  var ov=document.getElementById('rkExportOverlay');
+  var title=document.getElementById('rkExportTitle');
+  var name=document.getElementById('rkExportName');
+  var fmt=document.getElementById('rkExportFormat');
+  if(title)title.textContent='Export As a Picture — Selected Text';
+  if(name){
+    var base=(d.text.split(/\r?\n/)[0]||'REKHTA_Text').replace(/[\\\/:*?"<>|]+/g,'').trim();
+    name.value=(base||'REKHTA_Text').slice(0,28);
+  }
+  if(fmt){
+    fmt.innerHTML=''
+      +'<option value="svg">SVG Editable (*.svg) — CorelDRAW</option>'
+      +'<option value="eps">Encapsulated PostScript (*.eps) — CorelDRAW Picture</option>'
+      +'<option value="png">PNG Picture (*.png)</option>'
+      +'<option value="svgcurves">SVG Curves / Outlines — Final EXE</option>';
+    fmt.value='svg';
+  }
+  var ranges=document.querySelectorAll('input[name="rkExportRange"]');
+  ranges.forEach(function(r){r.disabled=true;r.checked=(r.value==='selected');});
+  var sc=document.getElementById('rkExportScale'); if(sc)sc.value=100;
+  if(ov){ov.classList.add('open');ov.style.display='flex';ov.setAttribute('aria-hidden','false');}
+}
+
+function rkRestorePageExportDialog(){
+  rkTextExportMode=false;
+  var title=document.getElementById('rkExportTitle'); if(title)title.textContent='Export As Picture';
+  var fmt=document.getElementById('rkExportFormat');
+  if(fmt)fmt.innerHTML='<option value="png">PNG Image (*.png)</option><option value="jpg">JPEG Image (*.jpg)</option><option value="svg">SVG Editable Text / Page (*.svg)</option><option value="svgcurves">SVG Curves / Outlines — CorelDRAW (Final EXE)</option><option value="eps">EPS Picture (*.eps)</option><option value="pdf">PDF Document (*.pdf)</option><option value="gif">CompuServe Bitmap (*.gif)</option>';
+  document.querySelectorAll('input[name="rkExportRange"]').forEach(function(r){r.disabled=false;});
+}
+
+function rkSafeExportName(ext){
+  var n=(document.getElementById('rkExportName').value||'REKHTA_Text').replace(/[\\\/:*?"<>|]+/g,'').trim()||'REKHTA_Text';
+  if(!n.toLowerCase().endsWith('.'+ext))n+='.'+ext;
+  return n;
+}
+function rkDownloadBlob(blob,name){
+  var u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(u)},30000);
+}
+function rkTextMetrics(d,scale){
+  var c=document.createElement('canvas'),ctx=c.getContext('2d');
+  ctx.font=d.fontStyle+' '+d.weight+' '+(d.size*scale)+'px '+d.family;
+  var lines=d.text.split(/\r?\n/),pad=Math.ceil(d.size*scale*.65),lineH=Math.ceil(d.size*scale*1.65);
+  var widths=lines.map(function(x){return ctx.measureText(x||' ').width});
+  return {lines:lines,pad:pad,lineH:lineH,w:Math.max(80,Math.ceil(Math.max.apply(null,widths)+pad*2)),h:Math.max(lineH+pad*2,lines.length*lineH+pad*2)};
+}
+function rkExportSelectedTextSvg(){
+  var d=rkTextExportStyle,m=rkTextMetrics(d,1),dir=d.direction==='rtl'?'rtl':'ltr',anchor=dir==='rtl'?'end':'start',x=dir==='rtl'?m.w-m.pad:m.pad;
+  function esc(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+  var tsp=m.lines.map(function(line,i){return '<tspan x="'+x+'" y="'+(m.pad+d.size+i*m.lineH)+'">'+esc(line||' ')+'</tspan>';}).join('');
+  var svg='<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="'+m.w+'" height="'+m.h+'" viewBox="0 0 '+m.w+' '+m.h+'"><text xml:space="preserve" direction="'+dir+'" unicode-bidi="plaintext" text-anchor="'+anchor+'" fill="'+esc(d.color)+'" font-family="'+esc(d.family)+'" font-size="'+d.size+'" font-weight="'+esc(d.weight)+'" font-style="'+esc(d.fontStyle)+'">'+tsp+'</text></svg>';
+  rkDownloadBlob(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),rkSafeExportName('svg'));
+}
+function rkDrawSelectedTextCanvas(scale){
+  var d=rkTextExportStyle,m=rkTextMetrics(d,scale),c=document.createElement('canvas');
+  c.width=m.w;c.height=m.h;var ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle=d.color;ctx.textBaseline='alphabetic';ctx.direction=d.direction==='rtl'?'rtl':'ltr';ctx.textAlign=d.direction==='rtl'?'right':'left';
+  ctx.font=d.fontStyle+' '+d.weight+' '+(d.size*scale)+'px '+d.family;
+  var x=d.direction==='rtl'?m.w-m.pad:m.pad;
+  m.lines.forEach(function(line,i){ctx.fillText(line||' ',x,m.pad+d.size*scale+i*m.lineH);});
+  return c;
+}
+function rkExportSelectedTextPng(){
+  var c=rkDrawSelectedTextCanvas(3);
+  c.toBlob(function(blob){if(blob)rkDownloadBlob(blob,rkSafeExportName('png'));},'image/png');
+}
+function rkExportSelectedTextEps(){
+  // InPage-style picture export: render selected text exactly as seen and wrap the raster in EPS.
+  // CorelDRAW can import this EPS reliably; it is a picture, not editable curves.
+  var c=rkDrawSelectedTextCanvas(3),ctx=c.getContext('2d'),img=ctx.getImageData(0,0,c.width,c.height),data=img.data;
+  var hex=[],i,r,g,b,a;for(i=0;i<data.length;i+=4){a=data[i+3]/255;r=Math.round(255-(255-data[i])*a);g=Math.round(255-(255-data[i+1])*a);b=Math.round(255-(255-data[i+2])*a);hex.push(r.toString(16).padStart(2,'0')+g.toString(16).padStart(2,'0')+b.toString(16).padStart(2,'0'));}
+  var lines=[];for(i=0;i<hex.length;i+=24)lines.push(hex.slice(i,i+24).join(''));
+  var ps='%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA RK Solution\n%%BoundingBox: 0 0 '+c.width+' '+c.height+'\n%%LanguageLevel: 2\n%%Pages: 1\n%%EndComments\n'
+    +'gsave\n'+c.width+' '+c.height+' scale\n'+c.width+' '+c.height+' 8\n['+c.width+' 0 0 -'+c.height+' 0 '+c.height+']\n{currentfile '+(c.width*3)+' string readhexstring pop} false 3 colorimage\n'+lines.join('\n')+'\ngrestore\nshowpage\n%%EOF\n';
+  rkDownloadBlob(new Blob([ps],{type:'application/postscript'}),rkSafeExportName('eps'));
+}
+function rkRunTextExport(){
+  var fmt=document.getElementById('rkExportFormat').value;
+  if(fmt==='svg')rkExportSelectedTextSvg();
+  else if(fmt==='png')rkExportSelectedTextPng();
+  else if(fmt==='eps')rkExportSelectedTextEps();
+  else if(fmt==='svgcurves'){
+    alert('True SVG Curves / Outlines final Electron EXE में font-outline engine से बनेगा। HTML test में fake curves नहीं बनाए जा रहे हैं। अभी SVG Editable या EPS Picture check करें।');
+    return;
+  }
+  closeExportPageDialog();
+  var st=document.getElementById('saveStatus');if(st)st.textContent='Export As Picture completed for selected text';
+}
+
+function textAsSvgCurves(){
+  var sel=window.getSelection(), hasSelection=!!(sel&&sel.rangeCount&&!sel.isCollapsed&&editor.contains(sel.anchorNode));
+  if(!hasSelection && !(savedRange && !savedRange.collapsed)){
+    alert('पहले page पर Urdu / English text select करें, फिर Text as SVG Curves चुनें।');
+    return;
+  }
+  alert('SVG Curves / Outlines checking option ready है।\n\nBrowser HTML में installed Jameel Noori Nastaleeq के glyph outlines निकालकर true path/curves बनाना reliable नहीं है। इसलिए यह test build fake curves export नहीं करेगा।\n\nFinal Electron EXE में font-outline engine जोड़कर selected text को real SVG paths/curves में convert किया जाएगा, ताकि CorelDRAW में font missing होने पर भी design same रहे।\n\nअभी checking के लिए Text as SVG Editable, EPS Picture या PDF use करें।');
+}
+
 function about(){alert('REKHTA — Digital Graphic Design Studio\nOffline Urdu / English graphic design and layout software\nRafique Karnool — RK Solution')}
-function shortcuts(){alert('REKHTA SHORTCUT KEYS\n\nCtrl+N  New\nCtrl+O  Open / Import\nCtrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+P  Print\nCtrl+Z  Undo\nCtrl+Y  Redo\nCtrl+X / C / V  Cut / Copy / Paste\nCtrl+A  Select All Page Matter\nCtrl+F  Find\nCtrl+B / I / U  Bold / Italic / Underline\nCtrl+Alt+U  Urdu RTL\nCtrl+Alt+E  English LTR\nCtrl+Shift+L  Switch Urdu / English\nCtrl+Shift+P  Text as Picture\nCtrl+Shift+E  Export Page\nCtrl+D  Duplicate Selected Object\nCtrl+G  Group Multi-Selected Objects\nCtrl+Shift+G  Ungroup\nCtrl+L  Lock / Unlock Selected Object\nArrow Keys  Move Selected Object\nShift + Arrow  Move 10 px\nDelete  Delete Selected Object\nTab / Shift+Tab  Indent / Outdent\nF1  Shortcut List\nEsc  Close Panel / Exit') }
+function shortcuts(){alert('REKHTA SHORTCUT KEYS\n\nCtrl+N  New\nCtrl+O  Open / Import\nCtrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+P  Print\nCtrl+Z  Undo\nCtrl+Y  Redo\nCtrl+X / C / V  Cut / Copy / Paste\nCtrl+A  Select All Page Matter\nCtrl+F  Find\nCtrl+B / I / U  Bold / Italic / Underline\nCtrl+Alt+U  Urdu RTL\nCtrl+Alt+E  English LTR\nCtrl+Shift+L  Switch Urdu / English\nCtrl+Shift+P  Text as SVG\nCtrl+Shift+E  Export Page\nCtrl+D  Duplicate Selected Object\nCtrl+G  Group Multi-Selected Objects\nCtrl+Shift+G  Ungroup\nCtrl+L  Lock / Unlock Selected Object\nArrow Keys  Move Selected Object\nShift + Arrow  Move 10 px\nDelete  Delete Selected Object\nTab / Shift+Tab  Indent / Outdent\nF1  Shortcut List\nEsc  Close Panel / Exit') }
 let pageAllSelected=false;
 function selectAllPageMatter(){
   pageAllSelected=true;
@@ -1189,10 +1791,34 @@ document.querySelectorAll('.design-object').forEach(makeMovableDesignObject);
 
 // REKHTA graphic-design helpers
 function addDesignText(){
-  const txt=prompt('Enter design text:','REKHTA'); if(txt===null)return;
-  const el=document.createElement('div');el.className='design-object';el.textContent=txt;el.contentEditable='true';
-  el.style.cssText='position:absolute;left:80px;top:80px;min-width:80px;font-family:Georgia,serif;font-size:36px;font-weight:700;text-align:center;padding:8px;cursor:move;color:#4a2b1b;z-index:25;';
-  document.getElementById('designDrawLayer').appendChild(el);makeDesignElement(el);selectDesignObject(el);changed();
+  // REKHTA rule: no separate text box on the canvas.
+  // Use the main page editor/caret for typing.
+  try{
+    selectDesignObject(null);
+    document.body.classList.remove('shape-draw-mode');
+    editor.style.pointerEvents='auto';
+    editor.focus();
+
+    var sel=window.getSelection();
+    if(savedRange){
+      try{
+        sel.removeAllRanges();
+        sel.addRange(savedRange.cloneRange());
+      }catch(e){}
+    }else{
+      var r=document.createRange();
+      r.selectNodeContents(editor);
+      r.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(r);
+      savedRange=r.cloneRange();
+    }
+
+    var st=document.getElementById('saveStatus');
+    if(st)st.textContent='Text Mode — click on page and type';
+  }catch(e){
+    console.error('Text mode error:',e);
+  }
 }
 function designAlign(v){focusEd();document.execCommand('justify'+v.charAt(0).toUpperCase()+v.slice(1));changed()}
 function deleteDesignElement(){const el=selectedDesign||document.querySelector('.design-object.selected');if(el){el.remove();selectedDesign=null;changed();return}focusEd();document.execCommand('delete');changed()}
@@ -1270,6 +1896,7 @@ window.addEventListener('keydown',function(e){
     closeExportPageDialog();
     try{
       if(fmt==='pdf'){printExportOnly();return}
+      if(fmt==='svgcurves'){alert('SVG Curves / Outlines का UI और workflow checking के लिए ready है। True font-to-path export Final Electron EXE में बनेगा; browser test build fake curves file नहीं बनाएगा.');return}
       if(fmt==='svg'&&range!=='selected'){saveBlob(svgBlobForPage(),name+'.svg');return}
       var c=await canvasForRange(scale,range);
       if(fmt==='png'){c.toBlob(function(b){saveBlob(b,name+'.png')},'image/png');return}
@@ -1283,9 +1910,7 @@ window.addEventListener('keydown',function(e){
   document.getElementById('rkExportOverlay').addEventListener('mousedown',function(e){if(e.target===this)closeExportPageDialog()});
 })();
 </script>
-<script id="rk-splash-script">
-(function(){function closeRkSplash(){var s=document.getElementById('rkSplash');if(!s)return;s.classList.add('rk-hide');setTimeout(function(){if(s&&s.parentNode)s.parentNode.removeChild(s)},420)}window.addEventListener('load',function(){setTimeout(closeRkSplash,1800)},{once:true});setTimeout(closeRkSplash,3500)})();
-</script>
+
 
 <script id="rk-smart-functions-script">
 (function(){
@@ -1353,70 +1978,95 @@ window.addEventListener('keydown',function(e){
   window.addEventListener('load',()=>{rkUpdateSmartProperties(active());const raw=localStorage.getItem('rk_urdu_autosave');if(raw){const b=document.querySelector('#rkPropertiesPanel h3 span');if(b)b.textContent='RECOVERY'}});
 })();
 </script>
-<script id="rekhta-master-shortcuts-v5">
+<script id="rekhta-master-shortcuts-v6">
 (function(){
   function mark(msg){
     var st=document.getElementById('saveStatus');
     if(!st)return;
-    var old=st.textContent;
     st.textContent=msg;
     clearTimeout(window.__rkShortcutMsg);
-    window.__rkShortcutMsg=setTimeout(function(){if(st.textContent===msg)st.textContent=old||'Ready'},1000);
+    window.__rkShortcutMsg=setTimeout(function(){
+      if(st.textContent===msg)st.textContent='Ready';
+    },1100);
   }
-  function editableTarget(e){
-    var t=e.target;
-    return t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+
+  function call(fn,args,msg){
+    if(typeof window[fn]==='function'){
+      window[fn].apply(window,args||[]);
+      if(msg)mark('Shortcut: '+msg);
+      return true;
+    }
+    return false;
   }
+
+  function editorActive(){
+    var ed=document.getElementById('editor');
+    return ed && (document.activeElement===ed || ed.contains(document.activeElement));
+  }
+
   document.addEventListener('keydown',function(e){
-    var k=(e.key||'').toLowerCase(),ctrl=e.ctrlKey||e.metaKey,shift=e.shiftKey,alt=e.altKey;
-    var handled=false,msg='';
+    var k=(e.key||'').toLowerCase();
+    var ctrl=e.ctrlKey||e.metaKey, shift=e.shiftKey, alt=e.altKey;
+    var handled=false;
 
-    // Exact higher-priority combinations first.
-    if(ctrl&&shift&&!alt&&k==='p'){ if(typeof textAsPicture==='function')textAsPicture(); handled=true; msg='Text as Picture'; }
-    else if(ctrl&&shift&&!alt&&k==='e'){ if(typeof openExportPageDialog==='function')openExportPageDialog(); handled=true; msg='Export Page'; }
-    else if(ctrl&&shift&&!alt&&k==='l'){ if(typeof toggleDirection==='function')toggleDirection(); handled=true; msg='Switch Language'; }
-    else if(ctrl&&shift&&!alt&&k==='s'){ if(typeof saveAs==='function')saveAs(); handled=true; msg='Save As'; }
-    else if(ctrl&&shift&&!alt&&k==='g'){ if(typeof rkUngroupSelected==='function')rkUngroupSelected(); handled=true; msg='Ungroup'; }
-    else if(ctrl&&alt&&k==='u'){ if(typeof setLanguage==='function')setLanguage('ur'); handled=true; msg='Urdu RTL'; }
-    else if(ctrl&&alt&&k==='e'){ if(typeof setLanguage==='function')setLanguage('en'); handled=true; msg='English LTR'; }
+    // Language and direction
+    if(ctrl&&alt&&!shift&&k==='u') handled=call('setLanguage',['ur'],'Urdu');
+    else if(ctrl&&alt&&!shift&&k==='e') handled=call('setLanguage',['en'],'English');
+    else if(ctrl&&alt&&!shift&&k==='r') handled=call('setTextDirection',['rtl'],'RTL');
+    else if(ctrl&&alt&&!shift&&k==='l') handled=call('setTextDirection',['ltr'],'LTR');
 
-    // Normal Ctrl shortcuts.
-    else if(ctrl&&!shift&&!alt&&k==='n'){ if(typeof newDoc==='function')newDoc(); handled=true; msg='New'; }
-    else if(ctrl&&!shift&&!alt&&k==='o'){ if(typeof openDoc==='function')openDoc(); handled=true; msg='Open'; }
-    else if(ctrl&&!shift&&!alt&&k==='s'){ if(typeof saveDoc==='function')saveDoc(); handled=true; msg='Save'; }
-    else if(ctrl&&!shift&&!alt&&k==='p'){ if(typeof printDoc==='function')printDoc(); handled=true; msg='Print'; }
-    else if(ctrl&&!shift&&!alt&&k==='f'){ if(typeof showFind==='function')showFind(); handled=true; msg='Find'; }
-    else if(ctrl&&!shift&&!alt&&k==='b'){ if(typeof format==='function')format('bold'); handled=true; msg='Bold'; }
-    else if(ctrl&&!shift&&!alt&&k==='i'){ if(typeof format==='function')format('italic'); handled=true; msg='Italic'; }
-    else if(ctrl&&!shift&&!alt&&k==='u'){ if(typeof format==='function')format('underline'); handled=true; msg='Underline'; }
-    else if(ctrl&&!shift&&!alt&&k==='d'){ if(typeof rkDuplicateSmart==='function')rkDuplicateSmart(); handled=true; msg='Duplicate'; }
-    else if(ctrl&&!shift&&!alt&&k==='g'){ if(typeof rkGroupSelected==='function')rkGroupSelected(); handled=true; msg='Group'; }
-    else if(ctrl&&!shift&&!alt&&k==='l'){
-      // Keep browser address-bar shortcut available unless a design object is selected.
-      var el=(typeof selectedDesign!=='undefined'&&selectedDesign)||document.querySelector('.design-object.selected');
-      if(el&&typeof rkToggleLock==='function'){rkToggleLock();handled=true;msg='Lock / Unlock';}
-    }
-    else if(ctrl&&!shift&&!alt&&k==='a'){
-      if(!editableTarget(e) || e.target===document.getElementById('editor')){
-        if(typeof selectAllPageMatter==='function')selectAllPageMatter();handled=true;msg='Select All Page Matter';
-      }
-    }
-    else if(ctrl&&!shift&&!alt&&k==='z'){ undoDoc(); handled=true; msg='Undo'; }
-    else if(ctrl&&!shift&&!alt&&k==='y'){ redoDoc(); handled=true; msg='Redo'; }
-    else if(!ctrl&&!alt&&k==='f1'){ if(typeof shortcuts==='function')shortcuts(); handled=true; msg='Shortcut List'; }
-    else if(!ctrl&&!alt&&k==='escape'){
-      var ex=document.getElementById('rkExportOverlay'), fp=document.getElementById('findbox'), ip=document.getElementById('insertPanel'), sp=document.getElementById('shapePanel');
-      var hadOpen=(ex&&ex.classList.contains('show'))||(fp&&fp.style.display==='block')||(ip&&ip.style.display==='block')||(sp&&sp.style.display==='block')||document.body.classList.contains('shape-draw-mode');
-      if(typeof hideFind==='function')hideFind(); if(typeof closePanel==='function')closePanel(); if(typeof closeShapePanel==='function')closeShapePanel();
-      if(typeof closeExportPageDialog==='function')closeExportPageDialog(); if(typeof cancelShapeDraw==='function'&&document.body.classList.contains('shape-draw-mode'))cancelShapeDraw();
-      if(!hadOpen&&typeof exitApp==='function')exitApp();
-      handled=true;msg=hadOpen?'Closed Panel':'Exit';
-    }
-    else if(!ctrl&&!alt&&k==='tab'){
-      var ed=document.getElementById('editor');if(ed&&(document.activeElement===ed||ed.contains(document.activeElement))){if(typeof insertTab==='function')insertTab(shift);handled=true;msg=shift?'Outdent':'Indent';}
+    // Ctrl+Shift
+    else if(ctrl&&shift&&!alt&&k==='s') handled=call('saveAs',[],'Save As');
+    else if(ctrl&&shift&&!alt&&k==='p') handled=call('textAsPicture',[],'Text as SVG');
+    else if(ctrl&&shift&&!alt&&k==='e') handled=call('openExportPageDialog',[],'Export Page');
+    else if(ctrl&&shift&&!alt&&k==='l') handled=call('toggleDirection',[],'Switch Language');
+    else if(ctrl&&shift&&!alt&&k==='m') handled=call('customPageSize',[],'Customize Page');
+    else if(ctrl&&shift&&!alt&&k==='g') handled=call('rkUngroupSelected',[],'Ungroup');
+
+    // Standard Ctrl
+    else if(ctrl&&!shift&&!alt&&k==='n') handled=call('newDoc',[],'New');
+    else if(ctrl&&!shift&&!alt&&k==='o') handled=call('openDoc',[],'Open');
+    else if(ctrl&&!shift&&!alt&&k==='s') handled=call('saveDoc',[],'Save');
+    else if(ctrl&&!shift&&!alt&&k==='p') handled=call('printDoc',[],'Print');
+    else if(ctrl&&!shift&&!alt&&k==='f') handled=call('showFind',[],'Find');
+    else if(ctrl&&!shift&&!alt&&k==='z') handled=call('undoDoc',[],'Undo');
+    else if(ctrl&&!shift&&!alt&&k==='y') handled=call('redoDoc',[],'Redo');
+    else if(ctrl&&!shift&&!alt&&k==='d') handled=call('rkDuplicateSmart',[],'Duplicate');
+    else if(ctrl&&!shift&&!alt&&k==='g') handled=call('rkGroupSelected',[],'Group');
+    else if(ctrl&&!shift&&!alt&&k==='b' && editorActive()) handled=call('format',['bold'],'Bold');
+    else if(ctrl&&!shift&&!alt&&k==='i' && editorActive()) handled=call('format',['italic'],'Italic');
+    else if(ctrl&&!shift&&!alt&&k==='u' && editorActive()) handled=call('format',['underline'],'Underline');
+    else if(ctrl&&!shift&&!alt&&k==='a' && editorActive()){
+      try{document.execCommand('selectAll');handled=true;mark('Shortcut: Select All Text')}catch(err){}
     }
 
-    if(handled){e.preventDefault();e.stopImmediatePropagation();if(msg)mark('Shortcut: '+msg);return false;}
+    // Function keys
+    else if(!ctrl&&!shift&&!alt&&k==='f1') handled=call('shortcuts',[],'Shortcut List');
+
+    // Tab inside editor
+    else if(!ctrl&&!alt&&k==='tab'&&editorActive()){
+      if(typeof insertTab==='function'){insertTab(shift);handled=true;mark(shift?'Shortcut: Outdent':'Shortcut: Indent');}
+    }
+
+    // ESC is intentionally NOT handled here.
+    // The dedicated ESC hierarchy controls Back / Close / Exit safely.
+
+    if(handled){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  },true);
+
+  // Keyboard support for custom page dialog
+  document.addEventListener('keydown',function(e){
+    var ov=document.getElementById('rkCustomPageOverlay');
+    if(!ov || !ov.classList.contains('show'))return;
+    if(e.key==='Escape'){
+      e.preventDefault();e.stopImmediatePropagation();rkCloseCustomPage();return;
+    }
+    if(e.key==='Enter' && !e.shiftKey){
+      e.preventDefault();e.stopImmediatePropagation();rkApplyCustomPage();return;
+    }
   },true);
 })();
 </script>
@@ -1490,12 +2140,1182 @@ window.addEventListener('keydown',function(e){
 </script>
 
 <script id="rk-export-alias">
-function runExportPage(){
-  if(typeof exportPageOK==='function') return exportPageOK();
-  if(typeof exportPNG==='function') return exportPNG();
-  if(typeof exportAsPicture==='function') return exportAsPicture();
-  alert('Export Page function is not available in this HTML test build.');
-}
+(function(){
+  if(typeof window.runExportPage==='function') return;
+  window.runExportPage=function(){
+    if(typeof exportPageOK==='function') return exportPageOK();
+    if(typeof exportPNG==='function') return exportPNG();
+    if(typeof exportAsPicture==='function') return exportAsPicture();
+    alert('Export Page function is not available in this HTML test build.');
+  };
+})();
 </script>
+
+<style id="rk-final-corrections-20260927">
+/* Slightly increased typing spacing requested for normal readability. */
+#editor, #editor * { letter-spacing: 0.28px; }
+#editor, #editor * { word-spacing: 0.08em; }
+</style>
+
+
+
+<script id="rk-master-esc-v7">
+(function(){
+  function visible(el){if(!el)return false;var cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden'&&cs.opacity!=='0';}
+  function closeActive(){
+    var help=document.getElementById('rkHelpOverlay');if(help&&help.classList.contains('show')){if(typeof rkCloseHelp==='function')rkCloseHelp();return true;}
+    var ex=document.getElementById('rkExitOverlay');if(ex&&ex.classList.contains('show')){if(typeof rkCancelExit==='function')rkCancelExit();else ex.classList.remove('show');return true;}
+    var cp=document.getElementById('rkCustomPageOverlay');if(cp&&cp.classList.contains('show')){if(typeof rkCloseCustomPage==='function')rkCloseCustomPage();return true;}
+    var ep=document.getElementById('rkExportOverlay');if(ep&&ep.classList.contains('show')){if(typeof closeExportPageDialog==='function')closeExportPageDialog();else ep.classList.remove('show');return true;}
+    var openMenu=document.querySelector('.menubar .menu.rk-kb-open');if(openMenu){openMenu.classList.remove('rk-kb-open');var b=openMenu.querySelector(':scope > button');if(b)b.focus();return true;}
+    var ids=[['findbox','hideFind'],['insertPanel','closePanel'],['shapePanel','closeShapePanel'],['questionPanel',null]];for(var i=0;i<ids.length;i++){var el=document.getElementById(ids[i][0]);if(el&&visible(el)){var fn=ids[i][1]&&window[ids[i][1]];if(typeof fn==='function')fn();else el.style.display='none';return true;}}
+    if(document.body.classList.contains('shape-draw-mode')){if(typeof cancelShapeDraw==='function')cancelShapeDraw();return true;}
+    var selected=document.querySelector('.design-object.selected,.rk-multi-selected');if(selected){try{if(typeof selectDesignObject==='function')selectDesignObject(null);document.querySelectorAll('.rk-multi-selected').forEach(function(x){x.classList.remove('rk-multi-selected')});}catch(err){}return true;}
+    return false;
+  }
+  document.addEventListener('keydown',function(e){if((e.key||'').toLowerCase()!=='escape'||e.altKey)return;e.preventDefault();e.stopImmediatePropagation();if(closeActive())return;var dash=document.getElementById('dashboard'),shell=document.getElementById('editorShell');var dashVisible=dash&&visible(dash)&&!dash.classList.contains('hidden');var editorVisible=shell&&visible(shell);if(editorVisible&&!dashVisible){if(typeof showDashboard==='function')showDashboard();return;}if(dashVisible){if(typeof rkRequestExit==='function')rkRequestExit();return;}try{if(typeof editor!=='undefined'&&editor)editor.focus();}catch(err){}},true);
+})();
+</script>
+
+<script id="rk-final-corrections-20260927-v2">
+(function(){
+  'use strict';
+
+  function visible(el){
+    if(!el)return false;
+    var st=getComputedStyle(el);
+    return st.display!=='none' && st.visibility!=='hidden' && (el.offsetWidth||el.offsetHeight||st.position==='fixed');
+  }
+  function closePanels(){
+    var exportOv=document.getElementById('rkExportOverlay');
+    if(exportOv&&exportOv.classList.contains('show')){closeExportPageDialog();return true;}
+    var ids=['findbox','insertPanel','questionPanel','shapePanel'];
+    for(var i=0;i<ids.length;i++){
+      var el=document.getElementById(ids[i]);
+      if(el&&visible(el)){
+        if(ids[i]==='findbox'&&typeof hideFind==='function')hideFind();
+        else if(ids[i]==='insertPanel'&&typeof closePanel==='function')closePanel();
+        else if(ids[i]==='shapePanel'&&typeof closeShapePanel==='function')closeShapePanel();
+        else el.style.display='none';
+        return true;
+      }
+    }
+    if(document.body.classList.contains('shape-draw-mode')&&typeof cancelShapeDraw==='function'){cancelShapeDraw();return true;}
+    return false;
+  }
+
+  // Assign practical Alt menu access keys even when the HTML has none.
+  var accessMap={file:'f',edit:'e',view:'v',format:'o',insert:'i',symbols:'s',utilities:'u',language:'l',window:'w',help:'h'};
+  document.querySelectorAll('.menubar .menu').forEach(function(m){
+    var b=m.querySelector(':scope > button');
+    if(!b)return;
+    var name=(b.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');
+    Object.keys(accessMap).some(function(n){
+      if(name.indexOf(n)===0){b.setAttribute('accesskey',accessMap[n]);return true}
+      return false;
+    });
+  });
+  var menuOpen=null;
+  var menuStyle=document.createElement('style');
+  menuStyle.textContent='.menubar .menu.rk-kb-open>.dropdown{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}';
+  document.head.appendChild(menuStyle);
+  function closeMenus(){
+    document.querySelectorAll('.menubar .menu.rk-kb-open').forEach(function(m){m.classList.remove('rk-kb-open')});
+    menuOpen=null;
+  }
+  function openMenu(k){
+    var b=[].slice.call(document.querySelectorAll('.menubar .menu > button[accesskey]')).find(function(x){return (x.getAttribute('accesskey')||'').toLowerCase()===k});
+    if(!b)return false;
+    closeMenus();menuOpen=b.closest('.menu');menuOpen.classList.add('rk-kb-open');b.focus();return true;
+  }
+  document.addEventListener('mousedown',function(e){if(!e.target.closest('.menubar .menu'))closeMenus()},true);
+
+  // Exit flow
+  window.rkRequestExit=function(){
+    if(closePanels())return;
+    if(typeof dirty!=='undefined'&&dirty){
+      var ov=document.getElementById('rkExitOverlay');ov.classList.add('show');ov.setAttribute('aria-hidden','false');return;
+    }
+    if(confirm('REKHTA Software बंद करना है?')){try{window.close()}catch(e){}}
+  };
+  window.rkCancelExit=function(){var ov=document.getElementById('rkExitOverlay');ov.classList.remove('show');ov.setAttribute('aria-hidden','true')};
+  window.rkExitWithoutSave=function(){try{dirty=false}catch(e){};rkCancelExit();try{window.close()}catch(e){}};
+  window.rkSaveAndExit=function(){
+    rkCancelExit();
+    try{
+      // In browser test mode Save As is safest because browser cannot overwrite an arbitrary existing Windows path.
+      if(typeof saveAs==='function')saveAs(); else if(typeof saveDoc==='function')saveDoc();
+      dirty=false;
+    }catch(e){}
+    setTimeout(function(){try{window.close()}catch(e){}},250);
+  };
+  window.exitApp=window.rkRequestExit;
+
+  // Alt menu, Esc panels/exit, Alt+Esc exit. Alt+F4 remains native OS/Electron exit.
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(e.altKey&&!e.ctrlKey&&!e.shiftKey&&k.length===1){
+      if(openMenu(k)){e.preventDefault();e.stopImmediatePropagation();return}
+    }
+    if(e.altKey&&k==='escape'){
+      e.preventDefault();e.stopImmediatePropagation();rkRequestExit();return;
+    }
+    if(k==='escape'){
+      if(closePanels()){e.preventDefault();e.stopImmediatePropagation();return}
+      if(menuOpen){closeMenus();e.preventDefault();e.stopImmediatePropagation();return}
+      e.preventDefault();e.stopImmediatePropagation();rkRequestExit();return;
+    }
+  },true);
+
+  // Warn on Alt+F4/window close when document is modified.
+  window.addEventListener('beforeunload',function(e){
+    if(typeof dirty!=='undefined'&&dirty){e.preventDefault();e.returnValue='';}
+  });
+
+  // As a Picture always opens the Export Page dialog first.
+  var oldPicture=window.exportAsPicture;
+  window.exportAsPicture=function(){
+    var ov=document.getElementById('rkExportOverlay');
+    if(ov){
+      ov.classList.add('show');ov.setAttribute('aria-hidden','false');
+      var f=document.getElementById('rkExportFormat');if(f)f.value='png';
+      var n=document.getElementById('rkExportName');if(n&&!n.value)n.value='REKHTA_Page';
+      return;
+    }
+    if(typeof oldPicture==='function')return oldPicture();
+  };
+
+  // Browse in HTML is a name helper only; native path chooser will be connected in EXE.
+  window.rkSuggestExportName=function(){
+    var n=document.getElementById('rkExportName');
+    var v=prompt('Export file name:',n&&n.value?n.value:'REKHTA_Page');
+    if(v&&n)n.value=v.replace(/\.[^.]+$/,'');
+  };
+
+  // Do not reopen last autosave automatically after starting the software.
+  window.addEventListener('load',function(){
+    try{dirty=false;var st=document.getElementById('saveStatus');if(st)st.textContent='Ready'}catch(e){}
+  });
+})();
+</script>
+
+
+<script id="rk-dashboard-failsafe">
+(function(){
+  function openEditorSafely(){
+    try{startMode('regular')}catch(err){
+      console.error(err);
+      var d=document.getElementById('dashboard');
+      var e=document.getElementById('editorShell');
+      if(d){d.classList.add('hidden');d.style.display='none';d.style.pointerEvents='none'}
+      if(e){e.style.display='flex';e.style.visibility='visible';e.style.opacity='1';e.style.pointerEvents='auto'}
+    }
+  }
+  window.rkOpenEditorSafely=openEditorSafely;
+
+  window.addEventListener('load',function(){
+    var dash=document.getElementById('dashboard');
+    if(!dash)return;
+    dash.querySelectorAll('button').forEach(function(btn){
+      var txt=(btn.innerText||'').toLowerCase();
+      if(txt.includes('open file'))return;
+      btn.addEventListener('click',function(){
+        setTimeout(function(){
+          var shell=document.getElementById('editorShell');
+          var dashNow=document.getElementById('dashboard');
+          if(dashNow && getComputedStyle(dashNow).display!=='none' && txt.indexOf('home')<0){
+            openEditorSafely();
+          }
+          if(shell && getComputedStyle(shell).display==='none' && txt.indexOf('home')<0){
+            openEditorSafely();
+          }
+        },60);
+      });
+    });
+  });
+})();
+</script>
+
+
+<script id="rk-text-picture-shortcut-fix">
+document.addEventListener('keydown',function(e){
+  var k=(e.key||'').toLowerCase();
+  if(e.ctrlKey && e.shiftKey && !e.altKey && k==='p'){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(typeof exportAsPicture==='function') exportAsPicture();
+  }
+},true);
+</script>
+
+
+<script id="rk-text-picture-preserve-selection">
+(function(){
+  document.addEventListener('selectionchange',function(){
+    try{
+      var sel=window.getSelection();
+      if(sel && sel.rangeCount && !sel.isCollapsed && editor.contains(sel.anchorNode)){
+        savedRange=sel.getRangeAt(0).cloneRange();
+      }
+    }catch(e){}
+  });
+
+  document.addEventListener('mousedown',function(e){
+    var b=e.target.closest && e.target.closest('button[onclick*="textAsPicture"]');
+    if(b){
+      // prevent the button from stealing the current editor text selection
+      e.preventDefault();
+      setTimeout(function(){ textAsPicture(); },0);
+    }
+  },true);
+})();
+</script>
+
+
+<script id="rk-menu-arrow-navigation">
+(function(){
+  function openMenus(){
+    return Array.from(document.querySelectorAll('.menubar .menu')).filter(function(m){
+      var dd=m.querySelector('.dropdown');
+      if(!dd)return false;
+      var cs=getComputedStyle(dd);
+      return m.classList.contains('rk-kb-open') || (cs.display!=='none' && cs.visibility!=='hidden' && cs.opacity!=='0');
+    });
+  }
+
+  function itemsOf(menu){
+    if(!menu)return [];
+    return Array.from(menu.querySelectorAll('.dropdown button, .dropdown [role="menuitem"], .dropdown a'))
+      .filter(function(el){
+        var cs=getComputedStyle(el);
+        return !el.disabled && cs.display!=='none' && cs.visibility!=='hidden';
+      });
+  }
+
+  function focusItem(items,index){
+    if(!items.length)return;
+    index=(index+items.length)%items.length;
+    items.forEach(function(x){x.classList.remove('rk-menu-key-focus')});
+    var el=items[index];
+    el.classList.add('rk-menu-key-focus');
+    el.focus({preventScroll:true});
+    try{el.scrollIntoView({block:'nearest'})}catch(e){}
+  }
+
+  var st=document.createElement('style');
+  st.textContent='.rk-menu-key-focus{background:#e6f0fb!important;color:#145eae!important;outline:1px solid #a9c5e5!important;outline-offset:-1px}';
+  document.head.appendChild(st);
+
+  document.addEventListener('keydown',function(e){
+    var menus=openMenus();
+    if(!menus.length)return;
+
+    var menu=menus[menus.length-1];
+    var items=itemsOf(menu);
+    if(!items.length)return;
+
+    var active=document.activeElement;
+    var idx=items.indexOf(active);
+    var k=e.key;
+
+    if(k==='ArrowDown'){
+      e.preventDefault();e.stopImmediatePropagation();
+      focusItem(items, idx<0?0:idx+1);
+      return;
+    }
+    if(k==='ArrowUp'){
+      e.preventDefault();e.stopImmediatePropagation();
+      focusItem(items, idx<0?items.length-1:idx-1);
+      return;
+    }
+    if(k==='Home'){
+      e.preventDefault();e.stopImmediatePropagation();
+      focusItem(items,0);
+      return;
+    }
+    if(k==='End'){
+      e.preventDefault();e.stopImmediatePropagation();
+      focusItem(items,items.length-1);
+      return;
+    }
+    if(k==='Enter' || k===' '){
+      if(idx>=0){
+        e.preventDefault();e.stopImmediatePropagation();
+        active.click();
+      }
+      return;
+    }
+    if(k==='Escape' || k==='ArrowLeft'){
+      e.preventDefault();e.stopImmediatePropagation();
+      menu.classList.remove('rk-kb-open');
+      var top=menu.querySelector(':scope > button');
+      if(top)top.focus();
+      return;
+    }
+    if(k==='ArrowRight'){
+      e.preventDefault();e.stopImmediatePropagation();
+      var all=Array.from(document.querySelectorAll('.menubar .menu'));
+      var mi=all.indexOf(menu);
+      if(mi>=0){
+        menu.classList.remove('rk-kb-open');
+        var next=all[(mi+1)%all.length];
+        next.classList.add('rk-kb-open');
+        var ni=itemsOf(next);
+        if(ni.length)focusItem(ni,0);
+        else{
+          var nb=next.querySelector(':scope > button');
+          if(nb)nb.focus();
+        }
+      }
+      return;
+    }
+  },true);
+
+  // When a menu is opened by Alt shortcut, automatically focus its first item.
+  document.addEventListener('keyup',function(e){
+    if(!e.altKey && e.key!=='Alt')return;
+    setTimeout(function(){
+      var menus=openMenus();
+      if(!menus.length)return;
+      var items=itemsOf(menus[menus.length-1]);
+      if(items.length && !items.includes(document.activeElement))focusItem(items,0);
+    },20);
+  },true);
+})();
+</script>
+
+
+<script id="rk-text-direction-feature">
+(function(){
+  window.setTextDirection=function(dir){
+    dir=(dir||'auto').toLowerCase();
+    var sel=window.getSelection();
+
+    // Restore editor selection when toolbar/menu click has moved focus.
+    if((!sel || !sel.rangeCount || !editor.contains(sel.anchorNode)) && typeof savedRange!=='undefined' && savedRange){
+      try{
+        sel=window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedRange.cloneRange());
+      }catch(e){}
+    }
+
+    var blocks=[];
+    if(sel && sel.rangeCount && editor.contains(sel.anchorNode)){
+      var range=sel.getRangeAt(0);
+      var root=range.commonAncestorContainer.nodeType===1
+        ? range.commonAncestorContainer
+        : range.commonAncestorContainer.parentElement;
+
+      var first=root && root.closest ? root.closest('div,p') : null;
+      if(first && first!==editor) blocks.push(first);
+
+      if(!range.collapsed){
+        editor.querySelectorAll('div,p').forEach(function(el){
+          try{ if(range.intersectsNode(el) && !blocks.includes(el)) blocks.push(el); }catch(e){}
+        });
+      }
+    }
+
+    if(!blocks.length) blocks=[editor];
+
+    blocks.forEach(function(el){
+      if(dir==='rtl'){
+        el.dir='rtl';
+        el.style.direction='rtl';
+        el.style.unicodeBidi='plaintext';
+        el.style.textAlign='right';
+      }else if(dir==='ltr'){
+        el.dir='ltr';
+        el.style.direction='ltr';
+        el.style.unicodeBidi='plaintext';
+        el.style.textAlign='left';
+      }else{
+        el.removeAttribute('dir');
+        el.style.direction='auto';
+        el.style.unicodeBidi='plaintext';
+        el.style.textAlign='start';
+      }
+    });
+
+    var dd=document.getElementById('textDirection');
+    if(dd)dd.value=dir;
+
+    var st=document.getElementById('langStatus');
+    if(st){
+      if(dir==='rtl') st.textContent='Text Direction: RTL';
+      else if(dir==='ltr') st.textContent='Text Direction: LTR';
+      else st.textContent='Text Direction: Auto';
+    }
+
+    try{editor.focus()}catch(e){}
+    if(typeof changed==='function')changed();
+  };
+
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(e.ctrlKey && e.altKey && !e.shiftKey && k==='r'){
+      e.preventDefault();e.stopImmediatePropagation();setTextDirection('rtl');return;
+    }
+    if(e.ctrlKey && e.altKey && !e.shiftKey && k==='l'){
+      e.preventDefault();e.stopImmediatePropagation();setTextDirection('ltr');return;
+    }
+  },true);
+})();
+</script>
+
+
+<script id="rk-full-keyboard-mouse-control">
+(function(){
+  'use strict';
+
+  function isVisible(el){
+    if(!el)return false;
+    var cs=getComputedStyle(el);
+    return cs.display!=='none' && cs.visibility!=='hidden' && cs.opacity!=='0' && !el.disabled;
+  }
+
+  function focusables(root){
+    root=root||document;
+    return Array.from(root.querySelectorAll(
+      'button:not([disabled]),select:not([disabled]),input:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'
+    )).filter(isVisible);
+  }
+
+  // Make clickable non-button controls keyboard reachable.
+  document.querySelectorAll('[onclick]').forEach(function(el){
+    if(!/^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(el.tagName) && !el.hasAttribute('tabindex')){
+      el.tabIndex=0;
+      el.setAttribute('role','button');
+      el.addEventListener('keydown',function(e){
+        if(e.key==='Enter' || e.key===' '){
+          e.preventDefault();
+          el.click();
+        }
+      });
+    }
+  });
+
+  // Ctrl+Tab / Ctrl+Shift+Tab cycles major controls; normal Tab still works naturally.
+  document.addEventListener('keydown',function(e){
+    if(e.ctrlKey && !e.altKey && e.key==='Tab'){
+      var arr=focusables(document);
+      if(!arr.length)return;
+      e.preventDefault();
+      var i=arr.indexOf(document.activeElement);
+      var n=e.shiftKey ? (i<=0?arr.length-1:i-1) : (i<0||i===arr.length-1?0:i+1);
+      arr[n].focus();
+    }
+  },true);
+
+  // Arrow-key navigation for visible button groups and menus.
+  document.addEventListener('keydown',function(e){
+    if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;
+
+    var active=document.activeElement;
+    if(!active)return;
+
+    // Selects should keep their native arrow-key behaviour.
+    if(active.tagName==='SELECT' || active.tagName==='INPUT' || active.tagName==='TEXTAREA' || (active.isContentEditable)) return;
+
+    var group=active.closest('.dropdown,.sidebar,.toolbar,.menubar,.rk-exit-actions,.rk-auth-card');
+    if(!group)return;
+
+    var items=focusables(group);
+    var idx=items.indexOf(active);
+    if(idx<0 || items.length<2)return;
+
+    var delta=(e.key==='ArrowDown'||e.key==='ArrowRight')?1:-1;
+    var ni=(idx+delta+items.length)%items.length;
+    e.preventDefault();
+    items[ni].focus();
+  },true);
+
+  function closeOneLayer(){
+    // 1. Exit confirmation
+    var exitOv=document.getElementById('rkExitOverlay');
+    if(exitOv && exitOv.classList.contains('show')){
+      if(typeof rkCancelExit==='function')rkCancelExit();
+      return true;
+    }
+
+    // 2. Export dialog
+    var exportOv=document.getElementById('rkExportOverlay');
+    if(exportOv && exportOv.classList.contains('show')){
+      if(typeof closeExportPageDialog==='function')closeExportPageDialog();
+      else exportOv.classList.remove('show');
+      return true;
+    }
+
+    // 3. Find / insert / shapes / question panels
+    var panelHandlers=[
+      ['findbox','hideFind'],
+      ['insertPanel','closePanel'],
+      ['shapePanel','closeShapePanel'],
+      ['questionPanel',null]
+    ];
+    for(var i=0;i<panelHandlers.length;i++){
+      var el=document.getElementById(panelHandlers[i][0]);
+      if(el && isVisible(el)){
+        var fn=panelHandlers[i][1] && window[panelHandlers[i][1]];
+        if(typeof fn==='function')fn();
+        else el.style.display='none';
+        return true;
+      }
+    }
+
+    // 4. Shape draw mode
+    if(document.body.classList.contains('shape-draw-mode')){
+      if(typeof cancelShapeDraw==='function')cancelShapeDraw();
+      return true;
+    }
+
+    // 5. Any open top dropdown
+    var openMenu=document.querySelector('.menubar .menu.rk-kb-open');
+    if(openMenu){
+      openMenu.classList.remove('rk-kb-open');
+      var top=openMenu.querySelector(':scope > button');
+      if(top)top.focus();
+      return true;
+    }
+
+    // 6. Editor -> Dashboard (Back)
+    var shell=document.getElementById('editorShell');
+    var dash=document.getElementById('dashboard');
+    if(shell && isVisible(shell) && dash){
+      if(typeof dirty!=='undefined' && dirty){
+        var ov=document.getElementById('rkExitOverlay');
+        if(ov){
+          var msg=document.getElementById('rkExitMessage');
+          if(msg)msg.textContent='Dashboard पर वापस जाने से पहले changes save करना है?';
+          ov.dataset.action='dashboard';
+          ov.classList.add('show');
+          return true;
+        }
+      }
+      if(typeof showDashboard==='function')showDashboard();
+      return true;
+    }
+
+    return false;
+  }
+
+  // Override exit dialog actions so same dialog can be used for Back-to-Dashboard or Exit.
+  var oldSaveAndExit=window.rkSaveAndExit;
+  var oldExitWithoutSave=window.rkExitWithoutSave;
+
+  window.rkSaveAndExit=function(){
+    var ov=document.getElementById('rkExitOverlay');
+    var action=ov&&ov.dataset.action;
+    try{
+      if(typeof saveAs==='function')saveAs();
+      else if(typeof saveDoc==='function')saveDoc();
+      if(typeof dirty!=='undefined')dirty=false;
+    }catch(e){}
+    if(ov){ov.classList.remove('show');ov.dataset.action='';}
+    if(action==='dashboard'){
+      setTimeout(function(){if(typeof showDashboard==='function')showDashboard();},180);
+    }else{
+      setTimeout(function(){try{window.close()}catch(e){}},220);
+    }
+  };
+
+  window.rkExitWithoutSave=function(){
+    var ov=document.getElementById('rkExitOverlay');
+    var action=ov&&ov.dataset.action;
+    try{if(typeof dirty!=='undefined')dirty=false}catch(e){}
+    if(ov){ov.classList.remove('show');ov.dataset.action='';}
+    if(action==='dashboard'){
+      if(typeof showDashboard==='function')showDashboard();
+    }else{
+      try{window.close()}catch(e){}
+    }
+  };
+
+  window.rkCancelExit=function(){
+    var ov=document.getElementById('rkExitOverlay');
+    if(ov){ov.classList.remove('show');ov.dataset.action='';}
+  };
+
+  // ESC rule:
+  // panel/menu/dialog => Back one level
+  // editor => Dashboard
+  // dashboard => Exit confirmation
+  document.addEventListener('keydown',function(e){
+    if((e.key||'').toLowerCase()!=='escape')return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    if(closeOneLayer())return;
+
+    var dash=document.getElementById('dashboard');
+    if(dash && isVisible(dash)){
+      if(typeof rkRequestExit==='function')rkRequestExit();
+      else if(confirm('REKHTA Software बंद करना है?')){try{window.close()}catch(err){}}
+    }
+  },true);
+
+  // Alt+Esc = direct Exit request from anywhere.
+  document.addEventListener('keydown',function(e){
+    if(e.altKey && (e.key||'').toLowerCase()==='escape'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(typeof rkRequestExit==='function')rkRequestExit();
+    }
+  },true);
+
+  // F6 cycles major application regions.
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='F6')return;
+    var regions=[
+      document.querySelector('.menubar'),
+      document.querySelector('.toolbar'),
+      document.getElementById('sidebar'),
+      document.getElementById('editor'),
+      document.getElementById('rkPropertiesPanel')
+    ].filter(Boolean).filter(isVisible);
+    if(!regions.length)return;
+    e.preventDefault();
+    var current=regions.findIndex(function(r){return r.contains(document.activeElement)});
+    var next=regions[(current+1)%regions.length];
+    var fs=focusables(next);
+    if(fs.length)fs[0].focus();
+    else{
+      next.tabIndex=next.tabIndex<0?0:next.tabIndex;
+      next.focus();
+    }
+  },true);
+
+})();
+</script>
+
+
+<script id="rk-no-textbox-stability-fix">
+(function(){
+  // Keep the main editor as the only normal typing surface.
+  editor.addEventListener('mousedown',function(){
+    try{
+      selectDesignObject(null);
+      editor.style.pointerEvents='auto';
+    }catch(e){}
+  },true);
+
+  // Prevent accidental legacy design-text creation from keyboard or toolbar code.
+  window.addDesignText=addDesignText;
+
+  // Existing old saved design-text objects remain readable/editable,
+  // but new Text commands will never create a visible text box.
+})();
+</script>
+
+
+<script id="rk-remove-legacy-textboxes">
+(function(){
+  function cleanLegacyTextBoxes(){
+    document.querySelectorAll('.design-object[contenteditable="true"]').forEach(function(el){
+      el.contentEditable='false';
+      el.removeAttribute('contenteditable');
+      el.style.border='none';
+      el.style.outline='none';
+      el.style.boxShadow='none';
+      el.style.background='transparent';
+      el.style.padding='0';
+    });
+  }
+  window.addEventListener('load',cleanLegacyTextBoxes);
+  document.addEventListener('DOMContentLoaded',cleanLegacyTextBoxes);
+  var oldRestore=window.restorePageState;
+  if(typeof oldRestore==='function'){
+    window.restorePageState=function(state){
+      var r=oldRestore(state);
+      cleanLegacyTextBoxes();
+      return r;
+    };
+  }
+})();
+</script>
+
+
+<script id="rk-esc-hierarchy-fix">
+(function(){
+  function shown(el){
+    if(!el)return false;
+    var cs=getComputedStyle(el);
+    return cs.display!=='none' && cs.visibility!=='hidden' && cs.opacity!=='0';
+  }
+
+  function activeFunctionClose(){
+    // Exit confirmation itself
+    var exitOv=document.getElementById('rkExitOverlay');
+    if(exitOv && exitOv.classList.contains('show')){
+      if(typeof rkCancelExit==='function')rkCancelExit();
+      return true;
+    }
+
+    // Export dialog
+    var exp=document.getElementById('rkExportOverlay');
+    if(exp && exp.classList.contains('show')){
+      if(typeof closeExportPageDialog==='function')closeExportPageDialog();
+      else exp.classList.remove('show');
+      return true;
+    }
+
+    // Any open dropdown menu
+    var openMenu=document.querySelector('.menubar .menu.rk-kb-open');
+    if(openMenu){
+      openMenu.classList.remove('rk-kb-open');
+      var top=openMenu.querySelector(':scope > button');
+      if(top)top.focus();
+      return true;
+    }
+
+    // Common working panels
+    var ids=['findbox','insertPanel','shapePanel','questionPanel'];
+    for(var i=0;i<ids.length;i++){
+      var el=document.getElementById(ids[i]);
+      if(el && shown(el)){
+        if(ids[i]==='findbox' && typeof hideFind==='function')hideFind();
+        else if(ids[i]==='insertPanel' && typeof closePanel==='function')closePanel();
+        else if(ids[i]==='shapePanel' && typeof closeShapePanel==='function')closeShapePanel();
+        else el.style.display='none';
+        return true;
+      }
+    }
+
+    // Shape drawing mode
+    if(document.body.classList.contains('shape-draw-mode')){
+      if(typeof cancelShapeDraw==='function')cancelShapeDraw();
+      return true;
+    }
+
+    // Selected design object: first Esc only deselects it
+    var sel=document.querySelector('.design-object.selected');
+    if(sel){
+      if(typeof selectDesignObject==='function')selectDesignObject(null);
+      else sel.classList.remove('selected');
+      return true;
+    }
+
+    // Page selection: first Esc cancels selection
+    if(typeof pageAllSelected!=='undefined' && pageAllSelected){
+      try{
+        pageAllSelected=false;
+        document.querySelectorAll('.page-selected').forEach(function(x){x.classList.remove('page-selected')});
+      }catch(e){}
+      return true;
+    }
+
+    // If focus is inside a toolbar/sidebar/menu control, Esc returns focus to page editor first.
+    var ae=document.activeElement;
+    if(ae && ae!==document.body && ae!==editor && !editor.contains(ae)){
+      try{editor.focus()}catch(e){}
+      return true;
+    }
+
+    return false;
+  }
+
+  // Capture phase so older Escape handlers cannot trigger Exit first.
+  document.addEventListener('keydown',function(e){
+    if((e.key||'').toLowerCase()!=='escape' || e.altKey)return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    // First Esc always backs out of the active function/state.
+    if(activeFunctionClose()) return;
+
+    var dash=document.getElementById('dashboard');
+    var shell=document.getElementById('editorShell');
+
+    var dashboardVisible=dash && shown(dash) && !dash.classList.contains('hidden');
+    var editorVisible=shell && shown(shell);
+
+    // If editing, Esc = BACK to dashboard. Never show exit prompt directly here.
+    if(editorVisible && !dashboardVisible){
+      if(typeof showDashboard==='function')showDashboard();
+      return;
+    }
+
+    // Only when completely idle on dashboard should Esc ask to Exit.
+    if(dashboardVisible){
+      if(typeof rkRequestExit==='function')rkRequestExit();
+      else if(confirm('REKHTA Software बंद करना है?')){
+        try{window.close()}catch(err){}
+      }
+    }
+  },true);
+})();
+</script>
+
+
+<script id="rk-urdu-space-fix">
+(function(){
+  editor.addEventListener('keydown',function(e){
+    if(e.key!==' ' || e.ctrlKey || e.altKey || e.metaKey)return;
+
+    var currentLang=(editor.getAttribute('lang')||'').toLowerCase();
+    var isUrdu=(typeof lang!=='undefined' && lang==='ur') || currentLang==='ur';
+    if(!isUrdu)return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    editor.focus();
+    var sel=window.getSelection();
+    if((!sel || !sel.rangeCount || !editor.contains(sel.anchorNode)) && typeof savedRange!=='undefined' && savedRange){
+      try{
+        sel=window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(savedRange.cloneRange());
+      }catch(err){}
+    }
+
+    try{
+      // NBSP gives a reliable visible Urdu word gap in contenteditable.
+      document.execCommand('insertText',false,'\u00A0');
+    }catch(err){
+      if(sel && sel.rangeCount){
+        var r=sel.getRangeAt(0);
+        r.deleteContents();
+        var n=document.createTextNode('\u00A0');
+        r.insertNode(n);
+        r.setStartAfter(n);
+        r.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(r);
+      }
+    }
+
+    try{saveRange()}catch(err){}
+    try{changed()}catch(err){}
+  },true);
+})();
+</script>
+
+
+<script id="rk-esc-back-priority-fix">
+(function(){
+  function vis(el){
+    if(!el) return false;
+    var cs=getComputedStyle(el);
+    return cs.display!=='none' && cs.visibility!=='hidden' && cs.opacity!=='0';
+  }
+
+  function closeActiveThing(){
+    var exitOv=document.getElementById('rkExitOverlay');
+    if(exitOv && exitOv.classList.contains('show')){
+      if(typeof rkCancelExit==='function') rkCancelExit();
+      else exitOv.classList.remove('show');
+      return true;
+    }
+
+    var exportOv=document.getElementById('rkExportOverlay');
+    if(exportOv && exportOv.classList.contains('show')){
+      if(typeof closeExportPageDialog==='function') closeExportPageDialog();
+      else exportOv.classList.remove('show');
+      return true;
+    }
+
+    var openMenu=document.querySelector('.menubar .menu.rk-kb-open');
+    if(openMenu){
+      openMenu.classList.remove('rk-kb-open');
+      var btn=openMenu.querySelector(':scope > button');
+      if(btn) btn.focus();
+      return true;
+    }
+
+    var panels=[
+      ['findbox','hideFind'],
+      ['insertPanel','closePanel'],
+      ['shapePanel','closeShapePanel'],
+      ['questionPanel',null]
+    ];
+    for(var i=0;i<panels.length;i++){
+      var el=document.getElementById(panels[i][0]);
+      if(el && vis(el)){
+        var fn=panels[i][1] && window[panels[i][1]];
+        if(typeof fn==='function') fn();
+        else el.style.display='none';
+        return true;
+      }
+    }
+
+    if(document.body.classList.contains('shape-draw-mode')){
+      if(typeof cancelShapeDraw==='function') cancelShapeDraw();
+      return true;
+    }
+
+    var sel=document.querySelector('.design-object.selected');
+    if(sel){
+      if(typeof selectDesignObject==='function') selectDesignObject(null);
+      else sel.classList.remove('selected');
+      return true;
+    }
+
+    return false;
+  }
+
+  document.addEventListener('keydown', function(e){
+    var key=(e.key||'').toLowerCase();
+    if(key!=='escape' || e.altKey) return;
+
+    // Highest priority handling for Escape
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    // 1) If anything active/open, close that first
+    if(closeActiveThing()) return;
+
+    var dash=document.getElementById('dashboard');
+    var shell=document.getElementById('editorShell');
+    var dashboardVisible = dash && vis(dash) && !dash.classList.contains('hidden');
+    var editorVisible = shell && vis(shell);
+
+    // 2) If editor is open, Esc must go BACK to dashboard
+    if(editorVisible && !dashboardVisible){
+      if(typeof showDashboard==='function'){
+        showDashboard();
+      }else{
+        shell.style.display='none';
+        if(dash){
+          dash.classList.remove('hidden');
+          dash.style.display='flex';
+        }
+      }
+      return;
+    }
+
+    // 3) Only on dashboard with nothing active should Exit prompt appear
+    if(dashboardVisible){
+      if(typeof rkRequestExit==='function') rkRequestExit();
+      else if(confirm('REKHTA Software बंद करना है?')){
+        try{ window.close(); }catch(err){}
+      }
+      return;
+    }
+
+    // 4) Final fallback: if something unexpected, focus editor
+    try{
+      if(typeof editor!=='undefined' && editor) editor.focus();
+    }catch(err){}
+  }, true);
+})();
+</script>
+
+
+<script id="rk-same-line-language-switch">
+(function(){
+  editor.addEventListener('input',function(){
+    document.querySelectorAll('#editor span[lang]').forEach(function(sp){
+      if(sp.textContent && sp.textContent.indexOf('\u200B')!==-1 && sp.textContent.length>1){
+        sp.textContent=sp.textContent.replace(/\u200B/g,'');
+      }
+    });
+  });
+
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();
+    if(e.ctrlKey && e.altKey && !e.shiftKey && k==='e'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setLanguage('en');
+      return;
+    }
+    if(e.ctrlKey && e.altKey && !e.shiftKey && k==='u'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setLanguage('ur');
+      return;
+    }
+  },true);
+})();
+</script>
+
+
+<script id="rk-ctrl-space-language-toggle">
+(function(){
+  function toggleUrduEnglish(){
+    try{
+      var current=(typeof lang!=='undefined' && lang)?lang:(document.getElementById('langMode')?document.getElementById('langMode').value:'ur');
+      if(current==='ur') setLanguage('en');
+      else setLanguage('ur');
+
+      var st=document.getElementById('saveStatus');
+      if(st){
+        st.textContent = current==='ur' ? 'Shortcut: English' : 'Shortcut: Urdu';
+        clearTimeout(window.__rkCtrlSpaceMsg);
+        window.__rkCtrlSpaceMsg=setTimeout(function(){
+          if(st.textContent==='Shortcut: English' || st.textContent==='Shortcut: Urdu') st.textContent='Ready';
+        },1000);
+      }
+    }catch(e){
+      console.error('Ctrl+Space language toggle error:', e);
+    }
+  }
+
+  document.addEventListener('keydown',function(e){
+    var isSpace = (e.code==='Space') || (e.key===' ') || (e.key==='Spacebar');
+    if((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && isSpace){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      toggleUrduEnglish();
+    }
+  }, true);
+})();
+</script>
+
+\n<script id="rk-v109-phonetic-help-save">
+(function(){
+'use strict';
+window.rkPhoneticEnabled=false;window.rkOpenedFileName='';window.rkOpenedExistingFile=false;
+var oldLoadFile=window.loadFile;window.loadFile=function(e){var f=e&&e.target&&e.target.files&&e.target.files[0];if(f){window.rkOpenedFileName=f.name||'';window.rkOpenedExistingFile=true;}return oldLoadFile.apply(this,arguments);};
+function updatePhoneticUI(){var on=!!window.rkPhoneticEnabled;var b=document.getElementById('rkPhoneticBtn');if(b){b.textContent=on?'Phonetic ON':'Phonetic OFF';b.setAttribute('aria-pressed',on?'true':'false');}var sb=document.getElementById('rkPhoneticSideBtn');if(sb)sb.textContent='Urdu Phonetic: '+(on?'ON':'OFF');var st=document.getElementById('langStatus');if(st&&typeof lang!=='undefined'&&lang==='ur')st.textContent='Urdu RTL • Jameel Noori Nastaleeq • Phonetic '+(on?'ON':'OFF');}
+window.togglePhonetic=function(force){window.rkPhoneticEnabled=(typeof force==='boolean')?force:!window.rkPhoneticEnabled;if(window.rkPhoneticEnabled&&typeof setLanguage==='function'&&(typeof lang==='undefined'||lang!=='ur'))setLanguage('ur');updatePhoneticUI();try{editor.focus();}catch(e){}};
+var map={q:'ق',w:'و',e:'ع',r:'ر',t:'ت',y:'ے',u:'ء',i:'ی',o:'ہ',p:'پ',a:'ا',s:'س',d:'د',f:'ف',g:'گ',h:'ھ',j:'ج',k:'ک',l:'ل',z:'ز',x:'ش',c:'چ',v:'ط',b:'ب',n:'ن',m:'م'};
+var shiftMap={H:'ح',X:'خ'};
+editor.addEventListener('keydown',function(e){if(!window.rkPhoneticEnabled||(typeof lang!=='undefined'&&lang!=='ur'))return;if(e.ctrlKey||e.metaKey||e.altKey||e.key.length!==1)return;var ch=(e.shiftKey&&shiftMap[e.key])?shiftMap[e.key]:map[e.key.toLowerCase()];if(!ch)return;e.preventDefault();try{document.execCommand('insertText',false,ch);}catch(err){var sel=getSelection();if(sel&&sel.rangeCount){var r=sel.getRangeAt(0);r.deleteContents();var n=document.createTextNode(ch);r.insertNode(n);r.setStartAfter(n);r.collapse(true);sel.removeAllRanges();sel.addRange(r);}}if(typeof changed==='function')changed();},true);
+document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase();if(e.ctrlKey&&e.altKey&&!e.shiftKey&&k==='p'){e.preventDefault();e.stopImmediatePropagation();togglePhonetic();}},true);
+var help={
+about:'<h3>About REKHTA</h3><p><b>REKHTA</b> Urdu + English design and typing software है, जिसे card makers, designers, typing centres और print shops के workflow के लिए बनाया जा रहा है.</p><div class="rk-help-note"><b>Developer:</b> RK Solution — Rafique Karnool</div><p>Main goal: Urdu/English typing, page design, wedding cards, question papers, graphics, SVG text, export और printing एक ही software में.</p>',
+quick:'<h3>Quick Start</h3><ol><li>Dashboard से New Design, Wedding Card या Question Paper चुनें.</li><li>Page size चुनें या Custom Page में Width/Height set करें.</li><li>Page पर click करके typing शुरू करें.</li><li>Urdu/English बदलने के लिए <kbd>Ctrl</kbd> + <kbd>Space</kbd> दबाएँ.</li><li>काम पूरा होने पर Save / Save As या Export Page करें.</li></ol>',
+urdu:'<h3>Urdu / Phonetic Help</h3><p>Urdu mode में default font <b>Jameel Noori Nastaleeq</b> और direction RTL है. English mode में Times New Roman और LTR.</p><h4>Language shortcuts</h4><p><kbd>Ctrl+Space</kbd> Urdu ↔ English &nbsp; • &nbsp; <kbd>Ctrl+Alt+U</kbd> Urdu &nbsp; • &nbsp; <kbd>Ctrl+Alt+E</kbd> English</p><h4>Phonetic Keyboard</h4><p><kbd>Ctrl+Alt+P</kbd> से Phonetic ON/OFF करें. Common mapping: a=ا, b=ب, p=پ, t=ت, j=ج, d=د, r=ر, s=س, k=ک, g=گ, l=ل, m=م, n=ن, w=و, y=ے. Special: Shift+H=ح, Shift+X=خ.</p><div class="rk-help-note">Phonetic option सिर्फ Urdu mode की typing को बदलता है; English mode normal keyboard ही रहता है.</div>',
+design:'<h3>Design Tools</h3><ul><li>Direct page typing — visible text box के बिना.</li><li>Picture / Logo insert, move और resize.</li><li>Rectangle, Circle, Line, Arrow और Shapes.</li><li>Duplicate, Delete, Group, Ungroup, Lock और alignment.</li><li>Properties: X, Y, Width, Height, Opacity.</li><li>Ruler, Zoom, page size और orientation controls.</li></ul>',
+save:'<h3>Save / Open Help</h3><p><kbd>Ctrl+O</kbd> Open, <kbd>Ctrl+S</kbd> Save, <kbd>Ctrl+Shift+S</kbd> Save As.</p><p>अगर opened file में changes किए गए हैं और software बंद किया जाता है, तो Save / Save As / Don\'t Save / Cancel options पूछे जाएँगे.</p><div class="rk-help-note"><b>HTML checking mode:</b> Browser security के कारण existing Windows file को उसी path पर silently overwrite नहीं किया जा सकता. Final Electron EXE में native Save उसी file को update करेगा.</div>',
+export:'<h3>SVG / Export Help</h3><ul><li><b>Export As Picture:</b> selected Urdu/English text को InPage-style dialog से SVG Editable, EPS Picture या PNG में export करने के लिए.</li><li><kbd>Ctrl+Shift+P</kbd> Text as SVG.</li><li><kbd>Ctrl+Shift+E</kbd> Export Page.</li><li>Page export formats: PNG, JPG, SVG, PDF, EPS, GIF (browser support format के अनुसार).</li></ul><p>CorelDRAW में SVG Editable use करने के लिए required font system में installed होना चाहिए. True SVG Curves/Outlines final EXE में font-outline engine के साथ export होगा, जिससे font dependency हटेगी.</p>',
+keyboard:'<h3>Keyboard & Mouse Control</h3><p>Software के जरूरी controls mouse और keyboard दोनों से operate करने के लिए बनाए गए हैं.</p><ul><li><kbd>Alt</kbd> + menu letter से top menu.</li><li>Arrow keys से menu navigation.</li><li><kbd>Enter</kbd> / <kbd>Space</kbd> activate.</li><li><kbd>F6</kbd> major panels में focus बदलता है.</li><li><kbd>Ctrl+Z</kbd>/<kbd>Ctrl+Y</kbd> Undo/Redo.</li><li><kbd>Ctrl+D</kbd> Duplicate, <kbd>Ctrl+G</kbd> Group.</li></ul>',
+esc:'<h3>ESC / Back / Exit</h3><p><b>Final rule:</b></p><ol><li>Dialog, menu या active function खुला है → <kbd>Esc</kbd> उसे Close/Back करेगा.</li><li>Editor में हैं → <kbd>Esc</kbd> Dashboard पर वापस जाएगा.</li><li>Dashboard पर <kbd>Esc</kbd> दबाने पर ही Exit request आएगी.</li><li>Unsaved changes होने पर Save options पहले पूछे जाएँगे.</li></ol>',
+license:'<h3>Login / License</h3><p>Test build में Customer Login, Password और License Key screen checking के लिए है.</p><div class="rk-help-note">Final EXE में one-license-one-PC binding native desktop layer में लागू होगी. HTML test file को secure licensing system न मानें.</div>',
+trouble:'<h3>Troubleshooting</h3><h4>Urdu font सही नहीं दिख रहा?</h4><p>Jameel Noori Nastaleeq installed/available है या नहीं check करें.</p><h4>Shortcut काम नहीं कर रहा?</h4><p>Input field में focus होने पर कुछ browser shortcuts reserved हो सकते हैं. Editor पर click करके फिर shortcut test करें.</p><h4>Save file पुरानी जगह पर update नहीं हुई?</h4><p>Browser test में download behavior normal है; final EXE native path save करेगा.</p>',
+contact:'<h3>Contact / Support</h3><p><b>RK Solution</b><br>Developer: Rafique Karnool<br>Email: rafiquekarnool@gmail.com</p><p>Software help के लिए Help menu और Keyboard Shortcuts section पहले check करें.</p>'};
+})();
+</script>\n
+
+<script id="rk-stable-menu-runtime-fix">
+(function(){
+  'use strict';
+  function allMenus(){return Array.prototype.slice.call(document.querySelectorAll('.menubar .menu'))}
+  function closeMenus(except){
+    allMenus().forEach(function(m){if(m!==except)m.classList.remove('rk-kb-open')});
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    allMenus().forEach(function(m){
+      var top=m.querySelector(':scope > button');
+      if(!top)return;
+      top.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var opening=!m.classList.contains('rk-kb-open');
+        closeMenus(m);
+        m.classList.toggle('rk-kb-open',opening);
+      });
+      var dd=m.querySelector('.dropdown');
+      if(dd)dd.addEventListener('click',function(e){
+        var item=e.target.closest('button,a,[role="menuitem"]');
+        if(item)setTimeout(function(){m.classList.remove('rk-kb-open')},40);
+      });
+    });
+    document.addEventListener('click',function(e){
+      if(!e.target.closest('.menubar .menu'))closeMenus();
+    });
+  },{once:true});
+})();
+</script>
+
+
+<script id="rk-picture-trace-script">
+(function(){
+  'use strict';
+  var img=null, mask=null, tw=0, th=0;
+  function el(id){return document.getElementById(id)}
+  function selectedImage(){
+    var box=(typeof selectedDesign!=='undefined'&&selectedDesign)?selectedDesign:document.querySelector('.design-object.selected');
+    return box&&box.querySelector?box.querySelector('img'):null;
+  }
+  function loadSrc(src){
+    return new Promise(function(ok,no){
+      var im=new Image();
+      im.onload=function(){img=im;ok(im)};
+      im.onerror=function(){no(new Error('Image load failed'))};
+      im.src=src;
+    });
+  }
+  function render(){
+    if(!img)return;
+    var max=parseInt(el('rkPictureTraceMax').value||900,10);
+    var scale=Math.min(1,max/(img.naturalWidth||img.width||1));
+    tw=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));
+    th=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+    var a=el('rkPictureTraceOriginal'),b=el('rkPictureTracePreview');
+    a.width=b.width=tw;a.height=b.height=th;
+    var ac=a.getContext('2d',{willReadFrequently:true}),bc=b.getContext('2d');
+    ac.clearRect(0,0,tw,th);ac.drawImage(img,0,0,tw,th);
+    var d=ac.getImageData(0,0,tw,th),t=parseInt(el('rkPictureTraceThreshold').value||170,10);
+    mask=new Uint8Array(tw*th);
+    var out=bc.createImageData(tw,th);
+    for(var i=0,p=0;i<d.data.length;i+=4,p++){
+      var alpha=d.data[i+3]/255,lum=(d.data[i]*.299+d.data[i+1]*.587+d.data[i+2]*.114);
+      var black=alpha>.08 && lum<t;
+      mask[p]=black?1:0;
+      var v=black?0:255;
+      out.data[i]=out.data[i+1]=out.data[i+2]=v;out.data[i+3]=255;
+    }
+    bc.putImageData(out,0,0);
+  }
+  function svg(){
+    if(!mask)return '';
+    var parts=[];
+    for(var y=0;y<th;y++){
+      var x=0;
+      while(x<tw){
+        while(x<tw&&!mask[y*tw+x])x++;
+        if(x>=tw)break;
+        var s=x;
+        while(x<tw&&mask[y*tw+x])x++;
+        var len=x-s;
+        parts.push('M'+s+' '+y+'h'+len+'v1h-'+len+'z');
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="'+tw+'" height="'+th+'" viewBox="0 0 '+tw+' '+th+'"><path fill="#000" d="'+parts.join('')+'"/></svg>';
+  }
+  function saveBlob(blob,name){
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+  }
+  window.rkOpenPictureTrace=function(){
+    var o=el('rkPictureTraceOverlay');if(o){o.classList.add('show');o.setAttribute('aria-hidden','false')}
+    var si=selectedImage();
+    if(si&&si.src)loadSrc(si.src).then(render).catch(function(){});
+  };
+  window.rkClosePictureTrace=function(){var o=el('rkPictureTraceOverlay');if(o){o.classList.remove('show');o.setAttribute('aria-hidden','true')}};
+  window.rkTraceUseSelected=function(){
+    var si=selectedImage();if(!si||!si.src){alert('पहले page पर picture select करें।');return}
+    loadSrc(si.src).then(render).catch(function(){alert('Selected picture trace के लिए load नहीं हुई।')});
+  };
+  window.rkPictureTracePreview=render;
+  window.rkExportPictureTraceSVG=function(){
+    if(!img){alert('पहले picture select करें या image file चुनें।');return}
+    render();var data=svg();
+    saveBlob(new Blob([data],{type:'image/svg+xml;charset=utf-8'}),'REKHTA_Trace_'+Date.now()+'.svg');
+    if(typeof setStatus==='function')setStatus('SVG Outline exported for CorelDRAW');
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    var f=el('rkPictureTraceFile');
+    if(f)f.addEventListener('change',function(){
+      var file=this.files&&this.files[0];if(!file)return;
+      var r=new FileReader();r.onload=function(){loadSrc(r.result).then(render).catch(function(){alert('Image load नहीं हुई।')})};r.readAsDataURL(file);
+    });
+    var ths=el('rkPictureTraceThreshold'), mx=el('rkPictureTraceMax');
+    if(ths)ths.addEventListener('input',function(){el('rkPictureTraceThresholdValue').textContent=this.value;render()});
+    if(mx)mx.addEventListener('change',render);
+  },{once:true});
+  document.addEventListener('keydown',function(e){
+    var o=el('rkPictureTraceOverlay');
+    if(e.key==='Escape'&&o&&o.classList.contains('show')){e.preventDefault();e.stopImmediatePropagation();rkClosePictureTrace()}
+  },true);
+})();
+</script>
+
 </body>
 </html>
