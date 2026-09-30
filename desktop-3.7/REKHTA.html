@@ -812,7 +812,7 @@ if(window.rekhtaDesktop){window.showSaveFilePicker=async function(options){const
     <button class="tool-btn" onclick="duplicateSelected()">⧉ Duplicate</button>
     <button class="tool-btn" onclick="deleteSelected()">⌫ Delete</button>
     <div class="corel-page-controls">
-      <select id="pageSizeTop" onchange="pageSize.value=this.value;changePageSize(this.value)">
+      <select id="pageSizeTop" onchange="pageSizeTop.value=this.value;changePageSize(this.value)">
         <option value="a4" selected>A4 Portrait</option>
         <option value="a5">A5 Portrait</option>
         <option value="a4l">A4 Landscape</option>
@@ -1449,14 +1449,12 @@ function setLanguageMenu(code){
   applyLanguage();
 }
 function setPageMenu(code){
-  const sel=document.getElementById('pageSize');
+  const sel=document.getElementById('pageSizeTop');
   sel.value=code;
   changePageSize(code);
 }
 function toggleGridMenu(){
-  const cb=document.getElementById('gridToggle');
-  cb.checked=!cb.checked;
-  page.classList.toggle('show-grid',cb.checked);
+  page.classList.toggle('show-grid');snapshot();
 }
 function showDashboard(){
   document.getElementById('app').classList.add('hidden');
@@ -1906,7 +1904,7 @@ page.addEventListener('click',function(e){
 });
 
 
-document.getElementById('pageSize').addEventListener('change',function(){
+document.getElementById('pageSizeTop').addEventListener('change',function(){
   const top=document.getElementById('pageSizeTop');
   if(top) top.value=this.value;
 });
@@ -2288,7 +2286,7 @@ function ipPageSetup(){
   openIpDialog('Page Setup',`<div class="row"><label>Page Size<select id="ipPage"><option value="a4">A4 Portrait</option><option value="a5">A5 Portrait</option><option value="a4l">A4 Landscape</option><option value="7x7">7 × 7 inch</option><option value="6.5x6.5">6.5 × 6.5 inch</option></select></label><label>Zoom %<input id="ipZoom" type="number" min="25" max="200" value="${Math.round(zoom*100)}"></label></div>`,()=>{
     setPageMenu(ipPage.value);setZoom(Math.max(.25,Math.min(2,+ipZoom.value/100)));
   });
-  ipPage.value=pageSize.value;
+  ipPage.value=pageSizeTop.value;
 }
 function ipColumns(){
   if(!selected||selected.dataset.type!=='text')return toast('Select text first');
@@ -2374,7 +2372,7 @@ page.addEventListener('focusin',function(e){
 
 
 function applyDefaultDocumentSettings(){
-  const ps=document.getElementById('pageSize');
+  const ps=document.getElementById('pageSizeTop');
   if(ps) ps.value='a4';
   const pst=document.getElementById('pageSizeTop');
   if(pst) pst.value='a4';
@@ -2872,7 +2870,7 @@ validateDocumentSettings(v);documentSettings={...v};const px=96/25.4;
 page.style.width=v.width*px+'px';page.style.height=v.height*px+'px';
 for(const k of ['left','right','top','bottom'])page.style.setProperty('--margin-'+k,v[k]*px+'px');page.classList.add('margin-guides');
 language.value=v.direction;fontFamily.value=v.direction==='ur'?'Jameel Noori Nastaleeq':'Times New Roman';
-pageSize.value=v.size==='custom'?'a4':v.size==='a4'&&v.orientation==='landscape'?'a4l':v.size;
+pageSizeTop.value=v.size==='custom'?'a4':v.size==='a4'&&v.orientation==='landscape'?'a4l':v.size;
 if(createArea&&v.automatic){const t=createText(v.direction==='ur'?(v.width-v.right)*px:v.left*px,v.top*px,false);t.style.left=v.left*px+'px';t.style.top=v.top*px+'px';t.style.width=(v.width-v.left-v.right)*px+'px';t.classList.add('flow-text');t.style.setProperty('--flow-columns',v.columns);t.style.setProperty('--flow-gutter',v.gutter*px+'px');t.style.setProperty('--flow-height',(v.height-v.top-v.bottom)*px+'px');t.focus({preventScroll:true});const r=document.createRange();r.selectNodeContents(t);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r);}
 fitPage();snapshot();
 }
