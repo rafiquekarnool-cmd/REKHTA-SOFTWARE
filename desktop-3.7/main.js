@@ -18,9 +18,9 @@ app.whenReady().then(async()=>{
   if(result.canceled)return null;const id=crypto.randomBytes(16).toString('hex');saveTargets.set(id,result.filePath);return{id,name:path.basename(result.filePath)};
  });
  ipcMain.handle('rekhta:save-data',async(event,id,data)=>{if(!isOwnFrame(event)||!saveTargets.has(id))throw Error('Invalid save target');const target=saveTargets.get(id);saveTargets.delete(id);const bytes=Buffer.from(data);if(bytes.length>400*1024*1024)throw Error('Export too large');await fs.writeFile(target,bytes);return true;});
- let errors=[];window.webContents.on('console-message',(_e,level,message)=>{if(level===3)errors.push(message);});window.webContents.on('render-process-gone',(_e,details)=>{console.error(details);app.exit(1);});
+ let errors=[];window.webContents.on('console-message',(_e,level,message)=>{if(level===3){errors.push(message);console.error('Renderer: '+message);}});window.webContents.on('render-process-gone',(_e,details)=>{console.error(details);app.exit(1);});
  await window.loadFile('REKHTA.html');
- if(smoke){window.show();window.focus();try{await new Promise(r=>setTimeout(r,200));await require('./scripts/smoke.cjs')(window);if(errors.some(e=>/Uncaught|SyntaxError|ReferenceError/.test(e)))throw Error(errors.join('\n'));console.log('REKHTA smoke tests passed');app.exit(0);}catch(e){console.error(e);app.exit(1);}return;}
+ if(smoke){window.show();window.focus();try{await new Promise(r=>setTimeout(r,200));await require('./scripts/smoke.cjs')(window);if(errors.some(e=>/Uncaught|SyntaxError|ReferenceError/.test(e)))throw Error(errors.join('\n'));console.log('REKHTA smoke tests passed');app.exit(0);}catch(e){console.error(e);console.error('Renderer errors:',errors);app.exit(1);}return;}
  window.maximize();window.show();
 });
 app.on('window-all-closed',()=>app.quit());
