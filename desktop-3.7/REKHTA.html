@@ -1,0 +1,2952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>REKHTA Studio 3.7 — Working Menus</title>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<style>
+@font-face{
+  font-family:"Jameel Noori Nastaleeq";
+  src:url("assets/JameelNooriNastaleeq.ttf") format("truetype");
+  font-weight:400;font-style:normal;font-display:swap;
+}
+:root{
+  --bg:#e7e9ee; --panel:#f7f8fb; --panel2:#ffffff; --line:#cfd5df;
+  --text:#1f2937; --muted:#64748b; --accent:#2f6fed; --accent2:#1f4fb6;
+  --danger:#c73838; --shadow:0 10px 28px rgba(15,23,42,.12);
+  --top:58px; --side:220px; --prop:260px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Segoe UI,Arial,sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* DASHBOARD */
+#dashboard{height:100%;display:flex;align-items:center;justify-content:center;background:
+radial-gradient(circle at 20% 20%,#fff 0 10%,transparent 30%),
+linear-gradient(135deg,#eef1f6,#dfe4ec)}
+.dash-card{width:min(980px,92vw);background:rgba(255,255,255,.94);border:1px solid #d7dce5;border-radius:22px;box-shadow:var(--shadow);padding:38px}
+.brand-row{display:flex;align-items:center;gap:16px;margin-bottom:30px}
+.logo{width:64px;height:64px;border-radius:16px;background:linear-gradient(145deg,var(--accent),#6aa0ff);color:white;display:grid;place-items:center;font-weight:800;font-size:26px;box-shadow:0 12px 24px rgba(47,111,237,.28)}
+.brand-row h1{margin:0;font-size:34px;letter-spacing:.4px}
+.brand-row p{margin:5px 0 0;color:var(--muted)}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.dash-btn{min-height:160px;background:#fff;border:1px solid #d7dce5;border-radius:18px;text-align:left;padding:22px;box-shadow:0 5px 16px rgba(15,23,42,.06);transition:.2s}
+.dash-btn:hover{transform:translateY(-3px);border-color:#a9b9d9}
+.dash-btn strong{display:block;font-size:20px;margin:12px 0 7px}
+.dash-btn span{color:var(--muted);line-height:1.4}
+.dash-icon{font-size:30px}
+.footer-note{margin-top:24px;color:var(--muted);font-size:13px}
+
+/* APP */
+#app{height:100%;display:grid;grid-template-rows:34px var(--top) 42px 1fr 28px}
+.topbar{background:#f8fafc;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 12px;gap:10px}
+.appmark{display:flex;align-items:center;gap:9px;font-weight:700;margin-right:8px}
+.appmark .mini{width:34px;height:34px;border-radius:9px;background:var(--accent);color:#fff;display:grid;place-items:center}
+.menu-btn,.tool-btn,.small-btn{border:1px solid transparent;background:transparent;border-radius:7px;padding:7px 9px;color:var(--text)}
+.menu-btn:hover,.tool-btn:hover,.small-btn:hover{background:#e9eef8;border-color:#d9e0eb}
+.tool-btn.active{background:#dfe9ff;border-color:#a9c2ff;color:#173d88}
+.sep{width:1px;height:28px;background:var(--line);margin:0 3px}
+.spacer{flex:1}
+.zoom-box{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px}
+
+.formatbar{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:5px 10px}
+.formatbar select,.formatbar input{height:30px;border:1px solid var(--line);border-radius:6px;background:#fff;padding:0 7px}
+.formatbar input[type=number]{width:66px}
+.formatbar .font{width:190px}
+
+.workspace{display:grid;grid-template-columns:var(--side) 1fr var(--prop);min-height:0}
+.leftbar,.rightbar{background:var(--panel);min-height:0;overflow:auto}
+
+.rightbar{border-left:1px solid var(--line);padding:12px}
+.panel-title{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;margin:4px 0 8px}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.bigtool{height:52px;border:1px solid var(--line);background:#fff;border-radius:9px;text-align:center;font-size:12px}
+.bigtool:hover,.bigtool.active{border-color:#98b6ef;background:#edf3ff}
+.bigtool b{display:block;font-size:19px;margin-bottom:2px}
+.hr{height:1px;background:var(--line);margin:14px 0}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.field input,.field select{width:100%;height:32px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:0 8px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+
+.stage-wrap{position:relative;overflow:auto;background:#cfd3db}
+.ruler-x{position:sticky;top:0;height:23px;z-index:20;background:#edf0f4;border-bottom:1px solid #b8bec8;background-image:repeating-linear-gradient(90deg,#aeb5c0 0 1px,transparent 1px 10px)}
+.ruler-y{position:sticky;left:0;width:23px;z-index:20;background:#edf0f4;border-right:1px solid #b8bec8;background-image:repeating-linear-gradient(#aeb5c0 0 1px,transparent 1px 10px)}
+.stage-space{min-width:100%;min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:42px 60px 90px 60px;position:relative}
+#page{
+  width:794px;height:1123px;background:white;position:relative;box-shadow:0 8px 25px rgba(0,0,0,.22);
+  transform-origin:top center;overflow:hidden;user-select:none;
+}
+#page.show-grid{
+  background-color:white;
+  background-image:linear-gradient(#e8ebf0 1px,transparent 1px),linear-gradient(90deg,#e8ebf0 1px,transparent 1px);
+  background-size:20px 20px;
+}
+.obj{position:absolute;min-width:20px;min-height:20px;user-select:none}
+.obj.selected{outline:1.5px solid var(--accent)}
+.obj.locked{outline-style:dashed}
+.handle{position:absolute;width:10px;height:10px;background:#fff;border:1.5px solid var(--accent);border-radius:2px;z-index:5}
+.handle.se{right:-6px;bottom:-6px;cursor:nwse-resize}
+.handle.rot{left:50%;top:-24px;transform:translateX(-50%);border-radius:50%;cursor:grab}
+.textobj{min-width:50px;min-height:40px;padding:3px 5px;white-space:pre-wrap;word-break:normal;line-height:1.55}
+.textobj[contenteditable="true"]{user-select:text;outline:none}
+.shapeobj{border:2px solid #334155;background:transparent}
+.shape-circle{border-radius:50%}
+.shape-line{height:2px!important;min-height:2px;border:none;background:#334155;transform-origin:left center}
+.shape-star{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:#334155}
+.imageobj img{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
+.statusbar{background:#f8fafc;border-top:1px solid var(--line);display:flex;align-items:center;padding:0 10px;color:var(--muted);font-size:12px;gap:18px}
+.statusbar .grow{flex:1}
+.layer-item{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px;margin-bottom:5px;font-size:12px}
+.layer-item.active{border-color:#8eaeeb;background:#eef4ff}
+.color-input{height:32px!important;padding:2px!important}
+#fileInput,#projectInput{display:none}
+.toast{position:fixed;right:18px;bottom:42px;background:#162033;color:white;padding:10px 14px;border-radius:8px;font-size:13px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:none}
+@media(max-width:900px){:root{--side:150px;--prop:200px}.dash-grid{grid-template-columns:1fr}.dash-card{overflow:auto;max-height:92vh}}
+@media print{
+  body{overflow:visible;background:#fff}
+  #dashboard,.topbar,.formatbar,.leftbar,.rightbar,.statusbar{display:none!important}
+  #app{display:block;height:auto}
+  .workspace,.stage-wrap,.stage-space{display:block;overflow:visible;background:white;padding:0;margin:0}
+  #page{box-shadow:none;margin:0;transform:none!important}
+  .obj.selected{outline:none}
+  .handle{display:none!important}
+}
+
+.fullmenubar{
+  background:#eef2f7;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:2px;padding:0 8px;
+  position:relative;z-index:2000;overflow:visible
+}
+.menu-wrap{position:relative;height:100%;display:flex;align-items:center}
+.menu-head{
+  border:0;background:transparent;padding:7px 11px;border-radius:5px;
+  font-size:13px;color:#263244
+}
+.menu-head:hover,.menu-wrap.open>.menu-head{background:#dfe7f2}
+.menu-drop{
+  display:none;position:absolute;top:32px;left:0;min-width:220px;
+  background:#fff;border:1px solid #cfd5df;border-radius:8px;
+  box-shadow:0 14px 30px rgba(15,23,42,.22);padding:6px;z-index:9999
+}
+.menu-wrap.open>.menu-drop{display:block}
+.menu-drop button{
+  display:flex;width:100%;justify-content:space-between;align-items:center;
+  border:0;background:#fff;padding:8px 10px;border-radius:6px;text-align:left;
+  font-size:13px;color:#1f2937
+}
+.menu-drop button:hover{background:#eef4ff}
+.menu-divider{height:1px;background:#dfe3ea;margin:5px 0}
+.menu-shortcut{color:#7b8798;font-size:11px;margin-left:18px}
+
+
+#page:focus{outline:2px solid #8fb2f5;outline-offset:3px}
+#page.tool-select{cursor:default}
+#page.tool-text{cursor:text}
+#page.tool-rect,#page.tool-circle,#page.tool-line,#page.tool-star{cursor:crosshair}
+.obj{touch-action:none}
+.obj.keyboard-selected{outline:2px solid #2f6fed}
+.shortcut-badge{font-size:11px;color:#64748b}
+
+
+.design-drawer{
+  position:absolute;top:35px;left:0;z-index:10000;width:310px;max-height:calc(100vh - 80px);
+  overflow:auto;background:#fff;border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 18px 38px rgba(15,23,42,.22);padding:12px;display:none
+}
+.design-drawer.open{display:block}
+.design-group{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.design-group:first-child{border-top:0;padding-top:0;margin-top:0}
+.design-group h4{margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.design-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.design-row button,.design-full{
+  min-height:34px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 8px;font-size:12px
+}
+.design-row button:hover,.design-full:hover{background:#eef4ff;border-color:#a9bdea}
+.design-full{width:100%;margin-bottom:7px}
+.design-color{width:100%;height:34px;border:1px solid var(--line);border-radius:7px;padding:2px;background:#fff}
+.preset-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.preset{
+  height:44px;border:1px solid var(--line);border-radius:7px;cursor:pointer
+}
+
+
+/* InPage-style free text: no visible textbox/frame */
+.textobj{
+  min-width:1px!important;
+  min-height:1.4em!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  white-space:pre-wrap;
+  overflow:visible!important;
+  cursor:text;
+}
+.textobj.selected,
+.textobj.keyboard-selected{
+  outline:none!important;
+}
+.textobj .handle{display:none!important}
+.textobj[contenteditable="true"]:focus{
+  outline:none!important;
+  box-shadow:none!important;
+}
+#page.free-text-mode{cursor:text}
+.inpage-options-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px
+}
+.inpage-options-grid button{
+  min-height:34px;border:1px solid var(--line);background:#fff;border-radius:7px;
+  padding:6px 8px;font-size:12px;text-align:left
+}
+.inpage-options-grid button:hover{background:#eef4ff;border-color:#a9bdea}
+
+
+/* CorelDRAW-inspired workspace layout */
+:root{
+  --top:46px;
+  --side:74px;
+  --prop:285px;
+}
+.topbar{
+  background:#f5f6f8;
+  border-bottom:1px solid #bfc6d1;
+  padding:0 8px;
+  gap:6px;
+}
+.formatbar{
+  background:#ffffff;
+  border-bottom:1px solid #c8ced8;
+  box-shadow:inset 0 -1px 0 #eef1f5;
+}
+.workspace{
+  grid-template-columns:1fr 285px;
+}
+
+.rightbar{
+  background:#f7f8fa;
+  border-left:1px solid #bcc3cd;
+  padding:10px;
+}
+
+.tool-grid{
+  grid-template-columns:1fr;
+  gap:5px;
+}
+.bigtool{
+  height:52px;
+  width:100%;
+  border-radius:5px;
+  border:1px solid transparent;
+  background:transparent;
+  font-size:10px;
+  padding:4px 2px;
+}
+.bigtool b{
+  font-size:21px;
+  margin-bottom:1px;
+}
+.bigtool:hover,.bigtool.active{
+  background:#dce8fa;
+  border-color:#9eb8df;
+}
+
+
+
+.stage-wrap{
+  background:#9da3ad;
+  position:relative;
+  overflow:auto;
+}
+.stage-wrap::before{
+  content:"";
+  position:sticky;
+  display:block;
+  top:0;
+  left:0;
+  height:24px;
+  width:100%;
+  z-index:10;
+  background:
+    repeating-linear-gradient(90deg,#6f7680 0 1px,transparent 1px 10px),
+    linear-gradient(#e6e9ed,#d7dbe0);
+  border-bottom:1px solid #9aa1aa;
+}
+.stage-space{
+  min-width:100%;
+  min-height:100%;
+  padding:48px 90px 120px 90px;
+  align-items:flex-start;
+}
+#page{
+  box-shadow:0 2px 4px rgba(0,0,0,.35),0 14px 36px rgba(0,0,0,.18);
+  border:1px solid #777;
+}
+.statusbar{
+  background:#eef1f5;
+  border-top:1px solid #b8c0cb;
+}
+.fullmenubar{
+  background:#f7f7f8;
+  border-bottom:1px solid #c4cad2;
+}
+.menu-head{
+  border-radius:3px;
+}
+.menu-head:hover,.menu-wrap.open>.menu-head{
+  background:#dfe6ef;
+}
+.rightbar .panel-title{
+  background:#e7ebf0;
+  border:1px solid #c9d0d9;
+  border-radius:4px;
+  padding:7px 8px;
+  margin:0 0 8px;
+}
+.layer-item{
+  border-radius:3px;
+}
+.corel-page-controls{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-left:4px;
+}
+.corel-page-controls select{
+  height:28px;
+  border:1px solid #c4cad2;
+  border-radius:3px;
+  background:white;
+}
+
+
+/* CorelDRAW-style vertical colour palette */
+.color-palette{
+  position:absolute;
+  right:286px;
+  top:0;
+  bottom:0;
+  width:34px;
+  background:#f4f5f7;
+  border-left:1px solid #bfc6d1;
+  border-right:1px solid #bfc6d1;
+  z-index:30;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  padding:4px 3px;
+  overflow-y:auto;
+}
+.color-swatch{
+  width:25px;height:25px;
+  border:1px solid #777;
+  padding:0;
+  border-radius:2px;
+  flex:0 0 auto;
+}
+.color-swatch:hover{outline:2px solid #2f6fed;outline-offset:1px}
+.color-none{
+  position:relative;background:#fff;
+}
+.color-none::after{
+  content:"";
+  position:absolute;left:2px;top:11px;width:20px;height:2px;
+  background:#d22;transform:rotate(-45deg);transform-origin:center;
+}
+.color-tools-bar{
+  display:flex;align-items:center;gap:6px;
+  padding:3px 7px;border-left:1px solid var(--line);
+}
+.color-indicator{
+  width:28px;height:28px;border:1px solid #777;border-radius:3px;position:relative;background:#fff;
+}
+.color-indicator .fill-chip{
+  position:absolute;left:3px;bottom:3px;width:15px;height:15px;background:#111;border:1px solid #333;
+}
+.color-indicator .outline-chip{
+  position:absolute;right:2px;top:2px;width:15px;height:15px;background:#fff;border:3px solid #111;
+}
+.color-mode-btn{
+  height:28px;border:1px solid var(--line);background:#fff;border-radius:4px;padding:0 7px;font-size:11px
+}
+.color-mode-btn.active{background:#dce8fa;border-color:#8eace0}
+.workspace{position:relative}
+.workspace.with-palette{grid-template-columns:1fr 319px}
+
+
+/* Corel-style extended design tools */
+.design-props{
+  display:flex;align-items:center;gap:5px;margin-left:6px
+}
+.design-props label{
+  display:flex;align-items:center;gap:3px;font-size:11px;color:#64748b
+}
+.design-props input,.design-props select{
+  height:28px;border:1px solid #c7ced8;border-radius:3px;background:#fff;padding:0 5px
+}
+.design-props input[type=number]{width:58px}
+.toolbox-sep{height:1px;background:#c7cdd5;margin:5px 4px}
+.tool-mini{font-size:9px!important}
+.obj.multi-selected{outline:1.5px dashed #2563eb}
+.right-section{margin-bottom:10px}
+.right-section .actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.right-section button{
+  min-height:32px;border:1px solid var(--line);background:#fff;border-radius:4px;
+  padding:5px 7px;font-size:11px;text-align:left
+}
+.right-section button:hover{background:#eef4ff;border-color:#a9bdea}
+.pathobj svg{width:100%;height:100%;overflow:visible;pointer-events:none}
+
+
+
+
+
+
+
+
+
+/* Mixed Urdu + English line engine */
+.textobj{
+  unicode-bidi: plaintext!important;
+  white-space: pre-wrap!important;
+  word-break: normal!important;
+  overflow-wrap: normal!important;
+  writing-mode: horizontal-tb!important;
+  text-orientation: mixed!important;
+}
+.textobj[data-mixed="1"]{
+  direction: rtl;
+  unicode-bidi: plaintext!important;
+}
+.mix-mode-indicator{
+  display:inline-flex;align-items:center;gap:5px;
+  height:28px;padding:0 7px;border:1px solid #c7ced8;border-radius:4px;
+  background:#fff;font-size:11px;color:#475569
+}
+
+
+.ip-dialog-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.28);display:none;align-items:center;justify-content:center;z-index:20000}
+.ip-dialog-backdrop.open{display:flex}
+.ip-dialog{width:min(520px,92vw);background:#fff;border:1px solid #cbd2dc;border-radius:10px;box-shadow:0 20px 48px rgba(15,23,42,.28);padding:16px}
+.ip-dialog h3{margin:0 0 12px;font-size:17px}
+.ip-dialog .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ip-dialog label{font-size:12px;color:#64748b}
+.ip-dialog input,.ip-dialog select{width:100%;height:34px;border:1px solid #cbd2dc;border-radius:5px;padding:0 8px;margin-top:4px}
+.ip-dialog .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.ip-dialog .actions button{min-width:86px;height:34px;border:1px solid #cbd2dc;background:#fff;border-radius:5px}
+.ip-dialog .actions .primary{background:#2f6fed;color:#fff;border-color:#2f6fed}
+
+/* No left toolbar: clean canvas workspace */
+.workspace{
+  display:grid!important;
+  grid-template-columns:1fr 285px!important;
+  min-height:0;
+}
+.workspace.with-palette{
+  grid-template-columns:1fr 319px!important;
+}
+.stage-wrap{
+  min-width:0;
+}
+
+
+/* FIX: Urdu/English must flow horizontally, never vertically */
+.textobj{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:pre-wrap!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+  width:auto;
+  max-width:none!important;
+}
+.textobj[dir="rtl"]{
+  direction:rtl!important;
+  unicode-bidi:plaintext!important;
+  text-align:right;
+}
+.textobj[dir="ltr"]{
+  direction:ltr!important;
+  unicode-bidi:plaintext!important;
+  text-align:left;
+}
+
+
+/* Resize nodes for shapes/images */
+.handle{
+  position:absolute;
+  width:10px;height:10px;
+  background:#fff;
+  border:1.5px solid #2563eb;
+  border-radius:2px;
+  z-index:50;
+}
+.handle.nw{left:-6px;top:-6px;cursor:nwse-resize}
+.handle.n{left:50%;top:-6px;transform:translateX(-50%);cursor:ns-resize}
+.handle.ne{right:-6px;top:-6px;cursor:nesw-resize}
+.handle.e{right:-6px;top:50%;transform:translateY(-50%);cursor:ew-resize}
+.handle.se{right:-6px;bottom:-6px;cursor:nwse-resize}
+.handle.s{left:50%;bottom:-6px;transform:translateX(-50%);cursor:ns-resize}
+.handle.sw{left:-6px;bottom:-6px;cursor:nesw-resize}
+.handle.w{left:-6px;top:50%;transform:translateY(-50%);cursor:ew-resize}
+
+
+.wedding-modal{
+  position:fixed;inset:0;background:rgba(15,23,42,.32);display:none;
+  align-items:center;justify-content:center;z-index:25000
+}
+.wedding-modal.open{display:flex}
+.wedding-card{
+  width:min(720px,94vw);max-height:88vh;overflow:auto;background:#fff;
+  border:1px solid #cbd2dc;border-radius:12px;box-shadow:0 22px 50px rgba(15,23,42,.28);
+  padding:18px
+}
+.wedding-card h3{margin:0 0 14px}
+.wedding-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wedding-grid label{font-size:12px;color:#64748b}
+.wedding-grid input,.wedding-grid select,.wedding-grid textarea{
+  width:100%;margin-top:4px;border:1px solid #cbd2dc;border-radius:6px;padding:8px;font:inherit
+}
+.wedding-grid textarea{min-height:72px;resize:vertical}
+.wedding-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.wedding-actions button{height:36px;padding:0 14px;border:1px solid #cbd2dc;border-radius:6px;background:#fff}
+.wedding-actions .primary{background:#2f6fed;color:#fff;border-color:#2f6fed}
+.smart-two{
+  display:flex;gap:6px;align-items:center;margin-left:6px
+}
+.smart-two button{
+  height:30px;border:1px solid #c7ced8;border-radius:4px;background:#fff;padding:0 9px;font-size:12px
+}
+.smart-two button:hover{background:#eef4ff}
+
+/* Urdu objects always use the actual Jameel Noori family. */
+[lang="ur"][data-type="text"], [data-type="text"][data-mixed="1"]{font-family:"Jameel Noori Nastaleeq" !important}
+</style>
+<script>
+if(window.rekhtaDesktop){window.showSaveFilePicker=async function(options){const match=Object.values(options.types[0].accept)[0][0].replace('.','');const target=await window.rekhtaDesktop.chooseSave({name:options.suggestedName,extension:match});if(!target)throw new DOMException('Save cancelled','AbortError');return{name:target.name,createWritable:async()=>{let data;return{write:async(blob)=>{data=await blob.arrayBuffer();},close:async()=>{await window.rekhtaDesktop.writeSave(target.id,data);},abort:async()=>{data=null;}};}};};}
+</script>
+</head>
+<body>
+
+<div id="dashboard">
+  <div class="dash-card">
+    <div class="brand-row">
+      <div class="logo">R</div>
+      <div>
+        <h1>REKHTA Studio 3.7</h1>
+        <p>Fresh build • Urdu & multilingual layout studio • Developed by RK Solution</p>
+      </div>
+    </div>
+    <div class="dash-grid">
+      <button class="dash-btn" onclick="startStudio()"><div class="dash-icon">📝</div><strong>Regular Document</strong><span>Urdu, English, Hindi and Marathi layout editing with free-position objects.</span></button>
+      <button class="dash-btn" onclick="startStudio('booklet')"><div class="dash-icon">📖</div><strong>Booklet</strong><span>Start a multi-page style document workspace (single-page engine in this preview).</span></button>
+      <button class="dash-btn" onclick="startStudio('picture')"><div class="dash-icon">🖼️</div><strong>Text as Picture</strong><span>Create text artwork and export/print it without using the old REKHTA codebase.</span></button>
+    </div>
+    <div class="footer-note">Fresh architecture. No old REKHTA HTML has been reused.</div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="fullmenubar" id="mainMenu">
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="file">File ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="new">New <span class="menu-shortcut">Ctrl+N</span></button>
+        <button type="button" data-action="open">Open Project <span class="menu-shortcut">Ctrl+O</span></button>
+        <button type="button" data-action="save">Save Project <span class="menu-shortcut">Ctrl+S</span></button>
+        <button type="button" onclick="openWeddingForm();closeAllMenus()">Wedding Data Form</button>
+        <button type="button" onclick="openCorelExport();closeAllMenus()">CorelDRAW Export</button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="print">Print <span class="menu-shortcut">Ctrl+P</span></button>
+        <button type="button" data-action="png">Export PNG</button>
+        <button type="button" data-action="jpg">Export JPG</button>
+        <button type="button" data-action="pdf">Export PDF</button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="dashboard">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="edit">Edit ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="undo">Undo <span class="menu-shortcut">Ctrl+Z</span></button>
+        <button type="button" data-action="redo">Redo <span class="menu-shortcut">Ctrl+Y</span></button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="duplicate">Duplicate <span class="menu-shortcut">Ctrl+D</span></button>
+        <button type="button" data-action="delete">Delete <span class="menu-shortcut">Del</span></button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="view">View ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="grid">Show / Hide Grid</button>
+        <button type="button" data-action="fit">Fit Page</button>
+        <button type="button" data-action="zoom100">Actual Size 100%</button>
+        <button type="button" data-action="zoomin">Zoom In</button>
+        <button type="button" data-action="zoomout">Zoom Out</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="insert">Insert ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="text">Free Cursor Text</button>
+        <button type="button" data-action="picture">Picture</button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="rect">Rectangle</button>
+        <button type="button" data-action="circle">Circle</button>
+        <button type="button" data-action="line">Line</button>
+        <button type="button" data-action="star">Star</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="format">Format ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="bold">Bold</button>
+        <button type="button" data-action="italic">Italic</button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="alignleft">Align Left</button>
+        <button type="button" data-action="aligncenter">Align Center</button>
+        <button type="button" data-action="alignright">Align Right</button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="directionrtl">Text Direction: RTL</button>
+        <button type="button" data-action="directionltr">Text Direction: LTR</button>
+        <button type="button" data-action="directionauto">Text Direction: Auto</button>
+        <button type="button" data-action="mixed">Urdu + English Auto</button>
+        <button type="button" data-action="urdu">Urdu RTL</button>
+        <button type="button" data-action="english">English LTR</button>
+        <button type="button" data-action="hindi">Hindi LTR</button>
+        <button type="button" data-action="marathi">Marathi LTR</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="page">Page ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="a4">A4 Portrait</button>
+        <button type="button" data-action="a5">A5 Portrait</button>
+        <button type="button" data-action="a4l">A4 Landscape</button>
+        <button type="button" data-action="7x7">7 × 7 inch</button>
+        <button type="button" data-action="6.5x6.5">6.5 × 6.5 inch</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="object">Object ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="front">Bring to Front</button>
+        <button type="button" data-action="back">Send to Back</button>
+        <button type="button" data-action="rotateleft">Rotate Left 90°</button>
+        <button type="button" data-action="rotateright">Rotate Right 90°</button>
+        <button type="button" data-action="lock">Lock / Unlock</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="tools">Tools ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="select">Select Tool</button>
+        <button type="button" data-action="text">Text Tool</button>
+        <button type="button" data-action="recttool">Rectangle Tool</button>
+        <button type="button" data-action="circletool">Circle Tool</button>
+        <button type="button" data-action="linetool">Line Tool</button>
+        <button type="button" data-action="startool">Star Tool</button>
+      </div>
+    </div>
+
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button">Text ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-ip-action="character">Character / Font</button>
+        <button type="button" data-ip-action="paragraph">Paragraph</button>
+        <button type="button" data-ip-action="tabs">Tabs</button>
+        <button type="button" data-ip-action="styles">Styles</button>
+        <button type="button" data-ip-action="findreplace">Find / Replace</button>
+        <div class="menu-divider"></div>
+        <button type="button" data-action="mixed">Urdu + English Auto</button>
+        <button type="button" data-action="urdu">Urdu RTL</button>
+        <button type="button" data-action="english">English LTR</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button">Layout ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-ip-action="pagesetup">Page Setup</button>
+        <button type="button" data-ip-action="columns">Columns</button>
+        <button type="button" data-ip-action="margins">Margins / Guides</button>
+        <button type="button" data-ip-action="pagenumber">Page Number</button>
+        <button type="button" data-action="grid">Grid</button>
+        <button type="button" data-action="fit">Fit Page</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button">Utilities ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-ip-action="wordcount">Word Count</button>
+        <button type="button" data-ip-action="spell">Spell / Dictionary</button>
+        <button type="button" data-ip-action="docinfo">Document Information</button>
+        <button type="button" data-ip-action="textaspicture">Text as Picture</button>
+        <button type="button" data-action="png">Export PNG</button>
+        <button type="button" data-action="pdf">Export PDF</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button">Window ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-ip-action="showlayers">Layers Panel</button>
+        <button type="button" data-ip-action="showprops">Properties Panel</button>
+        <button type="button" data-ip-action="resetpanels">Reset Panels</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button">Tools ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-iptool="select">Select / Move</button>
+        <button type="button" data-iptool="text">Text</button>
+        <button type="button" data-iptool="rect">Rectangle</button>
+        <button type="button" data-iptool="circle">Ellipse</button>
+        <button type="button" data-iptool="line">Line</button>
+        <button type="button" data-iptool="star">Star</button>
+        <button type="button" data-iptool="polygon">Polygon</button>
+        <button type="button" data-iptool="freehand">Freehand</button>
+        <button type="button" data-iptool="eyedropper">Eyedropper</button>
+        <button type="button" data-iptool="image">Insert Picture</button>
+      </div>
+    </div>
+
+    <div class="menu-wrap" id="designMenuWrap">
+      <button class="menu-head" type="button" id="designMenuButton">Design ▾</button>
+      <div class="design-drawer" id="designDrawer">
+        <div class="design-group">
+          <h4>Page Design</h4>
+          <label class="field"><span style="font-size:12px;color:var(--muted)">Background Color</span>
+            <input class="design-color" id="designBgColor" type="color" value="#ffffff">
+          </label>
+          <div class="preset-strip">
+            <button class="preset" style="background:#ffffff" data-bg="#ffffff" title="White"></button>
+            <button class="preset" style="background:#f1f3f5" data-bg="#f1f3f5" title="Light Grey"></button>
+            <button class="preset" style="background:#eaf1ff" data-bg="#eaf1ff" title="Soft Blue"></button>
+          </div>
+        </div>
+
+        <div class="design-group">
+          <h4>Selected Object</h4>
+          <div class="design-row">
+            <button type="button" data-design="shadow">Shadow</button>
+            <button type="button" data-design="noshadow">No Shadow</button>
+          </div>
+          <div class="design-row">
+            <button type="button" data-design="round">Round Corners</button>
+            <button type="button" data-design="square">Square Corners</button>
+          </div>
+          <div class="design-row">
+            <button type="button" data-design="border">Add Border</button>
+            <button type="button" data-design="noborder">Remove Border</button>
+          </div>
+          <div class="design-row">
+            <button type="button" data-design="flipx">Flip H</button>
+            <button type="button" data-design="flipy">Flip V</button>
+          </div>
+          <div class="design-row">
+            <button type="button" data-design="centerh">Center H</button>
+            <button type="button" data-design="centerv">Center V</button>
+          </div>
+          <label class="field"><span style="font-size:12px;color:var(--muted)">Object Color</span>
+            <input class="design-color" id="designObjColor" type="color" value="#334155">
+          </label>
+          <label class="field"><span style="font-size:12px;color:var(--muted)">Opacity</span>
+            <input id="designOpacity" type="range" min="10" max="100" value="100" style="width:100%">
+          </label>
+        </div>
+
+        <div class="design-group">
+          <h4>Quick Style</h4>
+          <button class="design-full" type="button" data-design="clean">Clean</button>
+          <button class="design-full" type="button" data-design="soft">Soft Card</button>
+          <button class="design-full" type="button" data-design="boldstyle">Bold Object</button>
+          <button class="design-full" type="button" data-design="reset">Reset Object Style</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-wrap">
+      <button class="menu-head" type="button" data-menu="help">Help ▾</button>
+      <div class="menu-drop">
+        <button type="button" data-action="shortcuts">Keyboard Shortcuts</button>
+        <button type="button" data-action="about">About REKHTA</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="appmark"><div class="mini">R</div>REKHTA</div>
+    <div class="smart-two">
+      <button type="button" onclick="openWeddingForm()">Wedding Data Form</button>
+      <button type="button" onclick="openCorelExport()">CorelDRAW Export</button>
+    </div>
+    <button class="menu-btn" id="designQuickBtn" type="button">🎨 Design Tool</button>
+    <button class="menu-btn" onclick="newDoc()">New</button>
+    <button class="menu-btn" onclick="saveProject()">Save</button>
+    <button class="menu-btn" onclick="document.getElementById('projectInput').click()">Load</button>
+    <button class="menu-btn" onclick="window.print()">Print</button>
+    <button class="menu-btn" onclick="exportPNG()">Export PNG</button>
+    <button class="menu-btn" onclick="exportPDF()">Export PDF</button>
+    <div class="sep"></div>
+    <button class="tool-btn" onclick="undo()">↶ Undo</button>
+    <button class="tool-btn" onclick="redo()">↷ Redo</button>
+    <div class="sep"></div>
+    <button class="tool-btn" onclick="duplicateSelected()">⧉ Duplicate</button>
+    <button class="tool-btn" onclick="deleteSelected()">⌫ Delete</button>
+    <div class="corel-page-controls">
+      <select id="pageSizeTop" onchange="pageSize.value=this.value;changePageSize(this.value)">
+        <option value="a4" selected>A4 Portrait</option>
+        <option value="a5">A5 Portrait</option>
+        <option value="a4l">A4 Landscape</option>
+        <option value="7x7">7 × 7 inch</option>
+        <option value="6.5x6.5">6.5 × 6.5 inch</option>
+      </select>
+      <button class="small-btn" onclick="toggleGridMenu()" title="Grid">#</button>
+      <button class="small-btn" onclick="fitPage()" title="Fit Page">Fit</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="zoom-box">
+      <button class="small-btn" onclick="setZoom(zoom-0.1)">−</button>
+      <span id="zoomLabel">100%</span>
+      <button class="small-btn" onclick="setZoom(zoom+0.1)">＋</button>
+      <button class="small-btn" onclick="fitPage()">Fit</button>
+    </div>
+  </div>
+
+  <div class="formatbar">
+    <select id="fontFamily" class="font" onchange="applyTextStyle()">
+      <option selected>Jameel Noori Nastaleeq</option>
+      <option>Times New Roman</option>
+      <option>Segoe UI</option>
+      <option>Arial</option>
+      <option>Georgia</option>
+      <option>Courier New</option>
+    </select>
+    <input id="fontSize" type="number" min="8" max="200" value="34" onchange="applyTextStyle()">
+    <button class="tool-btn" onclick="toggleBold()"><b>B</b></button>
+    <button class="tool-btn" onclick="toggleItalic()"><i>I</i></button>
+    <button class="tool-btn" onclick="setAlign('left')">≡←</button>
+    <button class="tool-btn" onclick="setAlign('center')">≡</button>
+    <button class="tool-btn" onclick="setAlign('right')">→≡</button>
+    <div class="sep"></div>
+    <div class="color-tools-bar">
+      <div class="color-indicator" title="Current Fill / Outline">
+        <span class="fill-chip" id="fillChip"></span>
+        <span class="outline-chip" id="outlineChip"></span>
+      </div>
+      <button class="color-mode-btn active" id="fillModeBtn" type="button">Fill/Text</button>
+      <button class="color-mode-btn" id="outlineModeBtn" type="button">Outline</button>
+      <input id="customColorPicker" type="color" value="#111111" title="Custom Colour" style="width:34px;height:28px;padding:1px;border:1px solid var(--line);border-radius:4px">
+    </div>
+    <div class="design-props">
+      <label>Outline <input id="strokeWidthTop" type="number" min="0" max="20" step="0.5" value="2" onchange="applyTopDesignProps()"></label>
+      <label>Radius <input id="radiusTop" type="number" min="0" max="100" value="0" onchange="applyTopDesignProps()"></label>
+      <label>Opacity <input id="opacityTop" type="number" min="10" max="100" value="100" onchange="applyTopDesignProps()"></label>
+    </div>
+    <select id="language" onchange="applyLanguage()">
+      <option value="mix" selected>Urdu + English Auto</option>
+      <option value="ur">Urdu RTL</option>
+      <option value="en">English LTR</option>
+      <option value="hi">Hindi LTR</option>
+      <option value="mr">Marathi LTR</option>
+    </select>
+    <label style="font-size:12px">Text Direction <select id="textDirection" onchange="setTextDirection(this.value)"><option value="rtl">Right to Left (RTL)</option><option value="ltr">Left to Right (LTR)</option><option value="auto">Auto</option></select></label>
+    <span class="mix-mode-indicator" id="mixModeIndicator">Mixed Line: ON</span>
+    <input id="textColor" class="color-input" type="color" value="#111111" onchange="applyTextStyle()">
+  </div>
+
+  <div class="workspace">
+    
+
+    <main class="stage-wrap" id="stageWrap">
+      <div class="stage-space">
+        <div id="page" tabindex="0" aria-label="REKHTA document page"></div>
+      </div>
+    </main>
+
+    <div class="color-palette" id="colorPalette" title="Left click = Fill/Text, Right click = Outline">
+  <button class="color-swatch color-none" type="button" data-color="none" title="No Color"></button>
+  <button class="color-swatch" type="button" data-color="#000000" style="background:#000000" title="Black"></button>
+  <button class="color-swatch" type="button" data-color="#4b5563" style="background:#4b5563" title="Dark Gray"></button>
+  <button class="color-swatch" type="button" data-color="#9ca3af" style="background:#9ca3af" title="Gray"></button>
+  <button class="color-swatch" type="button" data-color="#ffffff" style="background:#ffffff" title="White"></button>
+  <button class="color-swatch" type="button" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+  <button class="color-swatch" type="button" data-color="#f97316" style="background:#f97316" title="Orange"></button>
+  <button class="color-swatch" type="button" data-color="#f59e0b" style="background:#f59e0b" title="Amber"></button>
+  <button class="color-swatch" type="button" data-color="#eab308" style="background:#eab308" title="Yellow"></button>
+  <button class="color-swatch" type="button" data-color="#84cc16" style="background:#84cc16" title="Lime"></button>
+  <button class="color-swatch" type="button" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
+  <button class="color-swatch" type="button" data-color="#14b8a6" style="background:#14b8a6" title="Teal"></button>
+  <button class="color-swatch" type="button" data-color="#06b6d4" style="background:#06b6d4" title="Cyan"></button>
+  <button class="color-swatch" type="button" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+  <button class="color-swatch" type="button" data-color="#6366f1" style="background:#6366f1" title="Indigo"></button>
+  <button class="color-swatch" type="button" data-color="#8b5cf6" style="background:#8b5cf6" title="Violet"></button>
+  <button class="color-swatch" type="button" data-color="#a855f7" style="background:#a855f7" title="Purple"></button>
+  <button class="color-swatch" type="button" data-color="#d946ef" style="background:#d946ef" title="Magenta"></button>
+  <button class="color-swatch" type="button" data-color="#ec4899" style="background:#ec4899" title="Pink"></button>
+  <button class="color-swatch" type="button" data-color="#7c2d12" style="background:#7c2d12" title="Brown"></button>
+</div>
+<aside class="rightbar">
+      <div class="panel-title">Corel Style Properties</div>
+      <div style="font-size:11px;color:#64748b;margin:-2px 0 10px;line-height:1.35">
+        Left side = tools only. Object, text, color and design settings are controlled here or from the top property bar.
+      </div>
+      <div class="panel-title">Object Properties</div>
+      <div class="two">
+        <div class="field"><label>X</label><input id="propX" type="number" onchange="applyProps()"></div>
+        <div class="field"><label>Y</label><input id="propY" type="number" onchange="applyProps()"></div>
+      </div>
+      <div class="two">
+        <div class="field"><label>Width</label><input id="propW" type="number" onchange="applyProps()"></div>
+        <div class="field"><label>Height</label><input id="propH" type="number" onchange="applyProps()"></div>
+      </div>
+      <div class="two">
+        <div class="field"><label>Rotate</label><input id="propR" type="number" value="0" onchange="applyProps()"></div>
+        <div class="field"><label>Opacity</label><input id="propO" type="number" min="0" max="100" value="100" onchange="applyProps()"></div>
+      </div>
+      <div class="field"><label>Stroke / Shape color</label><input id="shapeColor" class="color-input" type="color" value="#334155" onchange="applyShapeStyle()"></div>
+      <div class="field"><label>Fill color</label><input id="fillColor" class="color-input" type="color" value="#ffffff" onchange="applyShapeStyle()"></div>
+      <div class="hr"></div>
+      <div class="right-section">
+        <div class="panel-title">Arrange / Transform</div>
+        <div class="actions">
+          <button type="button" onclick="alignSelected('left')">Align Left</button>
+          <button type="button" onclick="alignSelected('center')">Center H</button>
+          <button type="button" onclick="alignSelected('right')">Align Right</button>
+          <button type="button" onclick="alignSelected('middle')">Center V</button>
+          <button type="button" onclick="alignSelected('top')">Align Top</button>
+          <button type="button" onclick="alignSelected('bottom')">Align Bottom</button>
+          <button type="button" onclick="flipSelected('x')">Flip H</button>
+          <button type="button" onclick="flipSelected('y')">Flip V</button>
+          <button type="button" onclick="rotateSelected(-90)">Rotate -90°</button>
+          <button type="button" onclick="rotateSelected(90)">Rotate +90°</button>
+          <button type="button" onclick="bringFront()">Bring Front</button>
+          <button type="button" onclick="sendBack()">Send Back</button>
+        </div>
+      </div>
+
+      <div class="right-section">
+        <div class="panel-title">Effects</div>
+        <div class="actions">
+          <button type="button" onclick="toggleShadowEffect()">Shadow</button>
+          <button type="button" onclick="toggleOutlineEffect()">Outline</button>
+          <button type="button" onclick="applyTransparencyStep(-10)">More Opaque</button>
+          <button type="button" onclick="applyTransparencyStep(10)">More Transparent</button>
+          <button type="button" onclick="roundSelected(12)">Round Corners</button>
+          <button type="button" onclick="roundSelected(0)">Square Corners</button>
+        </div>
+      </div>
+
+      <div class="panel-title">Layers</div>
+      <div id="layers"></div>
+    </aside>
+  </div>
+
+  <div class="statusbar">
+    <span id="statusTool">Tool: Select</span>
+    <span id="statusObj">No selection</span>
+    <div class="grow"></div>
+    <span>Fresh Build 3.7</span>
+    <span>RK Solution</span>
+  </div>
+</div>
+
+<input id="fileInput" type="file" accept="image/*">
+<input id="projectInput" type="file" accept=".json,application/json">
+<div class="toast" id="toast"></div>
+
+<div class="wedding-modal" id="weddingModal">
+  <div class="wedding-card">
+    <h3>Wedding Data Form</h3>
+    <div class="wedding-grid">
+      <label>Party
+        <select id="wdParty"><option value="groom">Groom Side</option><option value="bride">Bride Side</option></select>
+      </label>
+      <label>Language
+        <select id="wdLang"><option>Urdu + English</option><option>Urdu</option><option>English</option><option>Hindi</option><option>Marathi</option></select>
+      </label>
+      <label>Groom Name<input id="wdGroom"></label>
+      <label>Bride Name<input id="wdBride"></label>
+      <label>Groom Father / Guardian<input id="wdGroomFather"></label>
+      <label>Bride Father / Guardian<input id="wdBrideFather"></label>
+      <label>Wedding Date<input id="wdDate" type="date"></label>
+      <label>Hijri Date<input id="wdHijri" placeholder="e.g. 17 Jamadil Awwal 1448 H"></label>
+      <label>Time<input id="wdTime"></label>
+      <label>Venue / Hall<input id="wdVenue"></label>
+      <label>Address<textarea id="wdAddress"></textarea></label>
+      <label>Family / Niyazmand Names<textarea id="wdFamily"></textarea></label>
+      <label>Mobile<input id="wdMobile"></label>
+      <label>Extra Matter<textarea id="wdExtra"></textarea></label>
+    </div>
+    <div class="wedding-actions">
+      <button type="button" onclick="closeWeddingForm()">Cancel</button>
+      <button type="button" onclick="clearWeddingForm()">Clear</button>
+      <button type="button" class="primary" onclick="insertWeddingData()">Insert in Design</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="ip-dialog-backdrop" id="ipDialogBackdrop">
+  <div class="ip-dialog">
+    <h3 id="ipDialogTitle">Settings</h3>
+    <div id="ipDialogBody"></div>
+    <div class="actions">
+      <button type="button" onclick="closeIpDialog()">Cancel</button>
+      <button type="button" class="primary" id="ipDialogApply">Apply</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const page=document.getElementById('page');
+const fileInput=document.getElementById('fileInput');
+const projectInput=document.getElementById('projectInput');
+let tool='select', selected=null, drag=null, resize=null, zoom=1, seq=1;
+let history=[], histIndex=-1, applyingHistory=false;
+
+function startStudio(mode='regular'){
+  dashboard.classList.add('hidden'); app.classList.remove('hidden');
+  newDoc(false); toast(mode==='regular'?'Regular Document ready':mode==='booklet'?'Booklet workspace ready':'Text as Picture workspace ready');
+}
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1600);
+}
+function newDoc(confirmIt=true){
+  if(confirmIt && page.children.length && !confirm('Create a new blank document?')) return;
+  page.innerHTML=''; seq=1; selectObj(null); snapshot();
+}
+function setTool(name,btn){
+  tool=name;
+  document.querySelectorAll('[data-tool]').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  page.classList.remove('tool-select','tool-text','tool-rect','tool-circle','tool-line','tool-star','tool-freehand','tool-polygon','tool-eyedropper','free-text-mode');
+  page.classList.add('tool-'+name);
+  if(name==='text') page.classList.add('free-text-mode');
+  statusTool.textContent='Tool: '+name[0].toUpperCase()+name.slice(1);
+  if(name!=='text') page.focus({preventScroll:true});
+}
+function pagePoint(e){
+  const r=page.getBoundingClientRect();
+  return {x:(e.clientX-r.left)/zoom,y:(e.clientY-r.top)/zoom};
+}
+page.addEventListener('mousedown',e=>{
+  if(e.target.closest('.obj')) return;
+  const p=pagePoint(e);
+  if(tool==='text'){ lastPageClick={x:p.x,y:p.y}; }
+  else if(['rect','circle','line','star','polygon'].includes(tool)){ createShape(tool,p.x,p.y); setTool('select',document.querySelector('[data-tool="select"]')); }
+  else selectObj(null);
+});
+function baseObj(type,x,y,w,h){
+  const el=document.createElement('div');
+  el.className='obj'; el.dataset.type=type; el.dataset.id='obj'+(seq++);
+  Object.assign(el.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',zIndex:String(seq)});
+  el.addEventListener('mousedown',objMouseDown);
+  page.appendChild(el); return el;
+}
+function createText(x,y,focus=false){
+  const mode=(document.getElementById('language')?.value||'mix');
+  const isRTL=(mode==='ur'||mode==='mix');
+
+  const margin=12;
+  let left,width;
+
+  if(isRTL){
+    // Click point becomes the visual RIGHT edge; text grows leftwards.
+    left=margin;
+    width=Math.max(140,Math.min(page.clientWidth-margin*2,x-margin));
+    // If clicked very near the left side, keep a usable horizontal line.
+    if(x<margin+140){
+      left=margin;
+      width=Math.max(140,page.clientWidth-margin*2);
+    }
+  }else{
+    // English/Hindi/Marathi: click point becomes LEFT edge; text grows rightwards.
+    left=Math.max(margin,Math.min(x,page.clientWidth-margin-140));
+    width=Math.max(140,page.clientWidth-left-margin);
+  }
+
+  const el=baseObj('text',left,y,width,46);
+  el.classList.add('textobj');
+  el.contentEditable='true';
+  el.spellcheck=false;
+  el.innerHTML='';
+
+  el.style.writingMode='horizontal-tb';
+  el.style.textOrientation='mixed';
+  el.style.whiteSpace='pre-wrap';
+  el.style.wordBreak='normal';
+  el.style.overflowWrap='normal';
+  el.style.height='auto';
+  el.style.minHeight='1.4em';
+  el.style.overflow='visible';
+  el.style.lineHeight='1.55';
+
+  if(isRTL){
+    el.style.fontFamily='"Jameel Noori Nastaleeq"';
+    el.style.fontSize='34px';
+    el.style.color='#111';
+    el.style.direction='rtl';
+    el.style.unicodeBidi='plaintext';
+    el.style.textAlign='right';
+    el.setAttribute('dir','rtl');
+    el.setAttribute('lang','ur');
+    if(mode==='mix') el.dataset.mixed='1';
+  }else{
+    el.style.fontFamily=(mode==='en'?'"Times New Roman",Times,serif':'"Times New Roman",Times,serif');
+    el.style.fontSize='28px';
+    el.style.color='#111';
+    el.style.direction='ltr';
+    el.style.unicodeBidi='plaintext';
+    el.style.textAlign='left';
+    el.setAttribute('dir','ltr');
+    el.setAttribute('lang',mode);
+  }
+
+  el.addEventListener('input',()=>{
+    el.style.writingMode='horizontal-tb';
+    el.style.height='auto';
+    el.style.minHeight='1.4em';
+    refreshLayerName(el);
+    debouncedSnapshot();
+  });
+  el.addEventListener('focus',()=>selectObj(el,false));
+  el.addEventListener('blur',()=>snapshot());
+
+  selectObj(el);
+
+  if(focus){
+    setTimeout(()=>{
+      el.focus();
+      placeCaretEnd(el);
+    },0);
+  }
+
+  snapshot();
+  return el;
+}
+function createShape(kind,x,y){
+  let w=140,h=90;
+  if(kind==='circle') h=140; if(kind==='line') h=2;
+  const el=baseObj(kind,x,y,w,h);
+  el.classList.add('shapeobj');
+  if(kind==='circle')el.classList.add('shape-circle');
+  if(kind==='line')el.classList.add('shape-line');
+  if(kind==='star'){el.classList.remove('shapeobj');el.classList.add('shape-star')}
+  if(kind==='polygon'){
+    el.classList.remove('shapeobj');
+    el.style.background='#334155';
+    el.style.clipPath='polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0 50%)';
+  }
+  selectObj(el); snapshot();
+}
+function objMouseDown(e){
+  if(e.target.classList.contains('handle')) return;
+  const el=e.currentTarget;
+  selectObj(el);
+
+  if(el.classList.contains('locked')) return;
+
+  // Text behaves like InPage: normal click edits text; Alt+drag moves it.
+  if(el.dataset.type==='text'){
+    if(e.altKey){
+      e.preventDefault();
+      const p=pagePoint(e);
+      drag={el,startX:p.x,startY:p.y,left:parseFloat(el.style.left)||0,top:parseFloat(el.style.top)||0};
+      return;
+    }
+    el.focus();
+    return;
+  }
+
+  e.preventDefault();
+  const p=pagePoint(e);
+  drag={el,startX:p.x,startY:p.y,left:parseFloat(el.style.left)||0,top:parseFloat(el.style.top)||0};
+}
+document.addEventListener('mousemove',e=>{
+  if(drag){
+    const p=pagePoint(e);
+    drag.el.style.left=Math.round(drag.left+p.x-drag.startX)+'px';
+    drag.el.style.top=Math.round(drag.top+p.y-drag.startY)+'px';
+    updateProps();
+  }
+  if(resize){
+    const p=pagePoint(e);
+    const dx=p.x-resize.startX, dy=p.y-resize.startY;
+    const minW=resize.el.dataset.type==='line'?10:20;
+    const minH=resize.el.dataset.type==='line'?2:20;
+
+    let left=resize.left, top=resize.top, w=resize.w, h=resize.h;
+    const d=resize.dir;
+
+    if(d.includes('e')) w=Math.max(minW,resize.w+dx);
+    if(d.includes('s')) h=Math.max(minH,resize.h+dy);
+    if(d.includes('w')){
+      const nw=Math.max(minW,resize.w-dx);
+      left=resize.left+(resize.w-nw);
+      w=nw;
+    }
+    if(d.includes('n')){
+      const nh=Math.max(minH,resize.h-dy);
+      top=resize.top+(resize.h-nh);
+      h=nh;
+    }
+
+    resize.el.style.left=left+'px';
+    resize.el.style.top=top+'px';
+    resize.el.style.width=w+'px';
+    resize.el.style.height=h+'px';
+    updateProps();
+  }
+});
+document.addEventListener('mouseup',()=>{if(drag||resize){drag=null;resize=null;snapshot()}});
+function addHandles(el){
+  if(!el)return;
+  el.querySelectorAll('.handle').forEach(h=>h.remove());
+  if(el.classList.contains('locked') || el.dataset.type==='text') return;
+
+  const dirs=['nw','n','ne','e','se','s','sw','w'];
+  dirs.forEach(dir=>{
+    const h=document.createElement('div');
+    h.className='handle '+dir;
+    h.dataset.dir=dir;
+    h.addEventListener('mousedown',e=>{
+      e.stopPropagation();
+      e.preventDefault();
+      const p=pagePoint(e);
+      resize={
+        el,
+        dir,
+        startX:p.x,
+        startY:p.y,
+        left:parseFloat(el.style.left)||0,
+        top:parseFloat(el.style.top)||0,
+        w:el.offsetWidth,
+        h:el.offsetHeight
+      };
+    });
+    el.appendChild(h);
+  });
+}
+function selectObj(el,bringFocus=true){
+  document.querySelectorAll('.obj.selected,.obj.keyboard-selected').forEach(o=>{
+    o.classList.remove('selected','keyboard-selected');
+    o.querySelectorAll('.handle').forEach(h=>h.remove());
+  });
+  selected=el;
+  if(el){
+    el.classList.add('selected','keyboard-selected');
+    addHandles(el);
+    statusObj.textContent=el.dataset.type+' • '+el.dataset.id;
+    updateProps();
+  }else{
+    statusObj.textContent='No selection';
+    clearProps();
+  }
+  refreshLayers();
+}
+function updateProps(){
+  if(!selected)return;
+  propX.value=Math.round(parseFloat(selected.style.left)||0);
+  propY.value=Math.round(parseFloat(selected.style.top)||0);
+  propW.value=Math.round(selected.offsetWidth);
+  propH.value=Math.round(selected.offsetHeight);
+  propR.value=getRotation(selected);
+  propO.value=Math.round((parseFloat(selected.style.opacity||1))*100);
+}
+function clearProps(){['propX','propY','propW','propH','propR'].forEach(id=>document.getElementById(id).value='')}
+function applyProps(){
+  if(!selected || selected.classList.contains('locked'))return;
+  selected.style.left=propX.value+'px';selected.style.top=propY.value+'px';
+  selected.style.width=Math.max(2,+propW.value)+'px';selected.style.height=Math.max(2,+propH.value)+'px';
+  setRotation(selected,+propR.value||0); selected.style.opacity=(+propO.value||100)/100; snapshot();
+}
+function getRotation(el){return +(el.dataset.rotation||0)}
+function setRotation(el,d){el.dataset.rotation=d;if(typeof refreshTransform==='function')refreshTransform(el);else el.style.transform='rotate('+d+'deg)'}
+function rotateSelected(d){if(!selected)return;setRotation(selected,getRotation(selected)+d);updateProps();snapshot()}
+function toggleLock(){if(!selected)return;selected.classList.toggle('locked');addHandles(selected);refreshLayers();snapshot()}
+function bringFront(){if(!selected)return;selected.style.zIndex=1000+seq++;snapshot();refreshLayers()}
+function sendBack(){if(!selected)return;selected.style.zIndex=1;snapshot();refreshLayers()}
+function duplicateSelected(){
+  if(!selected)return;
+  const clone=selected.cloneNode(true);clone.dataset.id='obj'+(seq++);clone.classList.remove('selected');
+  clone.querySelectorAll('.handle').forEach(h=>h.remove());
+  clone.style.left=(parseFloat(selected.style.left)+18)+'px';clone.style.top=(parseFloat(selected.style.top)+18)+'px';
+  clone.addEventListener('mousedown',objMouseDown);
+  if(clone.dataset.type==='text'){clone.addEventListener('input',()=>{refreshLayerName(clone);debouncedSnapshot()});clone.addEventListener('focus',()=>selectObj(clone,false))}
+  page.appendChild(clone);selectObj(clone);snapshot()
+}
+function deleteSelected(){if(!selected)return;const x=selected;selectObj(null);x.remove();snapshot()}
+function placeCaretEnd(el){const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}
+function applyTextStyle(){
+  if(!selected||selected.dataset.type!=='text')return;
+  selected.style.fontFamily='"'+fontFamily.value+'",serif';
+  selected.style.fontSize=fontSize.value+'px';selected.style.color=textColor.value;snapshot();
+}
+function toggleBold(){if(!selected||selected.dataset.type!=='text')return;selected.style.fontWeight=selected.style.fontWeight==='700'?'400':'700';snapshot()}
+function toggleItalic(){if(!selected||selected.dataset.type!=='text')return;selected.style.fontStyle=selected.style.fontStyle==='italic'?'normal':'italic';snapshot()}
+function setAlign(v){if(!selected||selected.dataset.type!=='text')return;selected.style.textAlign=v;snapshot()}
+function applyLanguage(){
+  if(!selected || selected.dataset.type!=='text') return;
+  const l=language.value;
+  const indicator=document.getElementById('mixModeIndicator');
+
+  if(l==='mix'){
+    selected.dataset.mixed='1';
+    selected.setAttribute('dir','rtl');
+    selected.setAttribute('lang','ur');
+    selected.style.direction='rtl';
+    selected.style.unicodeBidi='plaintext';
+    selected.style.textAlign='right';
+    selected.style.fontFamily='"Jameel Noori Nastaleeq"';
+    if(indicator) indicator.textContent='Mixed Line: ON';
+  }else{
+    delete selected.dataset.mixed;
+    const rtl=l==='ur';
+    selected.setAttribute('dir',rtl?'rtl':'ltr');
+    selected.setAttribute('lang',l);
+    selected.style.direction=rtl?'rtl':'ltr';
+    selected.style.unicodeBidi='plaintext';
+    selected.style.textAlign=rtl?'right':'left';
+    if(l==='ur') selected.style.fontFamily='"Jameel Noori Nastaleeq"';
+    if(l==='en') selected.style.fontFamily='"Times New Roman",Times,serif';
+    if(indicator) indicator.textContent=rtl?'Urdu RTL':'LTR Mode';
+  }
+  selected.focus();
+  placeCaretEnd(selected);
+  snapshot();
+}
+function applyShapeStyle(){
+  if(!selected)return;
+  const t=selected.dataset.type;
+  if(['rect','circle'].includes(t)){selected.style.borderColor=shapeColor.value;selected.style.background=fillColor.value}
+  if(t==='line'||t==='star')selected.style.background=shapeColor.value;
+  snapshot();
+}
+fileInput.addEventListener('change',()=>{
+  const f=fileInput.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const el=baseObj('image',80,80,300,220);el.classList.add('imageobj');
+    const im=document.createElement('img');im.src=rd.result;el.appendChild(im);selectObj(el);snapshot()
+  };rd.readAsDataURL(f);fileInput.value=''
+});
+function changePageSize(v){
+  const s={a4:[794,1123],a5:[559,794],'7x7':[672,672],'6.5x6.5':[624,624],a4l:[1123,794]}[v]||[794,1123];
+  page.style.width=s[0]+'px';page.style.height=s[1]+'px';fitPage();snapshot();
+}
+function setZoom(v){zoom=Math.max(.25,Math.min(2,Math.round(v*10)/10));page.style.transform='scale('+zoom+')';zoomLabel.textContent=Math.round(zoom*100)+'%'}
+function fitPage(){
+  const wrap=stageWrap.getBoundingClientRect(), pw=parseFloat(page.style.width||794), ph=parseFloat(page.style.height||1123);
+  const zx=(wrap.width-120)/pw, zy=(wrap.height-90)/ph;setZoom(Math.min(1,zx,zy));
+}
+function refreshLayerName(el){}
+function refreshLayers(){
+  layers.innerHTML='';
+  [...page.querySelectorAll('.obj')].sort((a,b)=>(+b.style.zIndex||0)-(+a.style.zIndex||0)).forEach(el=>{
+    const d=document.createElement('div');d.className='layer-item'+(el===selected?' active':'');
+    let name=el.dataset.type;
+    if(el.dataset.type==='text')name=(el.innerText.trim().slice(0,20)||'Text');
+    d.innerHTML='<span>'+({'text':'T','image':'🖼','rect':'▭','circle':'◯','line':'╱','star':'★','polygon':'⬡','freehand':'✎'}[el.dataset.type]||'•')+'</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escapeHtml(name)+'</span><span>'+(el.classList.contains('locked')?'🔒':'')+'</span>';
+    d.onclick=()=>selectObj(el);layers.appendChild(d)
+  })
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function serialize(){
+  return {
+    version:'3.7-wedding-form-corel-export',
+    page:{w:parseFloat(page.style.width||794),h:parseFloat(page.style.height||1123),grid:page.classList.contains('show-grid')},
+    pageStyle:page.getAttribute('style'),pageMargin:page.dataset.marginMm,guides:page.classList.contains('margin-guides'),
+    html:[...page.children].map(el=>{const c=el.cloneNode(true);c.classList.remove('selected');c.querySelectorAll('.handle').forEach(h=>h.remove());return c.outerHTML}).join('')
+  }
+}
+function restore(data){
+  page.style.width=data.page.w+'px';page.style.height=data.page.h+'px';page.classList.toggle('show-grid',!!data.page.grid);
+  if(data.pageStyle)page.setAttribute('style',data.pageStyle);page.dataset.marginMm=data.pageMargin||'';page.classList.toggle('margin-guides',!!data.guides);
+  page.innerHTML=data.html||'';
+  page.querySelectorAll('.obj').forEach(el=>{
+    el.addEventListener('mousedown',objMouseDown);
+    if(el.dataset.type==='text'){el.addEventListener('input',()=>{refreshLayerName(el);debouncedSnapshot()});el.addEventListener('focus',()=>selectObj(el,false))}
+  });
+  selectObj(null);refreshLayers()
+}
+function saveProject(){
+  const blob=new Blob([JSON.stringify(serialize(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='REKHTA_Project_'+Date.now()+'.json';a.click();URL.revokeObjectURL(a.href);toast('Project saved')
+}
+projectInput.addEventListener('change',()=>{
+  const f=projectInput.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{restore(JSON.parse(rd.result));snapshot();toast('Project loaded')}catch(e){alert('Invalid REKHTA project file')}};
+  rd.readAsText(f);projectInput.value=''
+});
+let snapTimer;
+function debouncedSnapshot(){clearTimeout(snapTimer);snapTimer=setTimeout(snapshot,400)}
+function snapshot(){
+  if(applyingHistory)return;
+  const s=JSON.stringify(serialize());
+  if(history[histIndex]===s)return;
+  history=history.slice(0,histIndex+1);history.push(s);if(history.length>50)history.shift();histIndex=history.length-1
+}
+function undo(){if(histIndex<=0)return;histIndex--;applyingHistory=true;restore(JSON.parse(history[histIndex]));applyingHistory=false}
+function redo(){if(histIndex>=history.length-1)return;histIndex++;applyingHistory=true;restore(JSON.parse(history[histIndex]));applyingHistory=false}
+document.addEventListener('keydown',e=>{
+  if(app.classList.contains('hidden'))return;
+  if(e.ctrlKey&&e.key.toLowerCase()==='n'){e.preventDefault();newDoc();return}
+  if(e.ctrlKey&&e.key.toLowerCase()==='o'){e.preventDefault();projectInput.click();return}
+  if(e.ctrlKey&&e.key.toLowerCase()==='p'){e.preventDefault();window.print();return}
+  const active=document.activeElement, editing=active&&active.classList&&active.classList.contains('textobj');
+  if(e.ctrlKey&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();return}
+  if(e.ctrlKey&&e.key.toLowerCase()==='y'){e.preventDefault();redo();return}
+  if(e.ctrlKey&&e.key.toLowerCase()==='s'){e.preventDefault();saveProject();return}
+  if(e.ctrlKey&&e.key.toLowerCase()==='d'){e.preventDefault();duplicateSelected();return}
+  if(e.key==='Delete'&&!editing){e.preventDefault();deleteSelected();return}
+  if(e.key==='Escape'){if(editing)active.blur();setTool('select',document.querySelector('[data-tool="select"]'));return}
+  if(selected&&!editing&&!selected.classList.contains('locked')&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+    e.preventDefault();const step=e.shiftKey?10:1;
+    let x=parseFloat(selected.style.left),y=parseFloat(selected.style.top);
+    if(e.key==='ArrowLeft')x-=step;if(e.key==='ArrowRight')x+=step;if(e.key==='ArrowUp')y-=step;if(e.key==='ArrowDown')y+=step;
+    selected.style.left=x+'px';selected.style.top=y+'px';updateProps();debouncedSnapshot()
+  }
+});
+window.addEventListener('resize',()=>{if(!app.classList.contains('hidden'))fitPage()});
+
+function closeAllMenus(){
+  document.querySelectorAll('.preferences-wrap.expanded').forEach(el=>{el.classList.remove('expanded');el.querySelector('.preferences-head').setAttribute('aria-expanded','false');});
+  document.querySelectorAll('.menu-wrap.open').forEach(el=>el.classList.remove('open'));
+}
+function activateTool(name){
+  const btn=document.querySelector('[data-tool="'+name+'"]');
+  setTool(name,btn);
+}
+function insertShapeAtCenter(kind){
+  const x=Math.max(20,page.clientWidth/2-70);
+  const y=Math.max(20,page.clientHeight/2-50);
+  createShape(kind,x,y);
+}
+function setLanguageMenu(code){
+  const sel=document.getElementById('language');
+  sel.value=code;
+  applyLanguage();
+}
+function setPageMenu(code){
+  const sel=document.getElementById('pageSize');
+  sel.value=code;
+  changePageSize(code);
+}
+function toggleGridMenu(){
+  const cb=document.getElementById('gridToggle');
+  cb.checked=!cb.checked;
+  page.classList.toggle('show-grid',cb.checked);
+}
+function showDashboard(){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+}
+function showShortcuts(){
+  alert("REKHTA Shortcuts\\n\\nCtrl+N New\\nCtrl+O Open\\nCtrl+S Save\\nCtrl+P Print\\nCtrl+Z Undo\\nCtrl+Y Redo\\nCtrl+D Duplicate\nCtrl+Shift+A Urdu+English Auto\nCtrl+Shift+U Urdu RTL\nCtrl+Shift+E English LTR\\nDelete Delete selected\\nArrow keys Move\\nShift+Arrow Move 10px\\nEsc Select tool");
+}
+function showAbout(){
+  alert("REKHTA Studio 3.7\\nFresh Build\\nDeveloped by RK Solution");
+}
+
+document.getElementById('mainMenu').addEventListener('click',function(e){
+  const head=e.target.closest('.menu-head');
+  if(head){
+    e.preventDefault();
+    e.stopPropagation();
+    const wrap=head.closest('.menu-wrap');
+    document.querySelectorAll('.menu-wrap.open').forEach(el=>{
+      if(el!==wrap) el.classList.remove('open');
+    });
+    wrap.classList.toggle('open');
+    return;
+  }
+
+  const item=e.target.closest('[data-action]');
+  if(!item) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const a=item.dataset.action;
+
+  const actions={
+    new:()=>newDoc(),
+    open:()=>document.getElementById('projectInput').click(),
+    save:()=>saveProject(),
+    print:()=>window.print(),
+    png:()=>exportPNG(),
+    jpg:()=>exportJPG(),
+    pdf:()=>exportPDF(),
+    dashboard:()=>showDashboard(),
+    undo:()=>{clearTimeout(snapTimer);snapshot();undo();},
+    redo:()=>{clearTimeout(snapTimer);redo();},
+    duplicate:()=>duplicateSelected(),
+    delete:()=>deleteSelected(),
+    grid:()=>toggleGridMenu(),
+    fit:()=>fitPage(),
+    zoom100:()=>setZoom(1),
+    zoomin:()=>setZoom(zoom+0.1),
+    zoomout:()=>setZoom(zoom-0.1),
+    text:()=>activateTool('text'),
+    picture:()=>document.getElementById('fileInput').click(),
+    rect:()=>insertShapeAtCenter('rect'),
+    circle:()=>insertShapeAtCenter('circle'),
+    line:()=>insertShapeAtCenter('line'),
+    star:()=>insertShapeAtCenter('star'),
+    bold:()=>toggleBold(),
+    italic:()=>toggleItalic(),
+    alignleft:()=>setAlign('left'),
+    aligncenter:()=>setAlign('center'),
+    alignright:()=>setAlign('right'),
+    directionrtl:()=>setTextDirection('rtl'),directionltr:()=>setTextDirection('ltr'),directionauto:()=>setTextDirection('auto'),
+    mixed:()=>setLanguageMenu('mix'),
+    urdu:()=>setLanguageMenu('ur'),
+    english:()=>setLanguageMenu('en'),
+    hindi:()=>setLanguageMenu('hi'),
+    marathi:()=>setLanguageMenu('mr'),
+    a4:()=>setPageMenu('a4'),
+    a5:()=>setPageMenu('a5'),
+    a4l:()=>setPageMenu('a4l'),
+    '7x7':()=>setPageMenu('7x7'),
+    '6.5x6.5':()=>setPageMenu('6.5x6.5'),
+    front:()=>bringFront(),
+    back:()=>sendBack(),
+    rotateleft:()=>rotateSelected(-90),
+    rotateright:()=>rotateSelected(90),
+    lock:()=>toggleLock(),
+    select:()=>activateTool('select'),
+    recttool:()=>activateTool('rect'),
+    circletool:()=>activateTool('circle'),
+    linetool:()=>activateTool('line'),
+    startool:()=>activateTool('star'),
+    shortcuts:()=>showShortcuts(),
+    about:()=>showAbout(),
+    findreplace:()=>toast('Find / Replace option selected'),
+    spell:()=>toast('Spell / Dictionary option selected'),
+    styles:()=>toast('Styles option selected'),
+    tabs:()=>toast('Tabs option selected'),
+    columns:()=>toast('Columns option selected'),
+    guides:()=>toggleGridMenu(),
+    pageinfo:()=>toast('Page: '+Math.round(page.clientWidth)+' × '+Math.round(page.clientHeight)+' px')
+  };
+  if(actions[a]) actions[a]();
+  closeAllMenus();
+});
+
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#mainMenu')) closeAllMenus();
+});
+
+async function captureCanvas(){
+  if(typeof html2canvas==='undefined'){
+    alert('Export library load nahi hui. Internet connection ke saath file dobara kholiye.');
+    return null;
+  }
+  const sel=selected;
+  if(sel) sel.classList.remove('selected');
+  page.querySelectorAll('.handle').forEach(h=>h.style.visibility='hidden');
+  try{
+    return await html2canvas(page,{backgroundColor:'#ffffff',scale:2,useCORS:true});
+  } finally {
+    page.querySelectorAll('.handle').forEach(h=>h.style.visibility='');
+    if(sel) sel.classList.add('selected');
+  }
+}
+async function exportPNG(){
+  const c=await captureCanvas(); if(!c)return;
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/png');
+  a.download='REKHTA_'+Date.now()+'.png';
+  a.click();
+}
+async function exportJPG(){
+  const c=await captureCanvas(); if(!c)return;
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/jpeg',0.95);
+  a.download='REKHTA_'+Date.now()+'.jpg';
+  a.click();
+}
+async function exportPDF(){
+  const c=await captureCanvas(); if(!c)return;
+  if(!window.jspdf){
+    alert('PDF library load nahi hui. Internet connection ke saath file dobara kholiye.');
+    return;
+  }
+  const w=page.clientWidth,h=page.clientHeight;
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({orientation:w>h?'landscape':'portrait',unit:'px',format:[w,h]});
+  pdf.addImage(c.toDataURL('image/jpeg',0.95),'JPEG',0,0,w,h);
+  pdf.save('REKHTA_'+Date.now()+'.pdf');
+}
+
+
+function isTextEditing(){
+  const a=document.activeElement;
+  return !!(a && a.classList && a.classList.contains('textobj'));
+}
+function nudgeSelected(dx,dy){
+  if(!selected || selected.classList.contains('locked')) return;
+  const x=(parseFloat(selected.style.left)||0)+dx;
+  const y=(parseFloat(selected.style.top)||0)+dy;
+  selected.style.left=Math.max(0,x)+'px';
+  selected.style.top=Math.max(0,y)+'px';
+  updateProps();
+  debouncedSnapshot();
+}
+function resizeSelected(dw,dh){
+  if(!selected || selected.classList.contains('locked')) return;
+  selected.style.width=Math.max(20,selected.offsetWidth+dw)+'px';
+  selected.style.height=Math.max(selected.dataset.type==='line'?2:20,selected.offsetHeight+dh)+'px';
+  updateProps();
+  debouncedSnapshot();
+}
+function cycleObjects(reverse=false){
+  const arr=[...page.querySelectorAll('.obj')];
+  if(!arr.length) return;
+  let i=selected?arr.indexOf(selected):-1;
+  i=reverse?(i<=0?arr.length-1:i-1):(i>=arr.length-1?0:i+1);
+  selectObj(arr[i]);
+  page.focus({preventScroll:true});
+}
+function editSelectedText(){
+  if(selected && selected.dataset.type==='text'){
+    selected.focus();
+    placeCaretEnd(selected);
+  }
+}
+function selectToolShortcut(name){
+  const btn=document.querySelector('[data-tool="'+name+'"]');
+  setTool(name,btn||null);
+}
+function zoomBy(delta){ setZoom(zoom+delta); }
+
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('app').classList.contains('hidden')) return;
+
+  const editing=isTextEditing();
+  const k=e.key.toLowerCase();
+
+  // Global Ctrl shortcuts
+  if(e.ctrlKey && !e.altKey){
+    if(k==='n'){e.preventDefault();newDoc();return}
+    if(k==='o'){e.preventDefault();projectInput.click();return}
+    if(k==='s'){e.preventDefault();saveProject();return}
+    if(k==='p'){e.preventDefault();window.print();return}
+    if(k==='z'){e.preventDefault();e.shiftKey?redo():undo();return}
+    if(k==='y'){e.preventDefault();redo();return}
+    if(k==='d' && !editing){e.preventDefault();duplicateSelected();return}
+    if(k==='+' || k==='='){e.preventDefault();zoomBy(.1);return}
+    if(k==='-'){e.preventDefault();zoomBy(-.1);return}
+    if(k==='0'){e.preventDefault();fitPage();return}
+  }
+
+  // Do not steal normal text editing keys
+  if(editing){
+    if(e.key==='Escape'){
+      e.preventDefault();
+      document.activeElement.blur();
+      selectToolShortcut('select');
+      page.focus({preventScroll:true});
+    }
+    return;
+  }
+
+  // Tool shortcuts
+  if(!e.ctrlKey && !e.altKey && !e.metaKey){
+    if(k==='v'){e.preventDefault();selectToolShortcut('select');return}
+    if(k==='t'){e.preventDefault();selectToolShortcut('text');return}
+    if(k==='r'){e.preventDefault();selectToolShortcut('rect');return}
+    if(k==='c'){e.preventDefault();selectToolShortcut('circle');return}
+    if(k==='l'){e.preventDefault();selectToolShortcut('line');return}
+    if(k==='s'){e.preventDefault();selectToolShortcut('star');return}
+    if(k==='enter'){e.preventDefault();editSelectedText();return}
+    if(k==='tab'){
+      e.preventDefault();cycleObjects(e.shiftKey);return
+    }
+  }
+
+  // Object manipulation
+  if(selected){
+    const step=e.shiftKey?10:1;
+    if(e.key==='ArrowLeft'){e.preventDefault();nudgeSelected(-step,0);return}
+    if(e.key==='ArrowRight'){e.preventDefault();nudgeSelected(step,0);return}
+    if(e.key==='ArrowUp'){e.preventDefault();nudgeSelected(0,-step);return}
+    if(e.key==='ArrowDown'){e.preventDefault();nudgeSelected(0,step);return}
+    if(e.key==='Delete' || e.key==='Backspace'){e.preventDefault();deleteSelected();return}
+    if(e.key==='['){e.preventDefault();sendBack();return}
+    if(e.key===']'){e.preventDefault();bringFront();return}
+    if(e.altKey && e.key==='ArrowLeft'){e.preventDefault();rotateSelected(-5);return}
+    if(e.altKey && e.key==='ArrowRight'){e.preventDefault();rotateSelected(5);return}
+    if(e.ctrlKey && e.shiftKey && e.key==='ArrowRight'){e.preventDefault();resizeSelected(10,0);return}
+    if(e.ctrlKey && e.shiftKey && e.key==='ArrowLeft'){e.preventDefault();resizeSelected(-10,0);return}
+    if(e.ctrlKey && e.shiftKey && e.key==='ArrowDown'){e.preventDefault();resizeSelected(0,10);return}
+    if(e.ctrlKey && e.shiftKey && e.key==='ArrowUp'){e.preventDefault();resizeSelected(0,-10);return}
+  }
+
+  if(e.key==='Escape'){
+    e.preventDefault();
+    selectObj(null);
+    selectToolShortcut('select');
+    page.focus({preventScroll:true});
+  }
+});
+
+// Double click text to edit
+page.addEventListener('dblclick',function(e){
+  const obj=e.target.closest('.obj');
+  if(obj && obj.dataset.type==='text'){
+    selectObj(obj);
+    obj.focus();
+    placeCaretEnd(obj);
+  }
+});
+
+// Mouse wheel zoom with Ctrl
+document.getElementById('stageWrap').addEventListener('wheel',function(e){
+  if(!e.ctrlKey) return;
+  e.preventDefault();
+  zoomBy(e.deltaY<0?.1:-.1);
+},{passive:false});
+
+// Right click selects object without opening accidental browser edit context
+page.addEventListener('contextmenu',function(e){
+  const obj=e.target.closest('.obj');
+  if(obj){
+    selectObj(obj);
+  }
+});
+
+// Keep page keyboard-ready after mouse use
+page.addEventListener('mousedown',function(e){
+  if(!e.target.closest('.textobj')) {
+    setTimeout(()=>page.focus({preventScroll:true}),0);
+  }
+});
+
+
+function getBaseTransform(el){
+  const r=getRotation(el);
+  const fx=el.dataset.flipx==='1'?-1:1;
+  const fy=el.dataset.flipy==='1'?-1:1;
+  return 'rotate('+r+'deg) scale('+fx+','+fy+')';
+}
+function refreshTransform(el){
+  if(!el)return;
+  el.style.transform=getBaseTransform(el);
+}
+function applyObjectColor(color){
+  if(!selected){toast('Select an object first');return}
+  const t=selected.dataset.type;
+  if(t==='text') selected.style.color=color;
+  else if(t==='line'||t==='star') selected.style.background=color;
+  else if(t==='rect'||t==='circle'){
+    selected.style.borderColor=color;
+  }
+  snapshot();
+}
+function applyDesignAction(action){
+  if(action==='clean'){
+    page.style.background='#ffffff';
+    if(selected){selected.style.boxShadow='none';selected.style.borderRadius='0';selected.style.opacity='1'}
+    snapshot(); return;
+  }
+  if(!selected && !['clean'].includes(action)){toast('Select an object first');return}
+
+  switch(action){
+    case 'shadow':
+      selected.style.boxShadow='0 8px 18px rgba(15,23,42,.22)';break;
+    case 'noshadow':
+      selected.style.boxShadow='none';break;
+    case 'round':
+      selected.style.borderRadius='14px';break;
+    case 'square':
+      selected.style.borderRadius='0';break;
+    case 'border':
+      selected.style.outline='2px solid #334155'; selected.dataset.designBorder='1';break;
+    case 'noborder':
+      selected.style.outline=''; delete selected.dataset.designBorder;break;
+    case 'flipx':
+      selected.dataset.flipx=selected.dataset.flipx==='1'?'0':'1';refreshTransform(selected);break;
+    case 'flipy':
+      selected.dataset.flipy=selected.dataset.flipy==='1'?'0':'1';refreshTransform(selected);break;
+    case 'centerh':
+      selected.style.left=Math.round((page.clientWidth-selected.offsetWidth)/2)+'px';break;
+    case 'centerv':
+      selected.style.top=Math.round((page.clientHeight-selected.offsetHeight)/2)+'px';break;
+    case 'soft':
+      selected.style.boxShadow='0 10px 24px rgba(15,23,42,.16)';
+      selected.style.borderRadius='12px';
+      selected.style.opacity='.96';break;
+    case 'boldstyle':
+      if(selected.dataset.type==='text'){selected.style.fontWeight='700';selected.style.letterSpacing='.2px'}
+      else {selected.style.filter='contrast(1.15) saturate(1.05)'}
+      break;
+    case 'reset':
+      selected.style.boxShadow='none';
+      selected.style.borderRadius='0';
+      selected.style.opacity='1';
+      selected.style.filter='';
+      selected.style.outline='';
+      selected.dataset.flipx='0'; selected.dataset.flipy='0';
+      refreshTransform(selected);
+      break;
+  }
+  updateProps();
+  snapshot();
+}
+function toggleDesignDrawer(force){
+  const d=document.getElementById('designDrawer');
+  const open=typeof force==='boolean'?force:!d.classList.contains('open');
+  d.classList.toggle('open',open);
+}
+document.getElementById('designMenuButton').addEventListener('click',function(e){
+  e.stopPropagation();
+  closeAllMenus();
+  toggleDesignDrawer();
+});
+document.getElementById('designQuickBtn').addEventListener('click',function(e){
+  e.stopPropagation();
+  toggleDesignDrawer();
+});
+document.getElementById('designDrawer').addEventListener('click',function(e){
+  e.stopPropagation();
+  const bg=e.target.closest('[data-bg]');
+  if(bg){
+    const c=bg.dataset.bg;
+    document.getElementById('designBgColor').value=c;
+    page.style.background=c;
+    snapshot();
+    return;
+  }
+  const b=e.target.closest('[data-design]');
+  if(b) applyDesignAction(b.dataset.design);
+});
+document.getElementById('designBgColor').addEventListener('input',function(){
+  page.style.background=this.value;
+});
+document.getElementById('designBgColor').addEventListener('change',snapshot);
+document.getElementById('designObjColor').addEventListener('input',function(){
+  applyObjectColor(this.value);
+});
+document.getElementById('designOpacity').addEventListener('input',function(){
+  if(!selected)return;
+  selected.style.opacity=(+this.value/100).toFixed(2);
+  updateProps();
+});
+document.getElementById('designOpacity').addEventListener('change',snapshot);
+
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#designMenuWrap') && !e.target.closest('#designQuickBtn')){
+    toggleDesignDrawer(false);
+  }
+});
+
+// Keyboard shortcut: D toggles Design Tool when not editing text
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('app').classList.contains('hidden'))return;
+  if(isTextEditing())return;
+  if(!e.ctrlKey && !e.altKey && !e.metaKey && e.key.toLowerCase()==='d'){
+    e.preventDefault();
+    toggleDesignDrawer();
+  }
+});
+
+
+let lastPageClick={x:60,y:60};
+page.addEventListener('mousedown',function(e){
+  if(e.target.closest('.obj')) return;
+  const p=pagePoint(e);
+  lastPageClick={x:p.x,y:p.y};
+});
+
+// If user clicks blank page and starts typing in Select mode, create free text there.
+document.addEventListener('keypress',function(e){
+  if(document.getElementById('app').classList.contains('hidden')) return;
+  if(isTextEditing()) return;
+  if(e.ctrlKey||e.altKey||e.metaKey) return;
+  if(e.key.length!==1) return;
+  if(document.activeElement!==page) return;
+  e.preventDefault();
+  const t=createText(lastPageClick.x,lastPageClick.y,true);
+  setTimeout(()=>{
+    t.textContent=e.key;
+    placeCaretEnd(t);
+    debouncedSnapshot();
+  },0);
+});
+
+// InPage-like behavior: clicking blank page while Text tool active immediately starts typing.
+page.addEventListener('click',function(e){
+  if(e.target.closest('.obj')) return;
+  if(tool==='text'){
+    const p=pagePoint(e);
+    const t=createText(p.x,p.y,true);
+    setTool('select',document.querySelector('[data-tool="select"]'));
+    lastPageClick={x:p.x,y:p.y};
+  }
+});
+
+
+document.getElementById('pageSize').addEventListener('change',function(){
+  const top=document.getElementById('pageSizeTop');
+  if(top) top.value=this.value;
+});
+
+
+let colorApplyMode='fill';
+let currentFill='#111111';
+let currentOutline='#334155';
+
+function updateColorIndicators(){
+  const f=document.getElementById('fillChip');
+  const o=document.getElementById('outlineChip');
+  if(f) f.style.background=currentFill==='none'?'transparent':currentFill;
+  if(o){
+    o.style.background='#fff';
+    o.style.borderColor=currentOutline==='none'?'transparent':currentOutline;
+  }
+}
+function setColorMode(mode){
+  colorApplyMode=mode;
+  document.getElementById('fillModeBtn').classList.toggle('active',mode==='fill');
+  document.getElementById('outlineModeBtn').classList.toggle('active',mode==='outline');
+}
+function applyPaletteColor(color,mode=colorApplyMode){
+  if(!selected){
+    if(mode==='fill'){
+      page.style.background=color==='none'?'#ffffff':color;
+      toast('Page background changed');
+      snapshot();
+    }else{
+      toast('Select an object for outline colour');
+    }
+    return;
+  }
+  const t=selected.dataset.type;
+
+  if(mode==='fill'){
+    currentFill=color;
+    if(t==='text'){
+      selected.style.color=color==='none'?'transparent':color;
+    }else if(t==='rect'||t==='circle'){
+      selected.style.background=color==='none'?'transparent':color;
+    }else if(t==='line'||t==='star'){
+      selected.style.background=color==='none'?'transparent':color;
+    }else if(t==='image'){
+      toast('Image fill colour is not applicable');
+    }
+  }else{
+    currentOutline=color;
+    if(t==='text'){
+      selected.style.webkitTextStrokeColor=color==='none'?'transparent':color;
+      if(color==='none') selected.style.webkitTextStrokeWidth='0px';
+      else if(!selected.style.webkitTextStrokeWidth) selected.style.webkitTextStrokeWidth='1px';
+    }else if(t==='rect'||t==='circle'){
+      selected.style.borderColor=color==='none'?'transparent':color;
+    }else if(t==='line'){
+      selected.style.background=color==='none'?'transparent':color;
+    }else if(t==='star'){
+      selected.style.filter=color==='none'?'opacity(.45)':'';
+    }else if(t==='image'){
+      selected.style.outline=color==='none'?'none':'2px solid '+color;
+    }
+  }
+  updateColorIndicators();
+  snapshot();
+}
+document.getElementById('fillModeBtn').addEventListener('click',()=>setColorMode('fill'));
+document.getElementById('outlineModeBtn').addEventListener('click',()=>setColorMode('outline'));
+
+document.getElementById('colorPalette').addEventListener('click',function(e){
+  const sw=e.target.closest('[data-color]');
+  if(!sw)return;
+  applyPaletteColor(sw.dataset.color,'fill');
+});
+document.getElementById('colorPalette').addEventListener('contextmenu',function(e){
+  const sw=e.target.closest('[data-color]');
+  if(!sw)return;
+  e.preventDefault();
+  applyPaletteColor(sw.dataset.color,'outline');
+});
+document.getElementById('customColorPicker').addEventListener('input',function(){
+  applyPaletteColor(this.value,colorApplyMode);
+});
+updateColorIndicators();
+
+// keyboard color mode helpers
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('app').classList.contains('hidden'))return;
+  if(isTextEditing())return;
+  if(e.altKey && e.key.toLowerCase()==='f'){
+    e.preventDefault();setColorMode('fill');toast('Colour mode: Fill/Text');
+  }
+  if(e.altKey && e.key.toLowerCase()==='o'){
+    e.preventDefault();setColorMode('outline');toast('Colour mode: Outline');
+  }
+});
+
+
+function applyTopDesignProps(){
+  if(!selected)return;
+  const sw=Math.max(0,+document.getElementById('strokeWidthTop').value||0);
+  const radius=Math.max(0,+document.getElementById('radiusTop').value||0);
+  const op=Math.max(10,Math.min(100,+document.getElementById('opacityTop').value||100));
+  selected.style.opacity=op/100;
+  if(selected.dataset.type==='rect'||selected.dataset.type==='circle'){
+    selected.style.borderWidth=sw+'px';
+    selected.style.borderStyle=sw>0?'solid':'none';
+  }
+  if(selected.dataset.type==='text' && sw>0){
+    selected.style.webkitTextStrokeWidth=(sw/2)+'px';
+  }
+  selected.style.borderRadius=radius+'px';
+  snapshot();
+}
+function alignSelected(mode){
+  if(!selected)return;
+  const pw=page.clientWidth,ph=page.clientHeight,w=selected.offsetWidth,h=selected.offsetHeight;
+  if(mode==='left')selected.style.left='0px';
+  if(mode==='center')selected.style.left=Math.round((pw-w)/2)+'px';
+  if(mode==='right')selected.style.left=Math.max(0,pw-w)+'px';
+  if(mode==='top')selected.style.top='0px';
+  if(mode==='middle')selected.style.top=Math.round((ph-h)/2)+'px';
+  if(mode==='bottom')selected.style.top=Math.max(0,ph-h)+'px';
+  updateProps();snapshot();
+}
+function flipSelected(axis){
+  if(!selected)return;
+  if(axis==='x')selected.dataset.flipx=selected.dataset.flipx==='1'?'0':'1';
+  if(axis==='y')selected.dataset.flipy=selected.dataset.flipy==='1'?'0':'1';
+  if(typeof refreshTransform==='function')refreshTransform(selected);
+  snapshot();
+}
+function toggleShadowEffect(){
+  if(!selected)return;
+  const on=selected.dataset.shadow==='1';
+  selected.dataset.shadow=on?'0':'1';
+  selected.style.boxShadow=on?'none':'0 10px 22px rgba(0,0,0,.24)';
+  snapshot();
+}
+function toggleOutlineEffect(){
+  if(!selected)return;
+  const on=selected.dataset.fxoutline==='1';
+  selected.dataset.fxoutline=on?'0':'1';
+  if(selected.dataset.type==='text'){
+    selected.style.webkitTextStrokeWidth=on?'0px':'1px';
+    selected.style.webkitTextStrokeColor=currentOutline==='none'?'#111':currentOutline;
+  }else{
+    selected.style.outline=on?'none':'2px solid '+(currentOutline==='none'?'#111':currentOutline);
+  }
+  snapshot();
+}
+function applyTransparencyStep(delta){
+  if(!selected)return;
+  let op=Math.round((parseFloat(selected.style.opacity||1))*100);
+  op=Math.max(10,Math.min(100,op-delta));
+  selected.style.opacity=op/100;
+  document.getElementById('opacityTop').value=op;
+  snapshot();
+}
+function roundSelected(px){
+  if(!selected)return;
+  selected.style.borderRadius=px+'px';
+  document.getElementById('radiusTop').value=px;
+  snapshot();
+}
+
+/* Eyedropper: click an existing object to copy its visible colour */
+page.addEventListener('click',function(e){
+  if(tool!=='eyedropper')return;
+  const obj=e.target.closest('.obj');
+  if(!obj)return;
+  e.stopPropagation();
+  let color='#111111';
+  if(obj.dataset.type==='text') color=getComputedStyle(obj).color;
+  else {
+    const cs=getComputedStyle(obj);
+    color=(cs.backgroundColor && cs.backgroundColor!=='rgba(0, 0, 0, 0)')?cs.backgroundColor:cs.borderColor;
+  }
+  const probe=document.createElement('canvas').getContext('2d');
+  probe.fillStyle=color;
+  const normalized=probe.fillStyle;
+  applyPaletteColor(normalized,'fill');
+  setTool('select',document.querySelector('[data-tool="select"]'));
+},true);
+
+/* Freehand path tool */
+let freehandDraw=null;
+function pathPoint(e){
+  const r=page.getBoundingClientRect();
+  return {x:(e.clientX-r.left)/zoom,y:(e.clientY-r.top)/zoom};
+}
+page.addEventListener('pointerdown',function(e){
+  if(tool!=='freehand' || e.target.closest('.obj'))return;
+  e.preventDefault();
+  const p=pathPoint(e);
+  freehandDraw={points:[p],pointerId:e.pointerId};
+  page.setPointerCapture?.(e.pointerId);
+});
+page.addEventListener('pointermove',function(e){
+  if(!freehandDraw || e.pointerId!==freehandDraw.pointerId)return;
+  const p=pathPoint(e);
+  const last=freehandDraw.points[freehandDraw.points.length-1];
+  if(Math.hypot(p.x-last.x,p.y-last.y)>3)freehandDraw.points.push(p);
+});
+page.addEventListener('pointerup',function(e){
+  if(!freehandDraw || e.pointerId!==freehandDraw.pointerId)return;
+  const pts=freehandDraw.points;freehandDraw=null;
+  if(pts.length<2)return;
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+  const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+  const w=Math.max(10,maxX-minX),h=Math.max(10,maxY-minY);
+  const el=baseObj('freehand',minX,minY,w,h);
+  el.classList.add('pathobj');
+  const rel=pts.map(p=>[(p.x-minX)/w*100,(p.y-minY)/h*100]);
+  const d=rel.map((p,i)=>(i?'L':'M')+p[0].toFixed(2)+' '+p[1].toFixed(2)).join(' ');
+  el.innerHTML='<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="'+d+'" fill="none" stroke="'+(currentOutline==='none'?'#334155':currentOutline)+'" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  selectObj(el);snapshot();
+  setTool('select',document.querySelector('[data-tool="select"]'));
+});
+
+/* Update property controls from selection */
+const _oldUpdateProps=updateProps;
+updateProps=function(){
+  _oldUpdateProps();
+  if(!selected)return;
+  const op=Math.round((parseFloat(selected.style.opacity||1))*100);
+  const radius=parseFloat(selected.style.borderRadius)||0;
+  const sw=parseFloat(selected.style.borderWidth)||2;
+  document.getElementById('opacityTop').value=op;
+  document.getElementById('radiusTop').value=Math.round(radius);
+  document.getElementById('strokeWidthTop').value=sw;
+};
+
+/* Extra shortcuts */
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('app').classList.contains('hidden')||isTextEditing())return;
+  if(e.ctrlKey||e.altKey||e.metaKey)return;
+  const k=e.key.toLowerCase();
+  if(k==='f'){e.preventDefault();setTool('freehand',document.querySelector('[data-tool="freehand"]'))}
+  if(k==='p'){e.preventDefault();setTool('polygon',document.querySelector('[data-tool="polygon"]'))}
+  if(k==='i'){e.preventDefault();setTool('eyedropper',document.querySelector('[data-tool="eyedropper"]'))}
+});
+
+
+function setMixedMode(){
+  const sel=document.getElementById('language');
+  sel.value='mix';
+  applyLanguage();
+}
+function setUrduBase(){
+  const sel=document.getElementById('language');
+  sel.value='ur';
+  applyLanguage();
+}
+function setEnglishBase(){
+  const sel=document.getElementById('language');
+  sel.value='en';
+  applyLanguage();
+}
+
+/* Keep Urdu + English in the same horizontal paragraph.
+   Browser Unicode BiDi handles English runs LTR inside an RTL Urdu base line. */
+document.addEventListener('beforeinput',function(e){
+  const el=document.activeElement;
+  if(!el || !el.classList || !el.classList.contains('textobj')) return;
+  if(el.dataset.mixed==='1'){
+    el.style.direction='rtl';
+    el.style.unicodeBidi='plaintext';
+    el.style.writingMode='horizontal-tb';
+  }
+});
+
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('app').classList.contains('hidden')) return;
+
+  // Language mode shortcuts work even while text is being edited.
+  if(e.ctrlKey && e.shiftKey && !e.altKey){
+    const k=e.key.toLowerCase();
+    if(k==='a'){
+      e.preventDefault();
+      setMixedMode();
+      toast('Urdu + English Auto mode');
+      return;
+    }
+    if(k==='u'){
+      e.preventDefault();
+      setUrduBase();
+      toast('Urdu RTL mode');
+      return;
+    }
+    if(k==='e'){
+      e.preventDefault();
+      setEnglishBase();
+      toast('English LTR mode');
+      return;
+    }
+  }
+});
+
+/* Whenever a fresh text object is selected, reflect its direction mode in toolbar. */
+const _selectObjMixed = selectObj;
+selectObj = function(el,bringFocus=true){
+  _selectObjMixed(el,bringFocus);
+  if(el && el.dataset.type==='text'){
+    const sel=document.getElementById('language');
+    const ind=document.getElementById('mixModeIndicator');
+    if(el.dataset.mixed==='1'){
+      sel.value='mix';
+      if(ind) ind.textContent='Mixed Line: ON';
+    }else if(el.style.direction==='rtl'){
+      sel.value='ur';
+      if(ind) ind.textContent='Urdu RTL';
+    }else{
+      sel.value='en';
+      if(ind) ind.textContent='LTR Mode';
+    }
+  }
+};
+
+
+function openIpDialog(title,body,applyFn){
+  ipDialogTitle.textContent=title;
+  ipDialogBody.innerHTML=body;
+  ipDialogBackdrop.classList.add('open');
+  ipDialogApply.onclick=()=>{if(applyFn)applyFn();closeIpDialog()};
+}
+function closeIpDialog(){ipDialogBackdrop.classList.remove('open')}
+ipDialogBackdrop.addEventListener('mousedown',e=>{if(e.target===ipDialogBackdrop)closeIpDialog()});
+
+function ipCharacter(){
+  if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+  openIpDialog('Character / Font',`
+    <div class="row">
+      <label>Font<select id="ipFont"><option>Jameel Noori Nastaleeq</option><option>Segoe UI</option><option>Arial</option><option>Times New Roman</option></select></label>
+      <label>Size<input id="ipSize" type="number" min="8" max="200" value="${parseFloat(selected.style.fontSize)||34}"></label>
+    </div>`,()=>{
+      selected.style.fontFamily='"'+ipFont.value+'",serif';
+      selected.style.fontSize=ipSize.value+'px';snapshot();
+    });
+}
+function ipParagraph(){
+  if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+  openIpDialog('Paragraph',`
+    <div class="row">
+      <label>Line Height<input id="ipLine" type="number" step=".05" min=".8" max="4" value="${parseFloat(selected.style.lineHeight)||1.55}"></label>
+      <label>Alignment<select id="ipAlign"><option value="right">Right</option><option value="left">Left</option><option value="center">Center</option><option value="justify">Justify</option></select></label>
+    </div>
+    <div class="row">
+      <label>Letter Spacing<input id="ipLetter" type="number" step=".1" value="${parseFloat(selected.style.letterSpacing)||0}"></label>
+      <label>Word Spacing<input id="ipWord" type="number" step=".1" value="${parseFloat(selected.style.wordSpacing)||0}"></label>
+    </div>`,()=>{
+      selected.style.lineHeight=ipLine.value;
+      selected.style.textAlign=ipAlign.value;
+      selected.style.letterSpacing=ipLetter.value+'px';
+      selected.style.wordSpacing=ipWord.value+'px';snapshot();
+    });
+  ipAlign.value=selected.style.textAlign||'right';
+}
+function ipTabs(){
+  openIpDialog('Tabs',`<div class="row"><label>Tab Width<input id="ipTab" type="number" min="10" max="200" value="40"></label><label>Leader<select><option>None</option><option>Dots</option><option>Line</option></select></label></div>`,()=>toast('Tab settings applied'));
+}
+function ipStyles(){
+  if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+  openIpDialog('Styles',`<div class="row"><label>Style<select id="ipStyle"><option value="normal">Normal</option><option value="heading">Heading</option><option value="caption">Caption</option></select></label></div>`,()=>{
+    if(ipStyle.value==='heading'){selected.style.fontSize='48px';selected.style.fontWeight='700'}
+    else if(ipStyle.value==='caption'){selected.style.fontSize='20px';selected.style.fontStyle='italic'}
+    else{selected.style.fontSize='34px';selected.style.fontWeight='400';selected.style.fontStyle='normal'}
+    snapshot();
+  });
+}
+function ipFindReplace(){
+  if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+  openIpDialog('Find / Replace',`<div class="row"><label>Find<input id="ipFind"></label><label>Replace<input id="ipReplace"></label></div>`,()=>{
+    if(!ipFind.value)return;
+    selected.innerHTML=selected.innerHTML.split(ipFind.value).join(ipReplace.value);snapshot();
+  });
+}
+function ipPageSetup(){
+  openIpDialog('Page Setup',`<div class="row"><label>Page Size<select id="ipPage"><option value="a4">A4 Portrait</option><option value="a5">A5 Portrait</option><option value="a4l">A4 Landscape</option><option value="7x7">7 × 7 inch</option><option value="6.5x6.5">6.5 × 6.5 inch</option></select></label><label>Zoom %<input id="ipZoom" type="number" min="25" max="200" value="${Math.round(zoom*100)}"></label></div>`,()=>{
+    setPageMenu(ipPage.value);setZoom(Math.max(.25,Math.min(2,+ipZoom.value/100)));
+  });
+  ipPage.value=pageSize.value;
+}
+function ipColumns(){
+  if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+  openIpDialog('Columns',`<div class="row"><label>Columns<input id="ipCols" type="number" min="1" max="6" value="1"></label><label>Gap<input id="ipGap" type="number" min="0" max="100" value="20"></label></div>`,()=>{
+    selected.style.columnCount=Math.max(1,+ipCols.value||1);
+    selected.style.columnGap=Math.max(0,+ipGap.value||0)+'px';snapshot();
+  });
+}
+function ipMargins(){toast('Margins / Guides option selected')}
+function ipPageNumber(){
+  const el=createText(page.clientWidth-130,page.clientHeight-50,false);
+  el.style.width='100px';el.style.fontSize='18px';el.style.textAlign='center';el.style.direction='ltr';el.dataset.mixed='0';el.textContent='1';snapshot();
+}
+function ipWordCount(){
+  const text=[...page.querySelectorAll('.textobj')].map(x=>x.innerText.trim()).join(' ');
+  const words=text?text.split(/\s+/).filter(Boolean).length:0;
+  alert('Words: '+words+'\\nCharacters: '+text.length);
+}
+function ipDocInfo(){alert('Objects: '+page.querySelectorAll('.obj').length+'\\nText objects: '+page.querySelectorAll('.textobj').length+'\\nPage: '+page.clientWidth+' × '+page.clientHeight+' px')}
+function ipSpell(){toast('Spell / Dictionary option ready')}
+function ipTextAsPicture(){exportPNG()}
+function ipShowLayers(){document.querySelector('.rightbar').scrollTop=document.getElementById('layers').offsetTop}
+function ipShowProps(){document.querySelector('.rightbar').scrollTop=0}
+function ipResetPanels(){document.querySelector('.rightbar').scrollTop=0;toast('Panels reset')}
+
+document.getElementById('mainMenu').addEventListener('click',function(e){
+  const item=e.target.closest('[data-ip-action]');
+  if(!item)return;
+  e.preventDefault();e.stopPropagation();
+  const a=item.dataset.ipAction;
+  const map={
+    character:ipCharacter,paragraph:ipParagraph,tabs:ipTabs,styles:ipStyles,findreplace:ipFindReplace,
+    pagesetup:ipPageSetup,columns:ipColumns,margins:ipMargins,pagenumber:ipPageNumber,
+    wordcount:ipWordCount,spell:ipSpell,docinfo:ipDocInfo,textaspicture:ipTextAsPicture,
+    showlayers:ipShowLayers,showprops:ipShowProps,resetpanels:ipResetPanels
+  };
+  if(map[a])map[a]();
+  closeAllMenus();
+});
+
+
+document.getElementById('mainMenu').addEventListener('click',function(e){
+  const item=e.target.closest('[data-iptool]');
+  if(!item)return;
+  e.preventDefault();e.stopPropagation();
+  const t=item.dataset.iptool;
+  if(t==='image') fileInput.click();
+  else setTool(t,null);
+  closeAllMenus();
+});
+
+
+function normalizeTextHorizontal(el){
+  if(!el || el.dataset.type!=='text')return;
+  el.style.writingMode='horizontal-tb';
+  el.style.textOrientation='mixed';
+  el.style.whiteSpace='pre-wrap';
+  el.style.wordBreak='normal';
+  el.style.overflowWrap='normal';
+  el.style.height='auto';
+  if(el.offsetWidth<120){
+    const rtl=(el.getAttribute('dir')==='rtl'||el.style.direction==='rtl');
+    if(rtl){
+      el.style.left='12px';
+      el.style.width=Math.max(140,page.clientWidth-24)+'px';
+    }else{
+      const x=parseFloat(el.style.left)||12;
+      el.style.width=Math.max(140,page.clientWidth-x-12)+'px';
+    }
+  }
+}
+
+const _restoreHorizontal=restore;
+restore=function(data){
+  _restoreHorizontal(data);
+  page.querySelectorAll('.textobj').forEach(normalizeTextHorizontal);
+};
+
+page.addEventListener('focusin',function(e){
+  const el=e.target.closest('.textobj');
+  if(el)normalizeTextHorizontal(el);
+});
+
+
+function applyDefaultDocumentSettings(){
+  const ps=document.getElementById('pageSize');
+  if(ps) ps.value='a4';
+  const pst=document.getElementById('pageSizeTop');
+  if(pst) pst.value='a4';
+  changePageSize('a4');
+
+  const langSel=document.getElementById('language');
+  if(langSel) langSel.value='mix';
+
+  const ff=document.getElementById('fontFamily');
+  if(ff) ff.value='Jameel Noori Nastaleeq';
+}
+const _startStudioDefaults=startStudio;
+startStudio=function(mode='regular'){
+  _startStudioDefaults(mode);
+  setTimeout(applyDefaultDocumentSettings,0);
+};
+const _newDocDefaults=newDoc;
+newDoc=function(confirmIt=true){
+  const r=_newDocDefaults(confirmIt);
+  if(!confirmIt || !page.children.length){
+    setTimeout(applyDefaultDocumentSettings,0);
+  }
+  return r;
+};
+
+
+// Keep resize nodes visible when selecting shapes/images.
+const _selectObjNodes=selectObj;
+selectObj=function(el,bringFocus=true){
+  _selectObjNodes(el,bringFocus);
+  if(el && el.dataset.type!=='text' && !el.classList.contains('locked')){
+    addHandles(el);
+  }
+};
+
+
+function openWeddingForm(){weddingModal.classList.add('open')}
+function closeWeddingForm(){weddingModal.classList.remove('open')}
+function clearWeddingForm(){
+  weddingModal.querySelectorAll('input,textarea').forEach(x=>x.value='');
+}
+weddingModal.addEventListener('mousedown',e=>{if(e.target===weddingModal)closeWeddingForm()});
+
+function insertWeddingData(){
+  const lines=[];
+  const groom=wdGroom.value.trim(), bride=wdBride.value.trim();
+  const gf=wdGroomFather.value.trim(), bf=wdBrideFather.value.trim();
+  if(groom) lines.push(groom);
+  if(gf) lines.push('S/O '+gf);
+  if(bride) lines.push(bride);
+  if(bf) lines.push('D/O '+bf);
+  if(wdDate.value) lines.push('Date: '+wdDate.value);
+  if(wdHijri.value.trim()) lines.push('Hijri: '+wdHijri.value.trim());
+  if(wdTime.value.trim()) lines.push('Time: '+wdTime.value.trim());
+  if(wdVenue.value.trim()) lines.push('Venue: '+wdVenue.value.trim());
+  if(wdAddress.value.trim()) lines.push(wdAddress.value.trim());
+  if(wdFamily.value.trim()) lines.push(wdFamily.value.trim());
+  if(wdMobile.value.trim()) lines.push('Mobile: '+wdMobile.value.trim());
+  if(wdExtra.value.trim()) lines.push(wdExtra.value.trim());
+
+  const t=createText(80,100,false);
+  t.style.width=Math.max(300,page.clientWidth-160)+'px';
+  t.textContent=lines.join('\n');
+  t.dataset.mixed='1';
+  t.setAttribute('dir','rtl');
+  t.style.direction='rtl';
+  t.style.unicodeBidi='plaintext';
+  t.style.textAlign='right';
+  t.style.fontFamily='"Jameel Noori Nastaleeq"';
+  selectObj(t);
+  snapshot();
+  closeWeddingForm();
+  toast('Wedding data inserted');
+}
+
+function openCorelExport(){
+  openIpDialog(
+    'CorelDRAW Export',
+    `<div class="row">
+      <label>Format
+        <select id="corelFormat">
+          <option value="pdf">PDF - Best for CorelDRAW</option>
+          <option value="png">PNG - Transparent/High Resolution</option>
+          <option value="jpg">JPG</option>
+        </select>
+      </label>
+      <label>Purpose
+        <select id="corelPurpose">
+          <option>Import into CorelDRAW</option>
+          <option>Print Production</option>
+          <option>Customer Preview</option>
+        </select>
+      </label>
+    </div>
+    <div style="font-size:12px;color:#64748b;line-height:1.5">
+      PDF is recommended for page layout transfer. PNG is useful when you want the design as an image.
+    </div>`,
+    ()=>{
+      const f=document.getElementById('corelFormat').value;
+      if(f==='pdf')exportPDF();
+      else if(f==='png')exportPNG();
+      else exportJPG();
+    }
+  );
+}
+
+</script>
+
+<script>
+// One capture dispatcher prevents the older handlers from running an action twice.
+(function(){
+const menu=document.getElementById('mainMenu');
+const bindings=new Map(), help=[];
+const keyboardButton=document.createElement('button');keyboardButton.type='button';keyboardButton.dataset.action='keyboardsettings';keyboardButton.textContent='Keyboard Preferences…';
+const editDrop=menu.querySelector('[data-menu="edit"]').closest('.menu-wrap').querySelector('.menu-drop');
+const prefWrap=document.createElement('div');prefWrap.className='preferences-wrap';
+const prefHead=document.createElement('button');prefHead.type='button';prefHead.className='preferences-head';prefHead.textContent='Preferences ▸';prefHead.setAttribute('aria-expanded','false');prefHead.setAttribute('aria-haspopup','true');
+const prefDrop=document.createElement('div');prefDrop.className='preferences-drop';prefDrop.appendChild(keyboardButton);prefWrap.append(prefHead,prefDrop);editDrop.appendChild(prefWrap);
+prefHead.onclick=()=>{const open=prefWrap.classList.toggle('expanded');prefHead.setAttribute('aria-expanded',String(open));if(open)keyboardButton.focus();};keyboardButton.addEventListener('click',()=>{closeAllMenus();openKeyboardSettings();});
+const exportButton=document.createElement('button');exportButton.type='button';exportButton.dataset.action='exportdialog';exportButton.textContent='Export Page…';
+const selectedExportButton=document.createElement('button');selectedExportButton.type='button';selectedExportButton.dataset.action='exportselection';selectedExportButton.textContent='Export… (Selected Object)';
+selectedExportButton.addEventListener('click',()=>{closeAllMenus();if(!selected)return toast('Select text or an object first');openExportDialog('png',true);});
+const fileDrop=menu.querySelector('[data-menu="file"]').closest('.menu-wrap').querySelector('.menu-drop');
+const printItem=fileDrop.querySelector('[data-action="print"]');fileDrop.insertBefore(selectedExportButton,printItem);fileDrop.insertBefore(exportButton,printItem);
+exportButton.addEventListener('click',()=>{closeAllMenus();openExportDialog('png',false);});
+const defaults={directionrtl:'Ctrl+Alt+KeyR',directionltr:'Ctrl+Alt+KeyL',directionauto:'Ctrl+Alt+KeyA',weddingform:'Ctrl+Shift+KeyW',corelexport:'Ctrl+Shift+KeyC',exportselection:'Ctrl+Shift+F9',exportdialog:'Ctrl+Shift+KeyX',new:'Ctrl+KeyN',open:'Ctrl+KeyO',save:'Ctrl+KeyS',print:'Ctrl+KeyP',undo:'Ctrl+KeyZ',redo:'Ctrl+KeyY',duplicate:'Ctrl+KeyD',bold:'Ctrl+KeyB',italic:'Ctrl+KeyI',alignleft:'Ctrl+KeyL',aligncenter:'Ctrl+KeyE',alignright:'Ctrl+KeyR',mixed:'Ctrl+Shift+KeyA',urdu:'Ctrl+Shift+KeyU',english:'Ctrl+Shift+KeyE',fit:'Ctrl+Digit0',zoomin:'Ctrl+Equal',zoomout:'Ctrl+Minus',shortcuts:'F1'};
+menu.querySelectorAll('button[onclick]').forEach(b=>{const call=b.getAttribute('onclick')||'';if(call.includes('openWeddingForm'))b.dataset.action='weddingform';else if(call.includes('openCorelExport'))b.dataset.action='corelexport';});
+const groups=new Map();
+menu.querySelectorAll('[data-action],[data-ip-action],[data-iptool],[data-design],[data-bg]').forEach(b=>{
+const key=['action','ipAction','iptool','design','bg'].find(k=>b.dataset[k]!==undefined);
+const id=key+':'+b.dataset[key];
+if(!groups.has(id))groups.set(id,[]);groups.get(id).push(b);
+});
+let index=0;const reservedCodes=new Set(Object.values(defaults));
+const extraCodes=[];for(const prefix of ['Ctrl+Alt+','Ctrl+Alt+Shift+'])for(let i=1;i<=12;i++)extraCodes.push(prefix+'F'+i);for(const prefix of ['Ctrl+Alt+','Ctrl+Alt+Shift+']){for(let i=65;i<=90;i++)extraCodes.push(prefix+'Key'+String.fromCharCode(i));for(let i=0;i<=9;i++)extraCodes.push(prefix+'Digit'+i);}
+function label(code){return code.replace(/Key/g,'').replace(/Digit/g,'').replace('Equal','+').replace('Minus','−');}
+for(const [id,buttons] of groups){
+const action=id.split(':')[1];
+let code=id.startsWith('action:')?defaults[action]:null;
+if(!code){do{code=extraCodes[index++];}while(code&&(reservedCodes.has(code)||bindings.has(code)));if(!code)throw Error('Shortcut capacity exceeded');}
+bindings.set(code,()=>buttons[0].click());
+const title=buttons[0].textContent.trim().replace(/Ctrl\+.*$/,'').trim()||('Background '+action);
+help.push(title+' — '+label(code));
+buttons.forEach(b=>{b.querySelectorAll('.menu-shortcut').forEach(x=>x.remove());const span=document.createElement('span');span.className='menu-shortcut';span.textContent=label(code);b.appendChild(span);b.title=title+' ('+label(code)+')';});
+}
+showShortcuts=function(){alert('REKHTA Keyboard Shortcuts\n\nCtrl+Space — Urdu / English\n'+help.join('\n')+'\n\nDelete — Delete object\nText: Arrow — Cursor; Shift+Arrow — Select; Ctrl+Arrow — Word\nHome/End — Line start/end; Ctrl+Home/End — Document start/end\nTab — Tab space; Enter — New line\nObjects: Arrow — Move; Shift+Arrow — Move 10px\nCtrl+Shift+Arrow — Resize\nAlt+Arrow Left/Right — Rotate\nEsc — Close dialog / Select');};
+function switchLanguage(code){
+// Input language is independent of the paragraph's direction and font.
+const selection=getSelection();let saved=null;
+const text=selected&&selected.dataset.type==='text'?selected:null;
+const chosenFont=fontFamily.value;
+if(text&&selection.rangeCount&&text.contains(selection.anchorNode))saved=selection.getRangeAt(0).cloneRange();
+if(text){delete text.dataset.mixed;text.dataset.inputLanguage=code;text.focus({preventScroll:true});if(saved&&text.contains(saved.startContainer)){selection.removeAllRanges();selection.addRange(saved);}snapshot();}
+language.value=code;fontFamily.value=chosenFont;
+const indicator=document.getElementById('mixModeIndicator');if(indicator)indicator.textContent=code==='ur'?'Typing: Urdu':'Typing: English';
+toast(code==='ur'?'Urdu typing':'English typing');
+}
+document.addEventListener('keydown',e=>{
+if(app.classList.contains('hidden')||e.isComposing||e.getModifierState?.('AltGraph'))return;
+const active=document.activeElement;
+const field=active&&/^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName);
+const dialog=ipDialogBackdrop.classList.contains('open')||!!active?.closest('.wedding-modal');
+if(e.key==='Escape'&&ipDialogBackdrop.classList.contains('open')){e.preventDefault();e.stopImmediatePropagation();closeIpDialog();return;}
+if(field||dialog){
+if(field&&!dialog&&e.ctrlKey&&!e.altKey&&!e.shiftKey&&['KeyN','KeyO','KeyS','KeyP'].includes(e.code)){const action=bindings.get('Ctrl+'+e.code);if(action){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)action();return;}}
+e.stopImmediatePropagation();return;}
+if(active?.tagName==='BUTTON'&&['Tab','Enter',' '].includes(e.key)&&!e.ctrlKey&&!e.altKey){e.stopImmediatePropagation();return;}
+if(active?.closest('#mainMenu')&&['Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter',' '].includes(e.key)&&!e.ctrlKey&&!e.altKey){e.stopImmediatePropagation();return;}
+let code=(e.ctrlKey?'Ctrl+':'')+(e.altKey?'Alt+':'')+(e.shiftKey?'Shift+':'')+(e.code||e.key);
+let fn=bindings.get(code);
+if(e.ctrlKey&&!e.altKey&&!e.shiftKey&&(e.code==='Space'||e.key===' '))fn=()=>switchLanguage(language.value==='en'?'ur':'en');
+if(code==='Ctrl+Shift+KeyZ')fn=()=>{clearTimeout(snapTimer);redo();};
+if(code==='Ctrl+Shift+KeyU')fn=()=>switchLanguage('ur');
+if(code==='Ctrl+Shift+KeyE')fn=()=>switchLanguage('en');
+const editing=active&&active.isContentEditable;
+// Native browser caret movement and selection must never reach object handlers.
+const caretKey=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown','Backspace','Delete','Enter'].includes(e.key);
+const clipboardKey=e.ctrlKey&&!e.altKey&&!e.shiftKey&&['KeyA','KeyC','KeyX','KeyV'].includes(e.code);
+if(editing&&(caretKey||clipboardKey)){e.stopImmediatePropagation();return;}
+if(editing&&e.key==='Tab'&&!e.ctrlKey&&!e.altKey){e.preventDefault();e.stopImmediatePropagation();insertRekhtaText(active,'\t');return;}
+if(!editing&&selected&&selected.dataset.type==='text'&&caretKey&&!e.altKey){
+selected.focus({preventScroll:true});
+const sel=getSelection();if(!sel.rangeCount||!selected.contains(sel.anchorNode))placeCaretEnd(selected);
+if(e.key.startsWith('Arrow')&&typeof sel.modify==='function'){
+e.preventDefault();e.stopImmediatePropagation();const direction={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'backward',ArrowDown:'forward'}[e.key];const granularity=['ArrowUp','ArrowDown'].includes(e.key)?'line':e.ctrlKey?'word':'character';sel.modify(e.shiftKey?'extend':'move',direction,granularity);return;
+}
+if(['Home','End','PageUp','PageDown'].includes(e.key)&&typeof sel.modify==='function'){
+e.preventDefault();e.stopImmediatePropagation();sel.modify(e.shiftKey?'extend':'move',['Home','PageUp'].includes(e.key)?'backward':'forward',e.ctrlKey||e.key.startsWith('Page')?'documentboundary':'lineboundary');return;
+}
+// Destructive text keys require an active caret; this press only restores focus.
+e.preventDefault();e.stopImmediatePropagation();return;
+}
+if(!editing&&selected&&e.key.startsWith('Arrow')){
+if(e.ctrlKey&&e.shiftKey)fn=()=>resizeSelected(e.key==='ArrowRight'?10:e.key==='ArrowLeft'?-10:0,e.key==='ArrowDown'?10:e.key==='ArrowUp'?-10:0);
+else if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))fn=()=>rotateSelected(e.key==='ArrowLeft'?-5:5);
+else if(!e.ctrlKey&&!e.altKey)fn=()=>nudgeSelected(e.key==='ArrowRight'?(e.shiftKey?10:1):e.key==='ArrowLeft'?-(e.shiftKey?10:1):0,e.key==='ArrowDown'?(e.shiftKey?10:1):e.key==='ArrowUp'?-(e.shiftKey?10:1):0);
+}
+if(!editing&&(e.key==='Delete'||e.key==='Backspace'))fn=()=>deleteSelected();
+if(e.key==='Escape')fn=()=>{closeAllMenus();if(editing)active.blur();activateTool('select');};
+if(fn){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat||e.key.startsWith('Arrow'))fn();}
+},true);
+// Keep mouse formatting clicks from moving the insertion caret into the toolbar.
+menu.addEventListener('mousedown',e=>{if(e.target.closest('button'))e.preventDefault();});
+ipTabs=function(){
+if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+openIpDialog('Tabs','<label>Tab width (pixels)<input id="ipTabReal" type="number" min="10" max="200" value="40"></label>',()=>{selected.style.tabSize=Math.max(10,Math.min(200,+ipTabReal.value||40))+'px';snapshot();});
+};
+document.addEventListener('keydown',e=>{if(e.key==='Tab'&&document.activeElement?.classList.contains('textobj')&&!e.ctrlKey&&!e.altKey){e.preventDefault();e.stopImmediatePropagation();insertRekhtaText(document.activeElement,'\t');debouncedSnapshot();}},true);
+ipMargins=function(){
+openIpDialog('Margins / Guides','<label>Margin (mm)<input id="ipMarginReal" type="number" min="0" max="80" value="'+(page.dataset.marginMm||10)+'"></label><label><input id="ipGuideReal" type="checkbox" checked> Show guides</label>',()=>{
+const mm=Math.max(0,Math.min(80,+ipMarginReal.value||0));page.dataset.marginMm=mm;page.style.setProperty('--guide-margin',mm*96/25.4+'px');page.classList.toggle('margin-guides',ipGuideReal.checked);snapshot();});
+};
+ipSpell=function(){
+if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+openIpDialog('Dictionary / Spell Check','<p>Browser spelling suggestions depend on installed language dictionaries. Right-click an underlined word for suggestions.</p><label>Find word<input id="dictionaryWord"></label><label>Replace with<input id="dictionaryReplacement"></label>',()=>{selected.spellcheck=true;if(dictionaryWord.value){const walker=document.createTreeWalker(selected,NodeFilter.SHOW_TEXT);let n;while(n=walker.nextNode())n.textContent=n.textContent.split(dictionaryWord.value).join(dictionaryReplacement.value);snapshot();}selected.focus();});
+};
+ipFindReplace=function(){
+if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+openIpDialog('Find / Replace','<label>Find<input id="ipFindReal"></label><label>Replace<input id="ipReplaceReal"></label>',()=>{if(!ipFindReal.value)return;let count=0,n;const w=document.createTreeWalker(selected,NodeFilter.SHOW_TEXT);while(n=w.nextNode()){const parts=n.textContent.split(ipFindReal.value);count+=parts.length-1;n.textContent=parts.join(ipReplaceReal.value);}snapshot();toast(count+' replacements');});
+};
+ipTextAsPicture=async function(){
+if(!selected||selected.dataset.type!=='text')return toast('Select text first');
+if(typeof html2canvas==='undefined')return toast('Image export library unavailable; connect to internet and reopen');
+const el=selected;await document.fonts.ready;
+const copy=el.cloneNode(true);copy.classList.remove('selected');copy.querySelectorAll('.handle').forEach(h=>h.remove());copy.style.position='fixed';copy.style.left='0';copy.style.top='0';copy.style.transform='none';document.body.appendChild(copy);
+try{const canvas=await html2canvas(copy,{scale:3,backgroundColor:null});const a=document.createElement('a');a.download='REKHTA_Text.png';a.href=canvas.toDataURL('image/png');a.click();}catch(err){toast('Text export failed: '+err.message);}finally{copy.remove();}
+};
+})();
+</script>
+<style>#page.margin-guides::after{content:"";position:absolute;inset:var(--guide-margin,38px);border:1px dashed #4a90e2;pointer-events:none}@media print{#page.margin-guides::after{display:none}}</style>
+
+
+<script>
+const defaultUrduPhonetic={q:'ق',w:'و',e:'ع',r:'ر',t:'ت',y:'ے',u:'ء',i:'ی',o:'ہ',p:'پ',a:'ا',s:'س',d:'د',f:'ف',g:'گ',h:'ھ',j:'ج',k:'ک',l:'ل',z:'ز',x:'ش',c:'چ',v:'ط',b:'ب',n:'ن',m:'م',Q:'ْ',W:'ؤ',E:'ٰ',R:'ڑ',T:'ٹ',Y:'َ',U:'ئ',I:'ِ',O:'ۃ',P:'ُ',A:'آ',S:'ص',D:'ڈ',F:'ّ',G:'غ',H:'ح',J:'ض',K:'خ',L:'ل',Z:'ذ',X:'ژ',C:'ث',V:'ظ',B:'ب',N:'ں',M:'م',',':'،','.':'۔','?':'؟',';':'؛','0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹'};
+let keyboardPrefs={mode:'phonetic',map:{...defaultUrduPhonetic}};
+try{const saved=JSON.parse(localStorage.getItem('rekhta.keyboard')||'null');if(saved){keyboardPrefs.mode=saved.mode==='system'?'system':'phonetic';keyboardPrefs.map={...defaultUrduPhonetic,...saved.map};}}catch(err){}
+function openKeyboardSettings(){
+const rows=Object.entries(keyboardPrefs.map).map(([key,value],index)=>'<label style="display:flex;align-items:center;gap:8px">'+escapeHtml(key)+' <input data-key-index="'+index+'" style="width:64px;font-family:&quot;Jameel Noori Nastaleeq&quot;;font-size:24px" value="'+escapeHtml(value)+'"></label>').join('');
+openIpDialog('Keyboard Preferences — Urdu Phonetic','<label>Urdu Keyboard<select id="urduKeyboardMode"><option value="phonetic">Phonetic — software keyboard</option><option value="system">System keyboard — Windows / InPage keyboard</option></select></label><p>Ctrl + Space: Urdu / English. Phonetic mode maps English keys to Urdu. System mode accepts your installed keyboard directly. You can adjust keys below to match your InPage layout.</p><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:240px;overflow:auto" id="phoneticKeyGrid">'+rows+'</div><button type="button" id="resetPhoneticKeys">Reset Phonetic Keys</button>',()=>{
+keyboardPrefs.mode=urduKeyboardMode.value;const keys=Object.keys(keyboardPrefs.map);phoneticKeyGrid.querySelectorAll('input').forEach(input=>keyboardPrefs.map[keys[+input.dataset.keyIndex]]=input.value);try{localStorage.setItem('rekhta.keyboard',JSON.stringify(keyboardPrefs));}catch(err){}toast('Keyboard settings saved');
+});urduKeyboardMode.value=keyboardPrefs.mode;
+resetPhoneticKeys.onclick=()=>{keyboardPrefs.map={...defaultUrduPhonetic};closeIpDialog();openKeyboardSettings();};
+}
+document.addEventListener('keydown',e=>{
+if(app.classList.contains('hidden')||keyboardPrefs.mode!=='phonetic'||language.value==='en'||language.value==='hi'||language.value==='mr'||e.ctrlKey||e.altKey||e.metaKey||e.isComposing)return;
+const active=document.activeElement;
+if(active?.closest('.ip-dialog,.wedding-modal')||/^(INPUT|TEXTAREA|SELECT)$/.test(active?.tagName||''))return;
+if(!active?.classList.contains('textobj')&&active!==page)return;
+if(e.key.length!==1||!Object.prototype.hasOwnProperty.call(keyboardPrefs.map,e.key))return;
+const value=keyboardPrefs.map[e.key];if(!value)return;
+e.preventDefault();e.stopImmediatePropagation();
+let target=active;
+if(active===page)target=createText(lastPageClick.x,lastPageClick.y,true);
+target.focus();insertRekhtaText(target,value);debouncedSnapshot();
+},true);
+</script>
+
+
+<script>
+
+function openExportDialog(preferred='png',selectionOnly=false){
+let fileHandle=null;
+openIpDialog('Export As Picture',`
+<div class="row"><label>File Name<input id="expName" value="Untitled-1"></label><label>Save as type<select id="expFormat"><option value="gif">CompuServe Bitmap Files (*.gif)</option><option value="png">PNG</option><option value="jpg">JPEG</option><option value="pdf">PDF (image)</option><option value="eps">Encapsulated PostScript Files (*.eps)</option></select></label></div>
+<fieldset class="export-range"><legend>Export Range</legend>
+<label><input type="radio" name="expRange" value="selection" id="expSelected"> Selected Objects</label>
+<label><input type="radio" name="expRange" value="all" id="expAll"> All Pages</label>
+<div class="export-pages-row"><label><input type="radio" name="expRange" value="pages" id="expPages" checked> Pages</label><label>From <input id="expFrom" type="number" value="1" min="1" max="1"></label><label>To <input id="expTo" type="number" value="1" min="1" max="1"></label></div>
+<p class="export-note">This document has 1 page.</p></fieldset>
+<div class="row"><label>Scaling %<input id="expScaling" type="number" min="10" max="400" value="100"></label><label>Resolution<select id="expDpi"><option>72</option><option>150</option><option selected>300</option><option>600</option></select> DPI</label></div>
+<div class="row"><label>Colour<select id="expColour"><option value="rgb">RGB Colour</option><option value="gray">Grayscale</option></select></label><label>JPEG Quality<input id="expQuality" type="number" min="10" max="100" value="95"> %</label></div>
+<label class="export-check"><input id="expTransparent" type="checkbox"> Transparent background (PNG only)</label>
+<button type="button" id="expBrowse">Browse…</button><span id="expDestination" class="export-note"> Browser download location</span>
+<p id="expDimensions" class="export-note"></p><p class="export-note">PDF/EPS contain an image; text is not editable in CorelDRAW.</p><p id="expError" style="color:#b91c1c"></p>`,null);
+const dialog=ipDialogBackdrop.querySelector('.ip-dialog');dialog.classList.add('export-picture-dialog');
+expFormat.value=preferred;(selectionOnly?expSelected:expPages).checked=true;
+expSelected.disabled=!selected;
+function update(){const selection=expSelected.checked;const target=selection?selected:page;const w=target?(target.offsetWidth||parseFloat(target.style.width)||1):0,h=target?(target.offsetHeight||parseFloat(target.style.height)||1):0;const factor=(+expScaling.value||100)/100;expDimensions.textContent=target?Math.round(w*+expDpi.value/96*factor)+' × '+Math.round(h*+expDpi.value/96*factor)+' pixels; '+(w/96*25.4*factor).toFixed(1)+' × '+(h/96*25.4*factor).toFixed(1)+' mm':'Select an object before exporting selection';expFrom.disabled=expTo.disabled=!expPages.checked;expTransparent.disabled=expFormat.value!=='png';expQuality.disabled=expFormat.value!=='jpg';}
+[expFormat,expDpi,expScaling,expSelected,expAll,expPages].forEach(x=>x.addEventListener('change',update));expScaling.addEventListener('input',update);update();
+expFormat.addEventListener('change',()=>{fileHandle=null;expDestination.textContent=' Browser download location';});
+expBrowse.onclick=async()=>{
+expError.textContent='';if(typeof window.showSaveFilePicker!=='function'){expDestination.textContent=' Browser download location — enable “Ask where to save” in browser Downloads settings.';return;}
+try{const format=expFormat.value;const mime={gif:'image/gif',png:'image/png',jpg:'image/jpeg',pdf:'application/pdf',eps:'application/postscript'}[format];fileHandle=await window.showSaveFilePicker({suggestedName:(expName.value||'Untitled-1')+'.'+format,types:[{description:format.toUpperCase()+' file',accept:{[mime]:['.'+format]}}]});expDestination.textContent=' '+fileHandle.name;}catch(err){if(err.name!=='AbortError')expError.textContent='Choose a location using your browser download settings.';}
+};
+const button=ipDialogApply;button.textContent='OK';button.disabled=false;
+const help=document.createElement('button');help.type='button';help.className='export-picture-help';help.textContent='Help';help.onclick=()=>alert('Selected Objects exports your selected text or object.\nAll Pages exports the current single-page document.\nPages supports page 1 to 1 in this version.\n100% preserves the original size; 50% halves it.\n300 DPI is suitable for printing.\nBrowse chooses a save file when supported by the browser. Otherwise, the browser download settings decide the location.');dialog.querySelector('.actions').appendChild(help);
+button.onclick=async()=>{button.disabled=true;expError.textContent='';try{
+const scaling=+expScaling.value;if(!Number.isFinite(scaling)||scaling<10||scaling>400)throw Error('Scaling must be between 10% and 400%.');
+if(expPages.checked&&(+expFrom.value!==1||+expTo.value!==1))throw Error('This document has one page. Set From 1 To 1.');
+await runConfiguredExport({name:expName.value,format:expFormat.value,area:expSelected.checked?'selection':'page',dpi:+expDpi.value,scaling,gray:expColour.value==='gray',transparent:expTransparent.checked,quality:Math.max(10,Math.min(100,+expQuality.value||95))/100,fileHandle});closeIpDialog();toast('Export complete');}catch(err){expError.textContent=err.message;}finally{button.disabled=false;}};
+}
+async function saveConfiguredExport(blob,name,options){
+if(options.fileHandle){const stream=await options.fileHandle.createWritable();try{await stream.write(blob);await stream.close();}catch(err){try{await stream.abort();}catch(ignore){}throw err;}return;}
+const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+async function runConfiguredExport(options){
+if(typeof html2canvas==='undefined')throw Error('Export library is unavailable. Connect to internet and reopen the HTML.');
+if(options.format==='pdf'&&!window.jspdf)throw Error('PDF library is unavailable. Connect to internet and reopen the HTML.');
+const source=options.area==='selection'?selected:page;if(!source)throw Error('Select text or an object first.');
+const urdu=(source.getAttribute('lang')==='ur'||source.dataset.mixed==='1'||!!source.querySelector('[lang="ur"],[data-mixed="1"]'));
+if(urdu){try{const fonts=await document.fonts.load('34px "Jameel Noori Nastaleeq"');if(!fonts.length)throw Error();}catch(e){throw Error('Jameel Noori Nastaleeq is unavailable. Install the font or place JAMEEL NOORI NASTALEEQ.TTF beside this HTML.');}}
+await document.fonts.ready;
+const width=source.offsetWidth||parseFloat(source.style.width)||1,height=source.offsetHeight||parseFloat(source.style.height)||1,scale=options.dpi/96*((options.scaling||100)/100);
+if(width*height*scale*scale>80000000)throw Error('This resolution is too large. Choose 150 or 300 DPI.');
+const clone=source.cloneNode(true);clone.querySelectorAll('.handle').forEach(h=>h.remove());[clone,...clone.querySelectorAll('.obj')].forEach(el=>{el.classList.remove('selected','keyboard-selected');el.style.outline='none';});clone.classList.remove('margin-guides','show-grid');
+clone.removeAttribute('id');clone.style.position='relative';clone.style.left='0';clone.style.top='0';clone.style.margin='0';clone.style.transform='none';clone.style.width=width+'px';clone.style.height=height+'px';
+if(source===page&&options.transparent&&options.format==='png')clone.style.background='transparent';
+const holder=document.createElement('div');holder.style.cssText='position:fixed;left:-100000px;top:0;pointer-events:none;';holder.appendChild(clone);document.body.appendChild(holder);
+let canvas;try{canvas=await html2canvas(clone,{scale,useCORS:true,backgroundColor:options.transparent&&options.format==='png'?null:'#ffffff',width,height,logging:false});}finally{holder.remove();}
+if(options.gray){const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height);for(let i=0;i<pixels.data.length;i+=4){const g=Math.round(.299*pixels.data[i]+.587*pixels.data[i+1]+.114*pixels.data[i+2]);pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=g;}ctx.putImageData(pixels,0,0);}
+const name=(options.name||'REKHTA_Design').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').replace(/\.(gif|png|jpg|jpeg|pdf|eps)$/i,'')||'REKHTA_Design';
+if(options.format==='pdf'){const factor=(options.scaling||100)/100,mmW=width/96*25.4*factor,mmH=height/96*25.4*factor;const pdf=new window.jspdf.jsPDF({orientation:mmW>mmH?'landscape':'portrait',unit:'mm',format:[mmW,mmH]});pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,mmW,mmH);await saveConfiguredExport(pdf.output('blob'),name+'.pdf',options);return;}
+let blob;
+if(options.format==='gif'){blob=encodeRekhtaGIF(canvas,options.gray);}
+else if(options.format==='eps'){
+const ctx=canvas.getContext('2d'),data=ctx.getImageData(0,0,canvas.width,canvas.height).data;const hex=Array.from({length:256},(_,i)=>i.toString(16).padStart(2,'0'));const parts=[];let line='';for(let i=0;i<data.length;i+=4){const a=data[i+3]/255;line+=hex[Math.round(data[i]*a+255*(1-a))]+hex[Math.round(data[i+1]*a+255*(1-a))]+hex[Math.round(data[i+2]*a+255*(1-a))];if(line.length>=120){parts.push(line+'\n');line='';}}if(line)parts.push(line+'\n');
+const factor=(options.scaling||100)/100,ptW=width*72/96*factor,ptH=height*72/96*factor;
+const header='%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 0 '+Math.ceil(ptW)+' '+Math.ceil(ptH)+'\n%%HiResBoundingBox: 0 0 '+ptW+' '+ptH+'\n%%LanguageLevel: 2\n%%EndComments\ngsave\n'+ptW+' '+ptH+' scale\n/DeviceRGB setcolorspace\n<< /ImageType 1 /Width '+canvas.width+' /Height '+canvas.height+' /BitsPerComponent 8 /Decode [0 1 0 1 0 1] /ImageMatrix ['+canvas.width+' 0 0 -'+canvas.height+' 0 '+canvas.height+'] /DataSource currentfile /ASCIIHexDecode filter >> image\n';
+blob=new Blob([header,...parts,'>\ngrestore\nshowpage\n%%EOF\n'],{type:'application/postscript'});
+}else{blob=await new Promise(resolve=>canvas.toBlob(resolve,options.format==='jpg'?'image/jpeg':'image/png',options.quality));if(!blob)throw Error('Unable to generate image.');}
+await saveConfiguredExport(blob,name+'.'+options.format,options);
+}
+openCorelExport=function(){openExportDialog('pdf');};
+exportPNG=function(){openExportDialog('png');};
+exportJPG=function(){openExportDialog('jpg');};
+exportPDF=function(){openExportDialog('pdf');};
+ipTextAsPicture=function(){openExportDialog('png',true);};
+</script>
+
+
+<style>
+/* Free cursor text stays on a horizontal line; Enter creates the next line. */
+.textobj{display:block!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:pre!important;word-break:normal!important;overflow-wrap:normal!important;column-count:1!important;column-width:auto!important;min-width:140px!important;max-width:none!important;height:auto!important;}
+.textobj *:not(.handle){writing-mode:horizontal-tb!important;text-orientation:mixed!important;word-break:normal!important;overflow-wrap:normal!important;white-space:inherit!important;}
+</style>
+<script>
+function insertRekhtaText(el,text){
+if(!el||!el.classList.contains('textobj'))return;
+el.focus();const selection=getSelection();let range;
+if(selection.rangeCount&&el.contains(selection.getRangeAt(0).startContainer)&&el.contains(selection.getRangeAt(0).endContainer))range=selection.getRangeAt(0);
+else{range=document.createRange();range.selectNodeContents(el);range.collapse(false);}
+range.deleteContents();const node=document.createTextNode(text);range.insertNode(node);range.setStart(node,node.length);range.collapse(true);selection.removeAllRanges();selection.addRange(range);refreshLayerName(el);debouncedSnapshot();
+}
+const _normalizeSentence=normalizeTextHorizontal;
+normalizeTextHorizontal=function(el){
+_normalizeSentence(el);if(!el||el.dataset.type!=='text')return;
+el.style.display='block';el.style.writingMode='horizontal-tb';el.style.whiteSpace='pre';el.style.wordBreak='normal';el.style.overflowWrap='normal';el.style.columnCount='1';el.style.columnWidth='auto';el.style.height='auto';
+const w=parseFloat(el.style.width);if(!Number.isFinite(w)||w<140)el.style.width=Math.max(140,page.clientWidth-(parseFloat(el.style.left)||12)-12)+'px';
+el.querySelectorAll('.handle').forEach(h=>h.remove());
+};
+const _createSentence=createText;
+createText=function(x,y,focus=false){const el=_createSentence(x,y,focus);normalizeTextHorizontal(el);return el;};
+page.querySelectorAll('.textobj').forEach(normalizeTextHorizontal);
+page.addEventListener('beforeinput',e=>{
+const el=e.target.closest('.textobj');if(!el||e.isComposing)return;
+normalizeTextHorizontal(el);
+if(e.inputType==='insertText'&&e.data!==null){e.preventDefault();insertRekhtaText(el,e.data);}
+else if(e.inputType==='insertParagraph'||e.inputType==='insertLineBreak'){e.preventDefault();insertRekhtaText(el,'\n');}
+});
+page.addEventListener('paste',e=>{const el=e.target.closest('.textobj');if(!el)return;e.preventDefault();insertRekhtaText(el,e.clipboardData.getData('text/plain').replace(/\r\n?/g,'\n'));});
+page.addEventListener('input',e=>{const el=e.target.closest('.textobj');if(el)normalizeTextHorizontal(el);});
+</script>
+
+
+<style>#page.tool-select,#page.tool-text{cursor:text}.textobj{caret-color:#145dcc!important}</style>
+<script>
+// A blank-page click activates the insertion caret in Select or Text mode.
+// Shape and drawing tools keep their mouse behavior.
+page.addEventListener('mousedown',function(e){
+if(e.button!==0||e.target.closest('.obj')||!['select','text'].includes(tool))return;
+e.preventDefault();e.stopImmediatePropagation();
+},true);
+page.addEventListener('click',function(e){
+if(e.button!==0||e.target.closest('.obj')||!['select','text'].includes(tool))return;
+e.preventDefault();e.stopImmediatePropagation();
+const p=pagePoint(e);lastPageClick={x:p.x,y:p.y};
+const el=createText(p.x,p.y,false);
+// Set the tool before focus so the page cannot steal focus from the caret.
+tool='select';statusTool.textContent='Tool: Select';
+page.classList.remove('tool-text');page.classList.add('tool-select');
+el.focus({preventScroll:true});
+const range=document.createRange();range.selectNodeContents(el);range.collapse(true);
+const selection=getSelection();selection.removeAllRanges();selection.addRange(range);
+},true);
+</script>
+
+<style>
+.preferences-wrap{position:relative}
+.preferences-drop{display:none;position:absolute;left:100%;top:0;min-width:260px;background:#fff;border:1px solid #cbd2dc;box-shadow:0 5px 18px #0002;padding:5px;z-index:10002}
+.preferences-wrap:hover>.preferences-drop,.preferences-wrap:focus-within>.preferences-drop,.preferences-wrap.expanded>.preferences-drop{display:block}
+.preferences-drop button{white-space:nowrap}
+@media(max-width:720px){.preferences-drop{left:0;top:100%}}
+</style>
+
+<style>
+.ip-dialog.keyboard-preferences{width:min(650px,94vw)}
+.phonetic-keyboard-view{margin:12px 0;padding:10px;background:#edf1f5;border:1px solid #ccd4dc;border-radius:6px}
+.phonetic-key-row{display:flex;justify-content:center;gap:4px;margin:5px 0}
+.phonetic-key{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;flex:1;min-height:65px;background:white;border:1px solid #bdc9d7;border-radius:5px}
+.phonetic-key small{font-family:Arial,sans-serif;font-size:11px;color:#64748b}
+.phonetic-key strong{font-family:"Jameel Noori Nastaleeq";font-size:24px;line-height:1.6;font-weight:normal}
+.keyboard-pref-view-button{width:100%;margin:10px 0;height:36px;border:1px solid #cbd2dc;border-radius:5px;background:#f8fafc;cursor:pointer}
+</style>
+<script>
+const _openDialogKeyboardStyle=openIpDialog;
+openIpDialog=function(title,body,applyFn){
+const dialog=ipDialogBackdrop.querySelector('.ip-dialog');dialog.classList.remove('keyboard-preferences','export-picture-dialog');dialog.querySelector('.keyboard-pref-help')?.remove();dialog.querySelector('.export-picture-help')?.remove();ipDialogApply.textContent='Apply';
+return _openDialogKeyboardStyle(title,body,applyFn);
+};
+const _openKeyboardWithSettings=openKeyboardSettings;
+openKeyboardSettings=function(){
+_openKeyboardWithSettings();
+ipDialogTitle.textContent='Keyboard Preferences';
+const dialog=ipDialogBackdrop.querySelector('.ip-dialog');dialog.classList.add('keyboard-preferences');
+const select=document.getElementById('urduKeyboardMode');select.parentElement.firstChild.textContent='Keyboard: ';
+select.options[0].textContent='Phonetic';select.options[1].textContent='System Keyboard';
+const grid=document.getElementById('phoneticKeyGrid');grid.style.display='none';
+const reset=document.getElementById('resetPhoneticKeys');reset.style.display='none';
+const viewButton=document.createElement('button');viewButton.type='button';viewButton.className='keyboard-pref-view-button';viewButton.textContent='Phonetic Keyboard (View)';viewButton.setAttribute('aria-expanded','false');
+grid.before(viewButton);
+const view=document.createElement('div');view.className='phonetic-keyboard-view';view.hidden=true;viewButton.after(view);
+let shifted=false;
+function showKeys(){
+view.replaceChildren();const shiftButton=document.createElement('button');shiftButton.type='button';shiftButton.textContent=shifted?'Show normal keys':'Show Shift keys';shiftButton.onclick=()=>{shifted=!shifted;showKeys();};view.appendChild(shiftButton);
+const entries=Object.entries(keyboardPrefs.map);const current={};grid.querySelectorAll('input').forEach(input=>{current[entries[+input.dataset.keyIndex][0]]=input.value;});
+for(const row of ['1234567890','qwertyuiop','asdfghjkl','zxcvbnm']){
+const line=document.createElement('div');line.className='phonetic-key-row';
+for(const key of row){const lookup=shifted?key.toUpperCase():key;const tile=document.createElement('div');tile.className='phonetic-key';const latin=document.createElement('small');latin.textContent=shifted?'Shift + '+key.toUpperCase():key.toUpperCase();const urdu=document.createElement('strong');urdu.textContent=current[lookup]||'';tile.append(latin,urdu);line.appendChild(tile);}view.appendChild(line);
+}
+}
+viewButton.onclick=()=>{view.hidden=!view.hidden;viewButton.setAttribute('aria-expanded',String(!view.hidden));if(!view.hidden)showKeys();};
+const editButton=document.createElement('button');editButton.type='button';editButton.className='keyboard-pref-view-button';editButton.textContent='Customize Phonetic Keys';reset.before(editButton);editButton.onclick=()=>{const show=grid.style.display==='none';grid.style.display=show?'grid':'none';reset.style.display=show?'inline-block':'none';};
+reset.onclick=()=>{const entries=Object.entries(keyboardPrefs.map);grid.querySelectorAll('input').forEach(input=>input.value=defaultUrduPhonetic[entries[+input.dataset.keyIndex][0]]||'');if(!view.hidden)showKeys();};
+grid.addEventListener('input',()=>{if(!view.hidden)showKeys();});
+ipDialogApply.textContent='OK';
+const help=document.createElement('button');help.type='button';help.className='keyboard-pref-help';help.textContent='Help';help.onclick=()=>alert('Phonetic: English keys type Urdu letters.\nSystem Keyboard: use your installed Windows keyboard directly.\nCtrl + Space switches Urdu / English inside REKHTA.\nView shows normal and Shift mappings.\nOK saves settings. Cancel closes without saving.');dialog.querySelector('.actions').appendChild(help);
+};
+</script>
+
+<style>
+.export-range{margin:8px 0 14px;border:1px solid #cbd2dc;border-radius:5px;padding:12px}
+.export-range>label{display:block;margin:6px 0}.export-range input[type=radio],.export-check input[type=checkbox]{width:auto!important;height:auto!important;margin:0 7px 0 0!important}
+.export-pages-row{display:flex;align-items:center;gap:14px}.export-pages-row label{display:flex;align-items:center;gap:5px}.export-pages-row input[type=number]{width:65px!important}
+.export-note{font-size:12px;color:#64748b}.export-picture-dialog #expBrowse{padding:7px 18px;border:1px solid #cbd2dc;background:#f8fafc;border-radius:4px;cursor:pointer}
+</style>
+
+<script>
+// GIF89a single-image encoder. Clear before code-size growth for valid 9-bit LZW.
+function encodeRekhtaGIF(canvas,grayscale=false){
+const width=canvas.width,height=canvas.height;
+if(width>65535||height>65535)throw Error('GIF dimensions are too large. Lower the DPI.');
+const header=[];function byte(v){header.push(v&255);}function word(v){byte(v);byte(v>>8);}function ascii(s){for(const c of s)byte(c.charCodeAt(0));}
+ascii('GIF89a');word(width);word(height);byte(247);byte(0);byte(0);
+for(let i=0;i<256;i++){if(grayscale){byte(i);byte(i);byte(i);}else{byte(Math.round((i>>5)*255/7));byte(Math.round(((i>>2)&7)*255/7));byte((i&3)*85);}}
+byte(44);word(0);word(0);word(width);word(height);byte(0);byte(8);
+const pixels=canvas.getContext('2d').getImageData(0,0,width,height).data;
+const packed=new Uint8Array(Math.ceil((width*height+Math.ceil(width*height/250)+2)*9/8)+8);
+let position=0,bits=0,pending=0;
+function code(value){pending|=value<<bits;bits+=9;while(bits>=8){packed[position++]=pending&255;pending>>>=8;bits-=8;}}
+code(256);let count=0;
+for(let i=0;i<pixels.length;i+=4){
+if(count===250){code(256);count=0;}
+const alpha=pixels[i+3]/255,r=Math.round(pixels[i]*alpha+255*(1-alpha)),g=Math.round(pixels[i+1]*alpha+255*(1-alpha)),b=Math.round(pixels[i+2]*alpha+255*(1-alpha));
+code(grayscale?Math.round(.299*r+.587*g+.114*b):((Math.round(r*7/255)<<5)|(Math.round(g*7/255)<<2)|Math.round(b*3/255)));count++;
+}
+code(257);if(bits)packed[position++]=pending&255;
+const chunks=[new Uint8Array(header)];for(let offset=0;offset<position;offset+=255){const length=Math.min(255,position-offset);chunks.push(new Uint8Array([length]),packed.subarray(offset,offset+length));}chunks.push(new Uint8Array([0,59]));return new Blob(chunks,{type:'image/gif'});
+}
+</script>
+
+
+<style>
+.ip-dialog.new-document-dialog{width:min(760px,95vw)}
+.new-document-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px}
+.new-document-grid fieldset{border:1px solid #cbd2dc;border-radius:5px;margin:0 0 10px;padding:10px}
+.new-document-grid label{display:block;margin:6px 0}
+.new-document-grid input[type=radio],.new-document-grid input[type=checkbox]{width:auto!important;height:auto!important;margin-right:6px}
+.textobj.flow-text{white-space:pre-wrap!important;column-count:var(--flow-columns,1)!important;column-gap:var(--flow-gutter,0px)!important;height:var(--flow-height)!important;min-width:0!important;column-fill:auto!important;overflow-wrap:normal!important}
+#page.margin-guides::after{inset:var(--margin-top,var(--guide-margin,38px)) var(--margin-right,var(--guide-margin,38px)) var(--margin-bottom,var(--guide-margin,38px)) var(--margin-left,var(--guide-margin,38px))}
+@media(max-width:650px){.new-document-grid{grid-template-columns:1fr}.new-document-dialog{max-height:90vh;overflow:auto}}
+</style>
+<script>
+const rekhtaDocumentDefaults={size:'a4',width:210,height:297,orientation:'portrait',left:12.7,right:12.7,top:12.7,bottom:12.7,columns:1,gutter:4.23,direction:'ur',automatic:true};
+let documentSettings={...rekhtaDocumentDefaults};
+try{const saved=JSON.parse(localStorage.getItem('rekhta.document.defaults')||'null');if(saved)documentSettings={...rekhtaDocumentDefaults,...saved};}catch(err){}
+function validateDocumentSettings(v){
+for(const k of ['width','height','left','right','top','bottom','gutter','columns'])if(!Number.isFinite(v[k]))throw Error('Enter valid numeric settings.');
+if(v.width<20||v.width>1000||v.height<20||v.height>1000)throw Error('Width and height must be 20–1000 mm.');
+if([v.left,v.right,v.top,v.bottom,v.gutter].some(x=>x<0))throw Error('Margins and gutter cannot be negative.');
+if(v.left+v.right>=v.width-10||v.top+v.bottom>=v.height-10)throw Error('Margins leave too little typing space.');
+if(v.columns<1||v.columns>6||!Number.isInteger(v.columns)||(v.width-v.left-v.right-(v.columns-1)*v.gutter)/v.columns<10)throw Error('Use 1–6 columns with at least 10 mm width per column.');return v;
+}
+function applyDocumentSettings(v,createArea=false){
+validateDocumentSettings(v);documentSettings={...v};const px=96/25.4;
+page.style.width=v.width*px+'px';page.style.height=v.height*px+'px';
+for(const k of ['left','right','top','bottom'])page.style.setProperty('--margin-'+k,v[k]*px+'px');page.classList.add('margin-guides');
+language.value=v.direction;fontFamily.value=v.direction==='ur'?'Jameel Noori Nastaleeq':'Times New Roman';
+pageSize.value=v.size==='custom'?'a4':v.size==='a4'&&v.orientation==='landscape'?'a4l':v.size;
+if(createArea&&v.automatic){const t=createText(v.direction==='ur'?(v.width-v.right)*px:v.left*px,v.top*px,false);t.style.left=v.left*px+'px';t.style.top=v.top*px+'px';t.style.width=(v.width-v.left-v.right)*px+'px';t.classList.add('flow-text');t.style.setProperty('--flow-columns',v.columns);t.style.setProperty('--flow-gutter',v.gutter*px+'px');t.style.setProperty('--flow-height',(v.height-v.top-v.bottom)*px+'px');t.focus({preventScroll:true});const r=document.createRange();r.selectNodeContents(t);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r);}
+fitPage();snapshot();
+}
+function openNewDocumentSettings(){
+const v={...documentSettings};
+openIpDialog('New Document',`<div class="new-document-grid"><div><fieldset><legend>Page</legend><label>Size<select id="ndSize"><option value="a4">A4 210 × 297 mm</option><option value="a5">A5 148 × 210 mm</option><option value="7x7">7 × 7 inch</option><option value="6.5x6.5">6.5 × 6.5 inch</option><option value="custom">Custom</option></select></label><label>Width (mm)<input id="ndWidth" type="number" step=".1" value="${v.width}"></label><label>Height (mm)<input id="ndHeight" type="number" step=".1" value="${v.height}"></label></fieldset><fieldset><legend>Orientation</legend><label><input id="ndPortrait" name="ndOrientation" type="radio" value="portrait">Portrait</label><label><input id="ndLandscape" name="ndOrientation" type="radio" value="landscape">Landscape</label></fieldset><label>Pages<input type="number" value="1" readonly></label></div><div><fieldset><legend>Margins (mm)</legend>${['left','right','top','bottom'].map(k=>'<label>'+k[0].toUpperCase()+k.slice(1)+'<input id="nd_'+k+'" type="number" step=".1" min="0" value="'+v[k]+'"></label>').join('')}</fieldset><fieldset><legend>Direction</legend><label><input id="ndEnglish" type="radio" name="ndDirection" value="en">Left To Right</label><label><input id="ndUrdu" type="radio" name="ndDirection" value="ur">Right To Left</label></fieldset></div><div><fieldset><legend>Columns</legend><label>Columns<input id="ndColumns" type="number" min="1" max="6" value="${v.columns}"></label><label>Gutter (mm)<input id="ndGutter" type="number" step=".01" min="0" value="${v.gutter}"></label></fieldset><label><input id="ndAutomatic" type="checkbox" ${v.automatic?'checked':''}>Automatic Text Area</label><p style="font-size:12px;color:#64748b">The typing area has no visible border. This version supports one page.</p><button id="ndSaveDefault" type="button">Save as Default</button></div></div><p id="ndError" style="color:#b91c1c"></p>`,null);
+ipDialogBackdrop.querySelector('.ip-dialog').classList.add('new-document-dialog');ndSize.value=v.size;(v.orientation==='landscape'?ndLandscape:ndPortrait).checked=true;(v.direction==='en'?ndEnglish:ndUrdu).checked=true;ipDialogApply.textContent='OK';
+function orient(){const w=+ndWidth.value,h=+ndHeight.value;if((ndLandscape.checked&&w<h)||(ndPortrait.checked&&w>h)){ndWidth.value=h;ndHeight.value=w;}}
+ndSize.onchange=()=>{const sizes={a4:[210,297],a5:[148,210],'7x7':[177.8,177.8],'6.5x6.5':[165.1,165.1]};if(sizes[ndSize.value]){[ndWidth.value,ndHeight.value]=sizes[ndSize.value];orient();}};ndPortrait.onchange=ndLandscape.onchange=orient;ndWidth.oninput=ndHeight.oninput=()=>ndSize.value='custom';
+function read(){return validateDocumentSettings({size:ndSize.value,width:+ndWidth.value,height:+ndHeight.value,orientation:ndLandscape.checked?'landscape':'portrait',left:+nd_left.value,right:+nd_right.value,top:+nd_top.value,bottom:+nd_bottom.value,columns:+ndColumns.value,gutter:+ndGutter.value,direction:ndUrdu.checked?'ur':'en',automatic:ndAutomatic.checked});}
+ndSaveDefault.onclick=()=>{try{const values=read();localStorage.setItem('rekhta.document.defaults',JSON.stringify(values));ndError.textContent='';toast('Document defaults saved');}catch(err){ndError.textContent=err.message;}};
+ipDialogApply.onclick=()=>{try{const values=read();if(page.querySelector('.obj')&&!confirm('Create a new document? Save the current design first if needed.'))return;page.innerHTML='';seq=1;selectObj(null);closeIpDialog();applyDocumentSettings(values,true);toast('New document ready');}catch(err){ndError.textContent=err.message;}};
+const help=document.createElement('button');help.type='button';help.className='new-document-help';help.textContent='Help';help.onclick=()=>alert('Page sizes and margins use millimetres.\nAutomatic Text Area follows margins and columns without a visible frame.\nUncheck it for free click-to-type objects.\nSave as Default stores settings for new documents.\nOnly one page is supported.');ipDialogBackdrop.querySelector('.actions').appendChild(help);
+}
+const _openDialogNewDocument=openIpDialog;
+openIpDialog=function(title,body,applyFn){const dialog=ipDialogBackdrop.querySelector('.ip-dialog');dialog.classList.remove('new-document-dialog');dialog.querySelector('.new-document-help')?.remove();return _openDialogNewDocument(title,body,applyFn);};
+newDoc=function(showSettings=true){if(showSettings){openNewDocumentSettings();return;}page.innerHTML='';seq=1;selectObj(null);try{applyDocumentSettings(documentSettings,true);}catch(err){applyDocumentSettings({...rekhtaDocumentDefaults},true);}};
+applyDefaultDocumentSettings=function(){applyDocumentSettings(documentSettings,false);};
+const _serializeDocumentSettings=serialize;serialize=function(){return {..._serializeDocumentSettings(),documentSettings:{...documentSettings}};};
+const _restoreDocumentSettings=restore;restore=function(data){_restoreDocumentSettings(data);if(data.documentSettings)documentSettings={...rekhtaDocumentDefaults,...data.documentSettings};};
+</script>
+
+<script>
+document.addEventListener('mousedown',function(e){
+if(e.button!==0)return;
+const button=e.target.closest('.topbar button,.formatbar button,.fullmenubar button');
+if(button&&selected?.dataset.type==='text')e.preventDefault();
+},true);
+</script>
+
+<style>.textobj{unicode-bidi:isolate!important}</style>
+<script>
+let currentTextDirection='rtl';
+function setTextDirection(direction){
+if(!['rtl','ltr','auto'].includes(direction))return;
+currentTextDirection=direction;textDirection.value=direction;
+if(!selected||selected.dataset.type!=='text')return;
+const el=selected,sel=getSelection();const range=sel.rangeCount&&el.contains(sel.anchorNode)?sel.getRangeAt(0).cloneRange():null;
+el.dataset.textDirection=direction;el.setAttribute('dir',direction);
+if(direction==='auto')el.style.removeProperty('direction');else el.style.direction=direction;
+el.style.unicodeBidi='isolate';el.style.textAlign='start';
+el.focus({preventScroll:true});if(range&&el.contains(range.startContainer)){sel.removeAllRanges();sel.addRange(range);}snapshot();
+}
+// Language menu and Ctrl+Space affect input mode only. No paragraph replacement.
+applyLanguage=function(){
+const code=language.value;
+if(code==='mix'){switchLanguage('ur');language.value='mix';if(selected?.dataset.type==='text')selected.dataset.inputLanguage='mix';}
+else if(code==='ur'||code==='en')switchLanguage(code);
+else{if(selected?.dataset.type==='text')selected.dataset.inputLanguage=code;language.value=code;}
+};
+const _selectMixedDirection=selectObj;
+selectObj=function(el,focus=true){
+_selectMixedDirection(el,focus);
+if(el?.dataset.type==='text'){
+if(el.dataset.inputLanguage)language.value=el.dataset.inputLanguage;
+const direction=el.dataset.textDirection||el.getAttribute('dir')||'rtl';
+textDirection.value=['rtl','ltr','auto'].includes(direction)?direction:'rtl';currentTextDirection=textDirection.value;
+}
+};
+const _createMixedDirection=createText;
+createText=function(x,y,focus=false){
+const direction=currentTextDirection,input=language.value;
+const el=_createMixedDirection(x,y,focus);
+delete el.dataset.mixed;el.dataset.inputLanguage=input;el.dataset.textDirection=direction;el.setAttribute('dir',direction);
+if(direction==='auto')el.style.removeProperty('direction');else el.style.direction=direction;
+el.style.unicodeBidi='isolate';el.style.textAlign='start';
+if(direction==='rtl'){el.style.left='12px';el.style.width=Math.max(140,x-12)+'px';}
+if(direction==='ltr'){el.style.left=Math.max(12,x)+'px';el.style.width=Math.max(140,page.clientWidth-x-12)+'px';}
+currentTextDirection=direction;textDirection.value=direction;language.value=input;
+return el;
+};
+const _applyMixedDocument=applyDocumentSettings;
+applyDocumentSettings=function(values,createArea=false){currentTextDirection=values.direction==='en'?'ltr':'rtl';textDirection.value=currentTextDirection;return _applyMixedDocument(values,createArea);};
+</script>
+
+</body>
+</html>
