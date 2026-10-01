@@ -88,6 +88,17 @@ module.exports=async function(win){
  const restored=await win.webContents.executeJavaScript(`(()=>{const saved=serialize();restore(saved);const t=page.querySelector('.textobj');selectObj(t,false);return {text:t.textContent,dir:t.dir,setting:textDirection.value};})()`);
  assert.equal(restored.text,'سلام English دنیا');assert.equal(restored.dir,'rtl');assert.equal(restored.setting,'rtl');
  console.log('RTL workflow: menu RTL, Urdu-English-Urdu typing in one line, repeated Ctrl+Space and save/restore passed');
+
+ // Arrow keys must actually move the editing caret, not merely leave objects still.
+ await win.webContents.executeJavaScript(`(()=>{page.innerHTML='';language.value='en';currentTextDirection='ltr';const t=createText(120,100,false);insertRekhtaText(t,'alpha\\nbeta\\ngamma');const nodes=[...t.childNodes].filter(n=>n.nodeType===3);const r=document.createRange();r.setStart(nodes[1],2);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r);t.focus();})()`);
+ const caret=()=>win.webContents.executeJavaScript(`({text:getSelection().focusNode.textContent,offset:getSelection().focusOffset})`);
+ const arrow=async keyCode=>{win.webContents.sendInputEvent({type:'keyDown',keyCode});win.webContents.sendInputEvent({type:'keyUp',keyCode});await new Promise(r=>setTimeout(r,30));};
+ const middle=await caret();assert.equal(middle.text,'beta');assert.equal(middle.offset,2);
+ await arrow('Left');assert.equal((await caret()).offset,1,'Left must move caret');
+ await arrow('Right');assert.equal((await caret()).offset,2,'Right must move caret');
+ await arrow('Up');assert.equal((await caret()).text,'alpha','Up must reach previous line');
+ await arrow('Down');assert.equal((await caret()).text,'beta','Down must reach following line');
+ console.log('Caret: Left, Right, Up and Down change the actual text selection');
  // Native Urdu export must preserve live-browser shaping and produce requested pixel dimensions.
  await win.webContents.executeJavaScript(`(()=>{page.innerHTML='';language.value='ur';currentTextDirection='rtl';const t=createText(150,100,false);t.textContent='نکاح مبارک محمد رفیق';t.style.width='500px';t.style.height='150px';t.style.fontSize='48px';})()`);
  const exported=await win.webContents.executeJavaScript(`(async()=>{const c=await captureRekhtaCanvas(page,{scale:1,width:page.offsetWidth,height:page.offsetHeight,backgroundColor:'#ffffff'});const px=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let ink=0;for(let i=0;i<px.length;i+=4)if(px[i]<200&&px[i+1]<200&&px[i+2]<200&&px[i+3]>0)ink++;return {width:c.width,height:c.height,ink,expectedWidth:page.offsetWidth,expectedHeight:page.offsetHeight};})()`);
