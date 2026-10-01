@@ -2525,6 +2525,7 @@ language.value=code;fontFamily.value=chosenFont;
 const indicator=document.getElementById('mixModeIndicator');if(indicator)indicator.textContent=code==='ur'?'Typing: Urdu':'Typing: English';
 toast(code==='ur'?'Urdu typing':'English typing');
 }
+window.switchLanguage=switchLanguage;
 document.addEventListener('keydown',e=>{
 if(app.classList.contains('hidden')||e.isComposing||e.getModifierState?.('AltGraph'))return;
 const active=document.activeElement;
