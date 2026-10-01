@@ -3,6 +3,11 @@ module.exports=async function(win){
  console.log('Smoke: editor startup');await win.webContents.executeJavaScript(`(()=>{try{startStudio();}catch(e){console.error(e.stack);throw e;}})()`);await new Promise(r=>setTimeout(r,300));
  const initial=await win.webContents.executeJavaScript(`(async()=>{await document.fonts.load('34px "Jameel Noori Nastaleeq"');return {visible:!app.classList.contains('hidden'),font:document.fonts.check('34px "Jameel Noori Nastaleeq"'),vendor:typeof html2canvas==='function'&&!!window.jspdf};})()`);
  assert(initial.visible&&initial.font&&initial.vendor,'Editor, font and offline exports must load');
+ // Rulers use document millimetres, track zoom and keep zero at the page edge.
+ const ruler=await win.webContents.executeJavaScript(`(async()=>{setZoom(.5);refreshRekhtaRulers();const half=+rekhtaRulerX.dataset.pixelsPerMm;setZoom(1);stageWrap.scrollTop=100;stageWrap.scrollLeft=20;refreshRekhtaRulers();const f=document.querySelector('.rekhta-ruler-frame').getBoundingClientRect(),p=page.getBoundingClientRect();const result={half,full:+rekhtaRulerX.dataset.pixelsPerMm,x:+rekhtaRulerX.dataset.zero,y:+rekhtaRulerY.dataset.zero,expectedX:p.left-f.left-26,expectedY:p.top-f.top-26,unit:rekhtaRulerX.dataset.unit};fitPage();refreshRekhtaRulers();return result;})()`);
+ assert.equal(ruler.unit,'mm');assert(Math.abs(ruler.full-96/25.4)<.00001);assert(Math.abs(ruler.half*2-ruler.full)<.00001);assert(Math.abs(ruler.x-ruler.expectedX)<1&&Math.abs(ruler.y-ruler.expectedY)<1,'Ruler zero must track page edges after scroll');
+ console.log('Rulers: calibrated millimetres; zoom scaling and scroll origin verified');
+
  await win.webContents.executeJavaScript(`(()=>{page.innerHTML='';language.value='ur';currentTextDirection='rtl';const t=createText(450,120,false);t.textContent='نکاح';t.focus();placeCaretEnd(t);})()`);
  const before=await win.webContents.executeJavaScript(`({font:getComputedStyle(selected).fontFamily,dir:selected.dir,count:page.querySelectorAll('.textobj').length})`);
  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space',modifiers:['control']});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space',modifiers:['control']});
