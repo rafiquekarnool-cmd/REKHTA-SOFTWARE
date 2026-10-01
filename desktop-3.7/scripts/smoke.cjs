@@ -50,6 +50,19 @@ module.exports=async function(win){
  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'char',keyCode:' '});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});
  assert.equal(await win.webContents.executeJavaScript(`selected.textContent`),'میٔ ','Space preserves combining Hamza');
  console.log('Hamza: standalone and combining marks survive Space');
+ // Type the photographed word one key at a time. Caret must stay inside
+ // the uninterrupted word, including at the last letter before Space.
+ await win.webContents.executeJavaScript(`(()=>{selected.textContent='';selected.focus();placeCaretEnd(selected);keyboardPrefs.map={...defaultUrduPhonetic};})()`);
+ for(const keyCode of ['A','S','L','A','M']){win.webContents.sendInputEvent({type:'keyDown',keyCode});win.webContents.sendInputEvent({type:'keyUp',keyCode});}
+ const word=await win.webContents.executeJavaScript(`({text:selected.textContent,nodes:selected.childNodes.length,caret:getSelection().anchorNode.nodeType,offset:getSelection().anchorOffset})`);
+ assert.equal(word.text,'اسلام');assert.equal(word.nodes,1);assert.equal(word.caret,3);assert.equal(word.offset,5,'Caret must follow the final Urdu letter within the same text run');
+ win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'char',keyCode:' '});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});
+ assert.equal(await win.webContents.executeJavaScript(`selected.textContent`),'اسلام ');
+ await win.webContents.executeJavaScript(`(()=>{selected.textContent='می';selected.focus();placeCaretEnd(selected);rekhtaScriptRange=null;insertHamzaAbove();})()`);
+ win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'char',keyCode:' '});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});
+ assert.equal(await win.webContents.executeJavaScript(`selected.textContent`),'میٔ ');
+ console.log('Urdu: photographed word stays in one text run with caret after the last letter; Space retains all letters and Hamza');
+
  // Native Urdu export must preserve live-browser shaping and produce requested pixel dimensions.
  await win.webContents.executeJavaScript(`(()=>{page.innerHTML='';language.value='ur';currentTextDirection='rtl';const t=createText(150,100,false);t.textContent='نکاح مبارک محمد رفیق';t.style.width='500px';t.style.height='150px';t.style.fontSize='48px';})()`);
  const exported=await win.webContents.executeJavaScript(`(async()=>{const c=await captureRekhtaCanvas(page,{scale:1,width:page.offsetWidth,height:page.offsetHeight,backgroundColor:'#ffffff'});const px=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let ink=0;for(let i=0;i<px.length;i+=4)if(px[i]<200&&px[i+1]<200&&px[i+2]<200&&px[i+3]>0)ink++;return {width:c.width,height:c.height,ink,expectedWidth:page.offsetWidth,expectedHeight:page.offsetHeight};})()`);

@@ -2711,11 +2711,26 @@ if(!el||!el.classList.contains('textobj'))return;
 el.focus({preventScroll:true});const selection=getSelection();let range;
 if(selection.rangeCount&&el.contains(selection.getRangeAt(0).startContainer)&&el.contains(selection.getRangeAt(0).endContainer))range=selection.getRangeAt(0);
 else{range=document.createRange();range.selectNodeContents(el);range.collapse(false);}
+// Keep consecutive typing inside one text run. Splitting and normalizing the
+// current Urdu word on each key can leave the caret at a shaping boundary.
+text=String(text).replace(/\r\n?/g,'\n');
+if(range.collapsed&&!text.includes('\n')&&!el.querySelector('br[data-rekhta-caret-tail]')){
+ let node=range.startContainer,offset=range.startOffset;
+ if(node.nodeType===Node.ELEMENT_NODE){
+  const before=node.childNodes[offset-1],after=node.childNodes[offset];
+  if(before?.nodeType===Node.TEXT_NODE){node=before;offset=node.length;}
+  else if(after?.nodeType===Node.TEXT_NODE){node=after;offset=0;}
+ }
+ if(node.nodeType===Node.TEXT_NODE){
+  node.insertData(offset,text);range.setStart(node,offset+text.length);range.collapse(true);
+  selection.removeAllRanges();selection.addRange(range);refreshLayerName(el);debouncedSnapshot();return;
+ }
+}
 range.deleteContents();
 el.querySelectorAll('br[data-rekhta-caret-tail]').forEach(node=>node.remove());
 const parts=String(text).replace(/\r\n?/g,'\n').split('\n');
 parts.forEach((part,index)=>{
- if(part){const node=document.createTextNode(part);range.insertNode(node);range.setStartAfter(node);range.collapse(true);}
+ if(part){const node=document.createTextNode(part);range.insertNode(node);range.setStart(node,node.length);range.collapse(true);}
  if(index<parts.length-1){const br=document.createElement('br');range.insertNode(br);range.setStartAfter(br);range.collapse(true);}
 });
 if(String(text).endsWith('\n')){
