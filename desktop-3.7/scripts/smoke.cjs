@@ -125,8 +125,9 @@ module.exports=async function(win){
   assert.equal((pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length,1,'Print must contain exactly one sheet, without a blank first page');
   console.log('Print: menus, panels, dialogs and handles excluded; PDF generated');
  } finally {
-  await win.webContents.debugger.sendCommand('Emulation.setEmulatedMedia',{media:''});win.webContents.debugger.detach();
+  await win.webContents.debugger.sendCommand('Emulation.setEmulatedMedia',{media:'screen'});win.webContents.debugger.detach();
  }
 
+ await win.webContents.executeJavaScript(`window.dispatchEvent(new Event('afterprint'))`);
  await require('./vector-interactions.cjs')(win);
 };
