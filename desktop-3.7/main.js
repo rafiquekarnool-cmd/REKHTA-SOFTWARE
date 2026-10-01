@@ -10,6 +10,30 @@ app.whenReady().then(async()=>{
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}));
  window.webContents.on('will-navigate',e=>e.preventDefault());
  session.defaultSession.on('will-download',(_event,item)=>{if(smoke){item.cancel();return;}item.setSaveDialogOptions({title:'Save REKHTA File',defaultPath:path.join(app.getPath('documents'),item.getFilename())});});
+ ipcMain.handle('rekhta:capture-page',async(event,options)=>{
+  if(!isOwnFrame(event))throw Error('Invalid sender');
+  const {width,height,scale,html}=options;
+  if(![width,height,scale].every(Number.isFinite)||width<=0||height<=0||scale<=0||scale>16||typeof html!=='string'||html.length>32*1024*1024)throw Error('Invalid export');
+  const w=Math.ceil(width*scale),h=Math.ceil(height*scale);
+  if(w>16000||h>16000||w*h>80000000)throw Error('Export resolution too large');
+  const {pathToFileURL}=require('url');
+  const font=pathToFileURL(path.join(__dirname,'assets','JameelNooriNastaleeq.ttf')).href;
+  const temp=path.join(app.getPath('temp'),'rekhta-export-'+crypto.randomBytes(12).toString('hex')+'.html');
+  let exportWindow;
+  try {
+   const document=`<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src file: data:; img-src file: data: blob: https:; script-src 'none'"><style>@font-face{font-family:"Jameel Noori Nastaleeq";src:url("${font}")}html,body{margin:0;padding:0;overflow:hidden;background:${options.transparent?'transparent':'white'}}#exportRoot{position:absolute;left:0;top:0;width:${width}px;height:${height}px;transform-origin:0 0;transform:scale(${scale});}</style></head><body><div id="exportRoot">${html}</div></body></html>`;
+   await fs.writeFile(temp,document);
+   exportWindow=new BrowserWindow({width:w,height:h,useContentSize:true,enableLargerThanScreen:true,show:false,backgroundColor:options.transparent?'#00000000':'#ffffff',webPreferences:{offscreen:true,contextIsolation:true,nodeIntegration:false,sandbox:true}});
+   exportWindow.webContents.setWindowOpenHandler(()=>({action:'deny'}));
+   exportWindow.webContents.on('will-navigate',e=>e.preventDefault());
+   await exportWindow.loadFile(temp);
+   await exportWindow.webContents.executeJavaScript(`(async()=>{await document.fonts.load('34px "Jameel Noori Nastaleeq"');await document.fonts.ready;await Promise.all([...document.images].map(i=>i.decode()));await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));})()`);
+   await new Promise(r=>setTimeout(r,100));
+   const image=await exportWindow.webContents.capturePage({x:0,y:0,width:w,height:h});
+   if(image.isEmpty())throw Error('Page capture failed');
+   return image.toDataURL();
+  } finally {if(exportWindow&&!exportWindow.isDestroyed())exportWindow.destroy();await fs.unlink(temp).catch(()=>{});}
+ });
  ipcMain.handle('rekhta:choose-save',async(event,options)=>{
   if(!isOwnFrame(event))throw Error('Invalid sender');
   const safeName=path.basename(String(options.name||'REKHTA_Design.png')).replace(/[<>:"|?*]/g,'_');
