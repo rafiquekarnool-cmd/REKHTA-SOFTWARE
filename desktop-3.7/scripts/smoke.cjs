@@ -55,6 +55,7 @@ module.exports=async function(win){
   assert.equal(layout.page,'block');assert.equal(layout.transform,'none');assert(layout.handles);assert(layout.paper.includes('@page{size:'));
   const pdf=await win.webContents.printToPDF({printBackground:true,preferCSSPageSize:true});
   assert(pdf.length>1000&&pdf.subarray(0,4).toString()==='%PDF','Print must produce a PDF');
+  assert.equal((pdf.toString('latin1').match(/\/Type\s*\/Page\b/g)||[]).length,1,'Print must contain exactly one sheet, without a blank first page');
   console.log('Print: menus, panels, dialogs and handles excluded; PDF generated');
  } finally {
   await win.webContents.debugger.sendCommand('Emulation.setEmulatedMedia',{media:''});win.webContents.debugger.detach();

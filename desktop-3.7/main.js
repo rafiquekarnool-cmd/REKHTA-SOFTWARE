@@ -23,15 +23,17 @@ app.whenReady().then(async()=>{
   try {
    const document=`<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src file: data:; img-src file: data: blob: https:; script-src 'none'"><style>@font-face{font-family:"Jameel Noori Nastaleeq";src:url("${font}")}html,body{margin:0;padding:0;overflow:hidden;background:${options.transparent?'transparent':'white'}}#exportRoot{position:absolute;left:0;top:0;width:${width}px;height:${height}px;transform-origin:0 0;transform:scale(${scale});}</style></head><body><div id="exportRoot">${html}</div></body></html>`;
    await fs.writeFile(temp,document);
-   exportWindow=new BrowserWindow({width:w,height:h,useContentSize:true,enableLargerThanScreen:true,show:false,backgroundColor:options.transparent?'#00000000':'#ffffff',webPreferences:{offscreen:true,contextIsolation:true,nodeIntegration:false,sandbox:true}});
+   exportWindow=new BrowserWindow({width:w,height:h,useContentSize:true,enableLargerThanScreen:true,show:false,backgroundColor:options.transparent?'#00000000':'#ffffff',webPreferences:{offscreen:true,backgroundThrottling:false,contextIsolation:true,nodeIntegration:false,sandbox:true}});
    exportWindow.webContents.setWindowOpenHandler(()=>({action:'deny'}));
    exportWindow.webContents.on('will-navigate',e=>e.preventDefault());
    await exportWindow.loadFile(temp);
    await exportWindow.webContents.executeJavaScript(`(async()=>{await document.fonts.load('34px "Jameel Noori Nastaleeq"');await document.fonts.ready;await Promise.all([...document.images].map(i=>i.decode()));await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));})()`);
    await new Promise(r=>setTimeout(r,100));
-   const image=await exportWindow.webContents.capturePage({x:0,y:0,width:w,height:h});
-   if(image.isEmpty())throw Error('Page capture failed');
-   return image.toDataURL();
+   exportWindow.webContents.debugger.attach('1.3');
+   if(options.transparent)await exportWindow.webContents.debugger.sendCommand('Emulation.setDefaultBackgroundColorOverride',{color:{r:0,g:0,b:0,a:0}});
+   const image=await exportWindow.webContents.debugger.sendCommand('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:true,clip:{x:0,y:0,width:w,height:h,scale:1}});
+   if(!image.data)throw Error('Page capture failed');
+   return 'data:image/png;base64,'+image.data;
   } finally {if(exportWindow&&!exportWindow.isDestroyed())exportWindow.destroy();await fs.unlink(temp).catch(()=>{});}
  });
  ipcMain.handle('rekhta:choose-save',async(event,options)=>{
