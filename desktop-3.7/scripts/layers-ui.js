@@ -20,6 +20,11 @@ refreshLayerName=function(){refreshLayers();};
 toggleLock=function(){if(selected)lockLayer(selected);};
 // Locked text must also stay protected from synthetic typing handlers.
 page.addEventListener('keydown',e=>{const el=e.target.closest('.obj');if(el?.classList.contains('locked')&&el.dataset.type==='text'&&!(e.ctrlKey||e.metaKey)&&!['Tab','Escape'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();}},true);
+// All existing property/menu entry points must respect a locked selection.
+for(const name of ['deleteSelected','bringFront','sendBack','rotateSelected','flipSelected','alignSelected','applyProps','applyTextStyle','toggleBold','toggleItalic','setAlign','applyPaletteColor','applyShapeStyle','roundSelected','toggleShadowEffect','toggleOutlineEffect','applyTransparencyStep']){
+ const fn=window[name];if(typeof fn==='function')window[name]=function(...args){if(selected?.classList.contains('locked')){toast('Unlock the layer before editing');return;}return fn.apply(this,args);};
+}
+const insert=window.insertRekhtaText;if(typeof insert==='function')window.insertRekhtaText=function(el,...args){if(el?.classList.contains('locked'))return;return insert.call(this,el,...args);};
 refreshLayers();
 window.rekhtaLayerControls={ordered,lockLayer,hideLayer,moveLayer};
 })();
