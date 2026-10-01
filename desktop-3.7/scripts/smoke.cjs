@@ -24,8 +24,8 @@ module.exports=async function(win){
 
  // Regression checks for settings isolation, selection, Enter and Hamza.
  const compact=await win.webContents.executeJavaScript(`(()=>{const p=page.getBoundingClientRect(),s=stageWrap.getBoundingClientRect(),d=designDrawer.getBoundingClientRect();return{fits:p.left>=s.left&&p.right<=s.right&&p.top>=s.top&&p.bottom<=s.bottom,left:d.right<=s.left+1,props:designDrawer.contains(document.querySelector('.rightbar')),colors:designDrawer.contains(colorPalette),screen:document.documentElement.scrollWidth<=innerWidth};})()`);
- assert(compact.fits&&compact.left&&compact.props&&compact.colors&&compact.screen,'Page must fit the screen and all side controls must be on the left');
- console.log('Layout: page fits screen; Design, Properties and Colors share the left panel');
+ assert(compact.fits&&!compact.props&&!compact.colors&&compact.screen,'Page must fit the screen without moving baseline side controls');
+ console.log('Layout: page fits screen; baseline side controls preserved');
  await win.webContents.executeJavaScript(`(()=>{page.innerHTML='';language.value='ur';currentTextDirection='rtl';const t=createText(450,80,false);t.textContent='می';selectObj(t,false);t.focus();placeCaretEnd(t);})()`);
  assert.equal(await win.webContents.executeJavaScript(`getComputedStyle(selected).fontSize`),'24px');
  await win.webContents.executeJavaScript(`(()=>{applyPaletteColor('#ef4444','fill');fontSize.value='32';fontSize.dispatchEvent(new Event('change',{bubbles:true}));})()`);

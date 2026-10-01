@@ -529,9 +529,6 @@ linear-gradient(135deg,#eef1f6,#dfe4ec)}
 /* Urdu objects always use the actual Jameel Noori family. */
 [lang="ur"][data-type="text"], [data-type="text"][data-mixed="1"]{font-family:"Jameel Noori Nastaleeq" !important}
 </style>
-<script>
-if(window.rekhtaDesktop){window.showSaveFilePicker=async function(options){const match=Object.values(options.types[0].accept)[0][0].replace('.','');const target=await window.rekhtaDesktop.chooseSave({name:options.suggestedName,extension:match});if(!target)throw new DOMException('Save cancelled','AbortError');return{name:target.name,createWritable:async()=>{let data;return{write:async(blob)=>{data=await blob.arrayBuffer();},close:async()=>{await window.rekhtaDesktop.writeSave(target.id,data);},abort:async()=>{data=null;}};}};};}
-</script>
 </head>
 <body>
 
@@ -1848,7 +1845,7 @@ document.getElementById('designOpacity').addEventListener('input',function(){
 document.getElementById('designOpacity').addEventListener('change',snapshot);
 
 document.addEventListener('click',function(e){
-  if(!document.getElementById('designDrawer').classList.contains('design-docked') && !e.target.closest('#designMenuWrap') && !e.target.closest('#designQuickBtn')){
+  if(!e.target.closest('#designMenuWrap') && !e.target.closest('#designQuickBtn')){
     toggleDesignDrawer(false);
   }
 });
@@ -3320,67 +3317,40 @@ applyTextStyle=function(field){
 </script>
 
 
-<style id="rekhtaLeftDesignPanel">
-@media screen {
- .workspace.design-panel-visible{grid-template-columns:260px minmax(0,1fr) 285px!important;}
- .workspace.with-palette.design-panel-visible{grid-template-columns:260px minmax(0,1fr) 319px!important;}
- #designDrawer.design-docked{position:relative;top:auto;left:auto;z-index:1;width:auto;min-width:0;min-height:0;max-height:none;height:100%;overflow:auto;border:0;border-right:1px solid var(--line);border-radius:0;box-shadow:none;background:#f4f8ff;padding:12px;}
- #designDrawer.design-docked.open{display:block;}
-}
-</style>
-<script>
-(function(){
- const panel=document.getElementById('designDrawer'),workspace=document.querySelector('.workspace');
- panel.classList.add('design-docked');workspace.prepend(panel);
- const originalToggle=toggleDesignDrawer;
- toggleDesignDrawer=function(force){originalToggle(force);workspace.classList.toggle('design-panel-visible',panel.classList.contains('open'));};
- toggleDesignDrawer(true);
-})();
-</script>
-
-
-<style id="rekhtaCompactWorkspace">
+<style id="rekhtaScreenFitOnly">
 @media screen {
  html,body{width:100%;height:100%;overflow:hidden;}
  #app{width:100%;height:100%;min-width:0;grid-template-rows:auto auto auto minmax(0,1fr) 28px;}
  .topbar,.formatbar{min-width:0;flex-wrap:wrap;gap:5px;padding:5px 8px;}
- .workspace,.workspace.with-palette{grid-template-columns:minmax(0,1fr)!important;min-width:0;overflow:hidden;}
- .workspace.design-panel-visible,.workspace.with-palette.design-panel-visible{grid-template-columns:230px minmax(0,1fr)!important;}
- #designDrawer.design-docked .rightbar{padding:10px 0 0;border:0;height:auto;overflow:visible;background:transparent;}
- #designDrawer.design-docked #colorPalette{position:static;inset:auto;width:100%;height:auto;display:grid;grid-template-columns:repeat(auto-fit,25px);justify-content:center;gap:3px;border:1px solid var(--line);padding:6px;margin:12px 0;overflow:visible;}
+ .workspace{min-width:0;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1fr) 260px!important;}
+ .workspace.with-palette{grid-template-columns:minmax(0,1fr) 294px!important;}
+ .rightbar{min-width:0;}
+ #colorPalette{right:260px;}
  .stage-wrap{min-width:0;min-height:0;}
  .stage-space{padding:0;display:block;position:relative;}
- #page{position:absolute;left:50%;top:32px;flex-shrink:0;}
- @media(max-width:900px){.workspace.design-panel-visible,.workspace.with-palette.design-panel-visible{grid-template-columns:180px minmax(0,1fr)!important;}}
+ #page{position:absolute;left:50%;top:24px;}
 }
 </style>
 <script>
 (function(){
- const panel=document.getElementById('designDrawer'),space=document.querySelector('.stage-space');
- panel.append(document.getElementById('colorPalette'),document.querySelector('.rightbar'));
- const hint=panel.querySelector('.rightbar .panel-title + div');if(hint)hint.textContent='Object, text, color and design settings.';
- const originalZoom=setZoom;
+ const space=document.querySelector('.stage-space');
+ const previousZoom=setZoom;
  setZoom=function(value){
-  originalZoom(value);
+  previousZoom(value);
   page.style.marginLeft=-(page.offsetWidth/2)+'px';
-  space.style.width=Math.max(stageWrap.clientWidth,page.offsetWidth*zoom+64)+'px';
-  space.style.height=Math.max(stageWrap.clientHeight,page.offsetHeight*zoom+64)+'px';
+  space.style.width=Math.max(stageWrap.clientWidth,page.offsetWidth*zoom+48)+'px';
+  space.style.height=Math.max(stageWrap.clientHeight,page.offsetHeight*zoom+48)+'px';
  };
  fitPage=function(){
-  const w=parseFloat(page.style.width)||794,h=parseFloat(page.style.height)||1123;
-  setZoom(Math.floor(Math.min(1,(stageWrap.clientWidth-64)/w,(stageWrap.clientHeight-64)/h)*10)/10);
+  const w=page.offsetWidth||794,h=page.offsetHeight||1123;
+  setZoom(Math.floor(Math.min(1,(stageWrap.clientWidth-48)/w,(stageWrap.clientHeight-48)/h)*10)/10);
   stageWrap.scrollTop=0;stageWrap.scrollLeft=0;
  };
- const originalStart=startStudio;
- startStudio=function(mode){originalStart(mode);fitPage();};
- const originalToggle=toggleDesignDrawer;
- toggleDesignDrawer=function(force){originalToggle(force);if(!app.classList.contains('hidden'))fitPage();};
- const originalDocument=applyDocumentSettings;
- applyDocumentSettings=function(...args){const result=originalDocument(...args);if(!app.classList.contains('hidden'))fitPage();return result;};
+ const previousStart=startStudio;
+ startStudio=function(mode){previousStart(mode);fitPage();};
+ const previousDocument=applyDocumentSettings;
+ applyDocumentSettings=function(...args){const result=previousDocument(...args);if(!app.classList.contains('hidden'))fitPage();return result;};
  window.addEventListener('resize',()=>{if(!app.classList.contains('hidden'))fitPage();});
- ipShowLayers=function(){toggleDesignDrawer(true);document.getElementById('layers').scrollIntoView({block:'nearest'});};
- ipShowProps=function(){toggleDesignDrawer(true);panel.querySelector('.rightbar').scrollIntoView({block:'start'});};
- ipResetPanels=function(){toggleDesignDrawer(true);panel.scrollTop=0;toast('Panels reset');};
 })();
 </script>
 
