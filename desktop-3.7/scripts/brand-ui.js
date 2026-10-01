@@ -31,7 +31,7 @@ const css=document.createElement('style');css.id='rekhtaBrandIdentity';css.textC
  .rightbar label{font-size:11px;color:#647e9a;}
  .rightbar .actions button{background:#fff;border:1px solid #ccdced;border-radius:5px;color:#345579;}
  .rk-vector-tools{background:#f0f6fe;border-right:1px solid #c2d6ef;}
- .rk-vector-tools button{background:#f8fbff;border:1px solid #c7d9ec;border-radius:5px;color:#315b88;}
+ .rk-vector-tools button{padding:4px 2px;overflow-wrap:normal;background:#f8fbff;border:1px solid #c7d9ec;border-radius:5px;color:#315b88;}
  .rk-vector-tools button:hover{background:#e4f0ff;border-color:#8fb5e2;}
  .rk-vector-tools button.active{background:#dcecff;border-color:#78a4d7;color:#164d8c;box-shadow:inset 3px 0 #2771c9;}
  .rk-trace-dialog{background:#ffffff;border:1px solid #b9cde7;border-radius:12px;padding:20px;box-shadow:0 18px 70px #16345738;}
@@ -45,5 +45,6 @@ const css=document.createElement('style');css.id='rekhtaBrandIdentity';css.textC
 }
 `;document.head.appendChild(css);
 const mark=document.querySelector('.appmark');if(mark){const badge=mark.querySelector('.mini');if(badge)badge.textContent='RK';[...mark.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.remove());const word=document.createElement('span');word.className='rk-brand-word';const name=document.createElement('span');name.className='rk-brand-name';name.textContent='REKHTA';const credit=document.createElement('span');credit.className='rk-brand-credit';credit.textContent='RK SOLUTION';word.append(name,credit);mark.appendChild(word);}
+const heading=document.querySelector('.rightbar .panel-title');if(heading)heading.textContent='Design Properties';const footer=[...document.querySelectorAll('.statusbar span')].find(n=>n.textContent==='Fresh Build 3.7');if(footer)footer.textContent='REKHTA Studio';
 const logo=document.querySelector('#dashboard .logo');if(logo)logo.textContent='RK';
 })();
