@@ -1848,7 +1848,7 @@ document.getElementById('designOpacity').addEventListener('input',function(){
 document.getElementById('designOpacity').addEventListener('change',snapshot);
 
 document.addEventListener('click',function(e){
-  if(!e.target.closest('#designMenuWrap') && !e.target.closest('#designQuickBtn')){
+  if(!document.getElementById('designDrawer').classList.contains('design-docked') && !e.target.closest('#designMenuWrap') && !e.target.closest('#designQuickBtn')){
     toggleDesignDrawer(false);
   }
 });
@@ -3317,6 +3317,25 @@ applyTextStyle=function(field){
  if(saved?.commonAncestorContainer.isConnected&&text.contains(saved.commonAncestorContainer)){text.focus({preventScroll:true});const s=getSelection();s.removeAllRanges();s.addRange(saved);}
  snapshot();syncRekhtaTextControls();
 };
+</script>
+
+
+<style id="rekhtaLeftDesignPanel">
+@media screen {
+ .workspace.design-panel-visible{grid-template-columns:260px minmax(0,1fr) 285px!important;}
+ .workspace.with-palette.design-panel-visible{grid-template-columns:260px minmax(0,1fr) 319px!important;}
+ #designDrawer.design-docked{position:relative;top:auto;left:auto;z-index:1;width:auto;min-width:0;min-height:0;max-height:none;height:100%;overflow:auto;border:0;border-right:1px solid var(--line);border-radius:0;box-shadow:none;background:#f4f8ff;padding:12px;}
+ #designDrawer.design-docked.open{display:block;}
+}
+</style>
+<script>
+(function(){
+ const panel=document.getElementById('designDrawer'),workspace=document.querySelector('.workspace');
+ panel.classList.add('design-docked');workspace.prepend(panel);
+ const originalToggle=toggleDesignDrawer;
+ toggleDesignDrawer=function(force){originalToggle(force);workspace.classList.toggle('design-panel-visible',panel.classList.contains('open'));};
+ toggleDesignDrawer(true);
+})();
 </script>
 
 </body>
