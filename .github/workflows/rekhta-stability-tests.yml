@@ -20,3 +20,10 @@ jobs:
       - run: npm install --no-audit --no-fund
       - name: Test editor interactions and native export without building EXE
         run: npm run smoke
+      - name: Save actual interface screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: REKHTA-preview-test-screenshots
+          path: desktop-3.7/test-output/*.png
+          if-no-files-found: ignore

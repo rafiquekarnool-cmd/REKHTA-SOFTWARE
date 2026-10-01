@@ -16,7 +16,7 @@ const lock=control(locked?'🔒':'🔓',locked?'Unlock layer':'Lock layer',()=>l
 const up=control('↑','Move one layer forward',()=>moveLayer(el,1));up.disabled=i===0||locked;
 const down=control('↓','Move one layer backward',()=>moveLayer(el,-1));down.disabled=i===list.length-1||locked;
 layers.appendChild(row);});};
-refreshLayerName=function(){refreshLayers();};
+let layerNameTimer;refreshLayerName=function(){clearTimeout(layerNameTimer);layerNameTimer=setTimeout(refreshLayers,120);};
 toggleLock=function(){if(selected)lockLayer(selected);};
 // Locked text must also stay protected from synthetic typing handlers.
 page.addEventListener('keydown',e=>{const el=e.target.closest('.obj');if(el?.classList.contains('locked')&&el.dataset.type==='text'&&!(e.ctrlKey||e.metaKey)&&!['Tab','Escape'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();}},true);

@@ -1,5 +1,6 @@
 const assert=require('assert');
 module.exports=async function(win){
+ const execute=win.webContents.executeJavaScript.bind(win.webContents);win.webContents.executeJavaScript=async(...args)=>{await new Promise(r=>setTimeout(r,35));return execute(...args);};
  console.log('Smoke: editor startup');await win.webContents.executeJavaScript(`(()=>{try{startStudio();}catch(e){console.error(e.stack);throw e;}})()`);await new Promise(r=>setTimeout(r,300));
  const initial=await win.webContents.executeJavaScript(`(async()=>{await document.fonts.load('34px "Jameel Noori Nastaleeq"');return {visible:!app.classList.contains('hidden'),font:document.fonts.check('34px "Jameel Noori Nastaleeq"'),vendor:typeof html2canvas==='function'&&!!window.jspdf};})()`);
  assert(initial.visible&&initial.font&&initial.vendor,'Editor, font and offline exports must load');
