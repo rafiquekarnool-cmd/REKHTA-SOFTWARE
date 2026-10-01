@@ -107,6 +107,7 @@ module.exports=async function(win){
  await arrow('Down');assert.equal((await caret()).text,'دنیا','RTL Down must reach following line');
  console.log('Urdu RTL caret: all four Arrow keys move the text cursor');
 
+ await require('./vector-interactions.cjs')(win);
  // Native Urdu export must preserve live-browser shaping and produce requested pixel dimensions.
  await win.webContents.executeJavaScript(`(()=>{page.innerHTML='';language.value='ur';currentTextDirection='rtl';const t=createText(150,100,false);t.textContent='نکاح مبارک محمد رفیق';t.style.width='500px';t.style.height='150px';t.style.fontSize='48px';})()`);
  const exported=await win.webContents.executeJavaScript(`(async()=>{const c=await captureRekhtaCanvas(page,{scale:1,width:page.offsetWidth,height:page.offsetHeight,backgroundColor:'#ffffff'});const px=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let ink=0;for(let i=0;i<px.length;i+=4)if(px[i]<200&&px[i+1]<200&&px[i+2]<200&&px[i+3]>0)ink++;return {width:c.width,height:c.height,ink,expectedWidth:page.offsetWidth,expectedHeight:page.offsetHeight};})()`);
@@ -129,5 +130,4 @@ module.exports=async function(win){
  }
 
  await win.webContents.executeJavaScript(`window.dispatchEvent(new Event('afterprint'))`);
- await require('./vector-interactions.cjs')(win);
 };
