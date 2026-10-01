@@ -127,4 +127,5 @@ module.exports=async function(win){
   await win.webContents.debugger.sendCommand('Emulation.setEmulatedMedia',{media:''});win.webContents.debugger.detach();
  }
 
+ await require('./vector-interactions.cjs')(win);
 };
