@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');
 module.exports=async win=>{
  const fs=require('node:fs');fs.mkdirSync('test-output',{recursive:true});const shot=async name=>fs.writeFileSync('test-output/'+name+'.png',(await win.capturePage()).toPNG());
- const run=s=>win.webContents.executeJavaScript(s),pause=()=>new Promise(r=>setTimeout(r,70));
+ const run=async s=>{console.log('Interaction check',s.slice(0,100));let timer;try{return await Promise.race([win.webContents.executeJavaScript(s),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Timed out: '+s.slice(0,180))),15000);})]);}finally{clearTimeout(timer);}},pause=()=>new Promise(r=>setTimeout(r,70));
  const clickTool=label=>run(`(()=>{const b=[...document.querySelectorAll('.rk-vector-tools button')].find(b=>b.textContent.trim().replace(/^Image Trace$/,'Trace').replace(/^[^A-Za-z]+/,'')===${JSON.stringify(label)}.replace(/^[^A-Za-z]+/,''));if(!b)throw Error('Missing tool');b.click();})()`);
  const click=async(x,y,count=1)=>{win.webContents.sendInputEvent({type:'mouseDown',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});win.webContents.sendInputEvent({type:'mouseUp',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});await pause();};
  const point=(x,y)=>run(`(()=>{const r=page.getBoundingClientRect();return{x:r.left+${x}*zoom,y:r.top+${y}*zoom};})()`);
