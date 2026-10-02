@@ -10,6 +10,11 @@ module.exports=async win=>{
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
+ for(const [label,expected] of [['Text','text'],['Pen','crosshair'],['Freehand','crosshair'],['Pick','default']]){
+ await clickTool(label);assert.equal(await run(`getComputedStyle(page).cursor`),expected,'Cursor matches '+label);
+ }
+ assert.equal(await run(`page.classList.contains('tool-vectorpen')`),false,'Pen cursor class is cleared on switching tool');
+
  const z=await run('zoom');await clickTool('＋ Zoom');assert((await run('zoom'))>z);await clickTool('− Zoom');assert.equal(await run('zoom'),z);await clickTool('Fit');await run('setZoom(.7)');
  // Real pointer drawing, not calling a shape constructor.
  await clickTool('✎ Freehand');let p=await point(100,160);win.webContents.sendInputEvent({type:'mouseDown',x:Math.round(p.x),y:Math.round(p.y),button:'left',clickCount:1});

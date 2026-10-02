@@ -94,3 +94,22 @@ e.preventDefault();e.stopImmediatePropagation();pending.delete(el);
 insertRekhtaText(el,' ');debouncedSnapshot();
 },true);
 })();
+
+/* Tool cursors follow the active mode, including objects beneath the pointer. */
+(function(){
+const oldSetTool=setTool;
+setTool=function(name,btn){
+for(const c of [...page.classList])if(c.startsWith('tool-'))page.classList.remove(c);
+oldSetTool(name,btn);
+};
+const style=document.createElement('style');style.id='rekhtaToolCursors';style.textContent=`@media screen{
+#page.tool-select,#page.tool-select .obj,#page.tool-select .obj *{cursor:default!important;}
+#page.tool-text,#page.tool-text .obj,#page.tool-text .obj *{cursor:text!important;}
+#page.tool-freehand,#page.tool-vectorpen,#page.tool-rect,#page.tool-circle,#page.tool-line,#page.tool-star,#page.tool-polygon{cursor:crosshair!important;}
+#page.tool-freehand .obj,#page.tool-freehand .obj *,#page.tool-vectorpen .obj,#page.tool-vectorpen .obj *{cursor:crosshair!important;}
+#page .obj.locked,#page .obj.locked *{cursor:not-allowed!important;}
+#page .handle.nw,#page .handle.se{cursor:nwse-resize!important;}#page .handle.ne,#page .handle.sw{cursor:nesw-resize!important;}
+#page .handle.n,#page .handle.s{cursor:ns-resize!important;}#page .handle.e,#page .handle.w{cursor:ew-resize!important;}#page .handle.rot{cursor:grab!important;}
+#page .rk-node{cursor:move!important;}
+}`;document.head.append(style);
+})();
