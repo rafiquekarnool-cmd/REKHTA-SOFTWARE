@@ -4,6 +4,14 @@ module.exports=async function(win){
  console.log('Smoke: editor startup');await win.webContents.executeJavaScript(`(()=>{try{startStudio();}catch(e){console.error(e.stack);throw e;}})()`);await new Promise(r=>setTimeout(r,300));
  const initial=await win.webContents.executeJavaScript(`(async()=>{await document.fonts.load('34px "Jameel Noori Nastaleeq"');return {visible:!app.classList.contains('hidden'),font:document.fonts.check('34px "Jameel Noori Nastaleeq"'),vendor:typeof html2canvas==='function'&&!!window.jspdf};})()`);
  assert(initial.visible&&initial.font&&initial.vendor,'Editor, font and offline exports must load');
+
+ console.log('Smoke: browser EPS capture');
+ const browserExport=await win.webContents.executeJavaScript(`(async()=>{
+ const holder=document.createElement('div');holder.style.cssText='position:fixed;left:0;top:0;z-index:-2147483647;pointer-events:none;';
+ const sheet=document.createElement('div');sheet.style.cssText='position:relative;width:240px;height:160px;background:white;color:black';sheet.innerHTML='<div style="position:absolute;left:20px;top:20px;width:80px;height:50px;background:#e02020"></div><div style="position:absolute;left:20px;top:90px;color:black;font:24px Arial">EPS TEST</div>';holder.appendChild(sheet);document.body.appendChild(holder);
+ try{const c=await captureRekhtaBrowserCanvas(sheet,{width:240,height:160,scale:1,backgroundColor:'#ffffff',logging:false});const ctx=c.getContext('2d'),red=[...ctx.getImageData(40,40,1,1).data],d=ctx.getImageData(0,90,240,60).data;let ink=0;for(let i=0;i<d.length;i+=4)if(d[i]<100&&d[i+1]<100&&d[i+2]<100)ink++;return{red,ink};}finally{holder.remove();}
+ })()`);
+ assert(browserExport.red[0]>180&&browserExport.red[1]<70&&browserExport.ink>20,'Browser export must include colours and text, not white pixels');
  // Rulers use document millimetres, track zoom and keep zero at the page edge.
  const ruler=await win.webContents.executeJavaScript(`(async()=>{setZoom(.5);refreshRekhtaRulers();const half=+rekhtaRulerX.dataset.pixelsPerMm;setZoom(1);stageWrap.scrollTop=100;stageWrap.scrollLeft=20;refreshRekhtaRulers();const f=document.querySelector('.rekhta-ruler-frame').getBoundingClientRect(),p=page.getBoundingClientRect();const result={half,full:+rekhtaRulerX.dataset.pixelsPerMm,x:+rekhtaRulerX.dataset.zero,y:+rekhtaRulerY.dataset.zero,expectedX:p.left-f.left-26,expectedY:p.top-f.top-26,unit:rekhtaRulerX.dataset.unit};fitPage();refreshRekhtaRulers();return result;})()`);
  assert.equal(ruler.unit,'mm');assert(Math.abs(ruler.full-96/25.4)<.00001);assert(Math.abs(ruler.half*2-ruler.full)<.00001);assert(Math.abs(ruler.x-ruler.expectedX)<1&&Math.abs(ruler.y-ruler.expectedY)<1,'Ruler zero must track page edges after scroll');

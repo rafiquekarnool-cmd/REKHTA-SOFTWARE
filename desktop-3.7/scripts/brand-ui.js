@@ -285,7 +285,7 @@ if(width*height*scale*scale>80000000)throw Error('This resolution is too large. 
 const clone=source.cloneNode(true);clone.querySelectorAll('.handle').forEach(h=>h.remove());[clone,...clone.querySelectorAll('.obj')].forEach(el=>{el.classList.remove('selected','keyboard-selected');el.style.outline='none';});clone.classList.remove('margin-guides','show-grid');
 clone.removeAttribute('id');clone.style.position='relative';clone.style.left='0';clone.style.top='0';clone.style.margin='0';clone.style.transform='none';clone.style.width=width+'px';clone.style.height=height+'px';
 if(source===page&&options.transparent&&options.format==='png')clone.style.background='transparent';
-const holder=document.createElement('div');holder.style.cssText='position:fixed;left:-100000px;top:0;pointer-events:none;';holder.appendChild(clone);document.body.appendChild(holder);
+const holder=document.createElement('div');holder.style.cssText='position:fixed;left:0;top:0;z-index:-2147483647;pointer-events:none;';holder.appendChild(clone);document.body.appendChild(holder);
 let canvas;try{canvas=await captureRekhtaCanvas(clone,{scale,useCORS:true,backgroundColor:options.transparent&&options.format==='png'?null:'#ffffff',width,height,logging:false});}finally{holder.remove();}
 if(options.gray){const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height);for(let i=0;i<pixels.data.length;i+=4){const g=Math.round(.299*pixels.data[i]+.587*pixels.data[i+1]+.114*pixels.data[i+2]);pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=g;}ctx.putImageData(pixels,0,0);}
 const name=(options.name||'REKHTA_Design').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').replace(/\.(gif|png|jpg|jpeg|pdf|eps)$/i,'')||'REKHTA_Design';
@@ -300,3 +300,15 @@ blob=new Blob([header,...parts,'grestore\nrekhtaSave restore\nshowpage\n%%Traile
 }else{blob=await new Promise(resolve=>canvas.toBlob(resolve,options.format==='jpg'?'image/jpeg':'image/png',options.quality));if(!blob)throw Error('Unable to generate image.');}
 await saveConfiguredExport(blob,name+'.'+options.format,options);
 };
+
+// Browser exports must capture a page at the origin, not a clipped offscreen page.
+async function captureRekhtaBrowserCanvas(source,options={}){
+await document.fonts.ready;
+return html2canvas(source,{...options,foreignObjectRendering:true,scrollX:0,scrollY:0,windowWidth:Math.max(innerWidth,options.width||source.offsetWidth),windowHeight:Math.max(innerHeight,options.height||source.offsetHeight)});
+}
+(()=>{const nativeCapture=captureRekhtaCanvas;captureRekhtaCanvas=async function(source,options={}){
+const canvas=window.rekhtaDesktop?.capturePage?await nativeCapture(source,options):await captureRekhtaBrowserCanvas(source,options);
+const hasInk=[...(source.matches?.('.obj')?[source]:[]),...source.querySelectorAll('.obj')].some(el=>{const s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&+s.opacity!==0&&(el.textContent.trim()||el.querySelector('img,svg')||el.dataset.type!=='text');});
+if(hasInk){const d=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let visible=false;for(let i=0;i<d.length;i+=4){if(d[i+3]&& (d[i]<250||d[i+1]<250||d[i+2]<250)){visible=true;break;}}if(!visible)throw Error('Page capture is blank. Export cancelled so an empty file is not saved.');}
+return canvas;
+};})();
