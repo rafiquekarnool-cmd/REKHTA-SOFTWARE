@@ -10,6 +10,10 @@ module.exports=async win=>{
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
+ assert.equal(await run(`!!document.querySelector('.rk-topdesign #propX')&&!!document.querySelector('.rk-topdesign #propW')`),true,'Object properties moved above page');
+ assert.equal(await run(`!!document.querySelector('.rightbar #fillColor')&&!!document.querySelector('.rightbar #shapeColor')&&!!document.querySelector('.rightbar #layers')`),true,'Color and Layers remain right');
+ assert.equal(await run(`document.querySelector('.rk-topdesign').getBoundingClientRect().bottom<=document.querySelector('.workspace').getBoundingClientRect().top+1`),true,'Properties do not overlap workspace');
+
  assert.equal(await run(`document.querySelectorAll('[data-clipboard-action]').length`),4);
  await run(`(()=>{const t=createText(100,100,false);t.textContent='سلام English';t.focus();document.querySelector('[data-clipboard-action=selectall]').click();})()`);
  assert.equal(await run(`getSelection().toString()`),'سلام English','Edit Select All selects mixed text');

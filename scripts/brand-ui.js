@@ -140,3 +140,33 @@ for(const [name,key,fn] of entries){const b=document.createElement('button');b.t
 const open=menu.querySelector('[data-action="open"]');if(open?.firstChild?.nodeType===3)open.firstChild.textContent='Open… ';
 const save=menu.querySelector('[data-action="save"]');if(save?.firstChild?.nodeType===3)save.firstChild.textContent='Save As… ';
 })();
+
+/* Object, arrange and effects above the page; Color and Layers stay right. */
+(function(){
+const right=document.querySelector('.rightbar'),workspace=document.querySelector('.workspace');if(!right||!workspace)return;
+const top=document.createElement('aside');top.className='rk-topdesign';top.setAttribute('aria-label','Object and design properties');
+const object=document.createElement('section');object.className='rk-top-object';
+const headings=[...right.children].filter(n=>n.classList.contains('panel-title'));
+if(headings[0])headings[0].textContent='Color & Layers';
+const note=headings[0]?.nextElementSibling;if(note&&!note.classList.contains('panel-title'))note.remove();
+if(headings[1])object.append(headings[1]);
+[...right.children].filter(n=>n.classList.contains('two')).forEach(n=>object.append(n));top.append(object);
+[...right.querySelectorAll(':scope > .right-section')].forEach(n=>top.append(n));
+right.querySelector(':scope > .hr')?.remove();workspace.before(top);
+const style=document.createElement('style');style.id='rekhtaTopProperties';style.textContent=`@media screen{
+#app{grid-template-rows:auto auto auto 134px minmax(0,1fr) 28px!important;}
+.rk-topdesign{display:flex;align-items:stretch;gap:10px;padding:6px 8px;min-width:0;overflow-x:auto;overflow-y:hidden;background:#f6faff;border-bottom:1px solid #c8d9ed;}
+.rk-topdesign>section,.rk-topdesign>.right-section{flex:0 0 auto;border-right:1px solid #d4e0ef;padding:0 10px 0 0;margin:0;}
+.rk-top-object{width:330px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-content:start;}
+.rk-top-object>.panel-title{grid-column:1/-1;}.rk-top-object>.two{display:flex;flex-direction:column;gap:5px;margin:0;}
+.rk-topdesign .field{display:flex;align-items:center;justify-content:space-between;gap:4px;margin:0;}
+.rk-topdesign .field label{font:11px 'Segoe UI',Arial,sans-serif;color:#476581;}
+.rk-topdesign input{width:65px;height:25px;padding:2px 4px;border:1px solid #c5d5e8;border-radius:4px;}
+.rk-topdesign .panel-title{margin:0 0 5px;padding:5px 7px;}
+.rk-topdesign .right-section{width:310px;}.rk-topdesign .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;}
+.rk-topdesign .actions button{font:11px 'Segoe UI',Arial,sans-serif;padding:4px 3px;min-height:23px;background:#fff;border:1px solid #c8d9ec;border-radius:4px;color:#345579;white-space:nowrap;}
+.rk-topdesign .right-section:last-child{width:290px;}.rightbar{overflow-y:auto;}
+}@media print{.rk-topdesign{display:none!important;}}
+`;document.head.append(style);
+requestAnimationFrame(()=>{if(!app.classList.contains('hidden'))fitPage();window.dispatchEvent(new Event('resize'));});
+})();
