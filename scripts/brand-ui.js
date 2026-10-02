@@ -186,3 +186,19 @@ requestAnimationFrame(()=>{if(!app.classList.contains('hidden'))fitPage();window
 .rk-topdesign .right-section:last-child{width:285px;}.rk-topdesign .right-section:last-child .actions{grid-template-columns:repeat(3,minmax(0,1fr));}
 .statusbar{font-size:10px;}.rk-topdesign button:hover{background:#e9f3ff;border-color:#8bb3df;}
 }`;document.head.append(style);requestAnimationFrame(()=>{if(!app.classList.contains('hidden'))fitPage();window.dispatchEvent(new Event('resize'));});})();
+
+/* Muted teal and grey identity, applied only to the software interface. */
+(function(){const s=document.createElement('style');s.id='rekhtaMutedTeal';s.textContent=`@media screen{
+:root{--accent:#2b4242;--line:#aab7b5;--panel:#edf0ee;--text:#2b4242;--muted:#617671;}
+#dashboard{background:radial-gradient(ellipse at top,#edf2f0,transparent 65%),linear-gradient(135deg,#c3c6c3,#93a4ab);}.dash-card{border-color:#a5b5b0;box-shadow:0 18px 55px #2b424225;}.brand-row h1{color:#2b4242;}.logo,.appmark .mini{background:linear-gradient(145deg,#2b4242,#6b8784);box-shadow:0 2px 7px #2b424225;}.dash-btn{border-color:#b6c4bf;background:linear-gradient(#fff,#edf2ef);}.dash-btn:hover{border-color:#6b8784;}
+.fullmenubar{background:#2b4242;border-bottom:1px solid #49625e;}.menu-head{color:#f5f8f7;}.menu-head:hover,.menu-wrap.open>.menu-head{background:#49635f;color:#fff;}
+.topbar{background:#e3e8e5;border-color:#aab9b4;}.topbar .appmark{color:#2b4242;}.rk-brand-credit{color:#526e68;}.rk-large-icon{stroke:#2b4242;}.topbar .rk-icon-label{color:#2b4242;}.smart-two button{background:#edf2ef;border-color:#b4c4bd;color:#2b4242;}
+.formatbar,.rk-topdesign{background:#e8ece9;border-color:#a9b9b2;}.formatbar input,.formatbar select,.rightbar input,.rightbar select,.rk-topdesign input{background:#fafcfb;border-color:#aebfb7;color:#2b4242;}
+.workspace{background:#93a4ab;}.stage-wrap{background:radial-gradient(ellipse at top,#c3c6c3,#7d8f8b);}
+.rightbar{background:#e8ece9;border-color:#a5b5ae;}.panel-title{background:#d6dfda;color:#2b4242;border-color:#b0c0b7;}.rightbar label,.rk-topdesign .field label{color:#49645b;}
+.rightbar .actions button,.rk-topdesign .actions button{background:#f8faf9;color:#2b4242;border-color:#b0c0b7;}.rk-topdesign button:hover{background:#d6e3dc;border-color:#6b8784;}
+.rk-vector-tools{background:#dce4df;border-color:#9db2a7;}.rk-vector-tools button{background:#edf2ef;color:#2b4242;border-color:#b2c2b9;}.rk-vector-tools button:hover{background:#cfdfd6;border-color:#6b8784;}.rk-vector-tools button.active{background:#b8cdc3;border-color:#6b8784;color:#203b32;box-shadow:inset 3px 0 #2b4242;}
+button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#3a7161;}.menu-drop,.ip-menu-panel{background:#f8faf9;border-color:#a9bcb2;box-shadow:0 8px 25px #2b424225;}.menu-drop button:hover{background:#dbe7e0;}
+.rk-trace-dialog{border-color:#a7bdb1;}.rk-trace-dialog h3{color:#2b4242;border-color:#bccdc3;}.rk-trace-dialog button{background:#e8efeb;color:#2b4242;border-color:#a9bfb2;}.rk-trace-dialog [data-apply]{background:#2b4242;color:#fff;}
+.statusbar{background:#2b4242;color:#f2f6f4;border-color:#49625e;}.rightbar #layers button{color:#2b4242;}
+}`;document.head.append(s);})();
