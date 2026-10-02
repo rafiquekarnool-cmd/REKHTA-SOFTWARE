@@ -10,6 +10,12 @@ module.exports=async win=>{
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
+ assert.equal(await run(`document.querySelectorAll('[data-clipboard-action]').length`),4);
+ await run(`(()=>{const t=createText(100,100,false);t.textContent='سلام English';t.focus();document.querySelector('[data-clipboard-action=selectall]').click();})()`);
+ assert.equal(await run(`getSelection().toString()`),'سلام English','Edit Select All selects mixed text');
+ await run(`(()=>{window.rkTestCopy=document.execCommand;document.execCommand=c=>c==='copy';document.querySelector('[data-clipboard-action=cut]').click();})()`);
+ await pause();assert.equal(await run(`selected.textContent`),'','Cut removes selected text after successful copy');await run(`document.execCommand=rkTestCopy;page.innerHTML='';selectObj(null);`);
+
  await run(`saveProject()`);assert.equal(await run(`document.querySelectorAll('#rkSaveFormat option').length`),7);
  assert.equal(await run(`document.querySelector('#rkSaveFormat option[value=svg]').disabled`),true,'SVG needs a vector selection');await run(`closeIpDialog()`);
  for(const format of ['png','jpg','gif','pdf','eps']){
