@@ -56,7 +56,7 @@ New:'M6 3h9l4 4v14H6z M14 3v5h5',Save:'M4 3h14l3 3v15H3V3z M7 3v6h10V3 M7 21v-8h
 function icon(key){const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');s.setAttribute('focusable','false');s.classList.add('rk-large-icon');const p=document.createElementNS(s.namespaceURI,'path');p.setAttribute('d',shapes[key]||shapes.Design);s.append(p);return s;}
 const map={'Design Tool':'Design','Export PNG':'Picture','Export PDF':'PDF','Wedding Data Form':'Wedding','CorelDRAW Export':'SVG','SVG Export':'SVG'};
 for(const b of document.querySelectorAll('.topbar>.menu-btn,.topbar>.tool-btn,.topbar .smart-two>button,.rk-vector-tools button')){
-const label=b.textContent.trim().replace(/^[^A-Za-z]+/,'').trim().replace(/^T Text$/,'Text');const key=map[label]||label;const name=document.createElement('span');name.className='rk-icon-label';name.textContent=label;b.replaceChildren(icon(key),name);b.classList.add('rk-icon-button');if(!b.title)b.title=label;b.setAttribute('aria-label',label);
+b.dataset.rekhtaCommand=b.textContent.trim();const label=b.textContent.trim().replace(/^[^A-Za-z]+/,'').trim().replace(/^T Text$/,'Text');const key=map[label]||label;const name=document.createElement('span');name.className='rk-icon-label';name.textContent=label;b.replaceChildren(icon(key),name);b.classList.add('rk-icon-button');if(!b.title)b.title=label;b.setAttribute('aria-label',label);
 }
 const style=document.createElement('style');style.id='rekhtaLargeIcons';style.textContent=`@media screen{
 .topbar{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;min-height:76px;gap:5px;padding:5px 8px;}
