@@ -18,10 +18,10 @@ module.exports=async function(win){
  let output;
  try{page.innerHTML='';const text=createText(60,60,false);text.textContent='نکاح EPS Test';captureRekhtaCanvas=captureRekhtaBrowserCanvas;saveConfiguredExport=async blob=>{output=await blob.text();};
  await runConfiguredExport({name:'Browser EPS',format:'eps',area:'page',dpi:96,scaling:100,gray:false});
- const hex=output.split('false 3 colorimage\\n')[1]?.split('grestore')[0].replace(/\\s/g,'');return{header:output.startsWith('%!PS-Adobe'),length:hex?.length||0,ink:!!hex&&/[^f]/i.test(hex)};
+ return{header:output.startsWith('%!PS-Adobe'),length:output.length,ink:output.includes('closepath fill'),noRaster:!output.includes('colorimage')};
  }finally{captureRekhtaCanvas=capture;saveConfiguredExport=save;page.innerHTML=previous;selectObj(null);}
  })()`);
- assert(epsBrowser.header&&epsBrowser.length>100000&&epsBrowser.ink,'Actual browser EPS export of Urdu/English must contain nonwhite RGB data');
+ assert(epsBrowser.header&&epsBrowser.length>1000&&epsBrowser.ink&&epsBrowser.noRaster,'Actual browser EPS export of Urdu/English must contain nonwhite RGB data');
  // Rulers use document millimetres, track zoom and keep zero at the page edge.
  const ruler=await win.webContents.executeJavaScript(`(async()=>{setZoom(.5);refreshRekhtaRulers();const half=+rekhtaRulerX.dataset.pixelsPerMm;setZoom(1);stageWrap.scrollTop=100;stageWrap.scrollLeft=20;refreshRekhtaRulers();const f=document.querySelector('.rekhta-ruler-frame').getBoundingClientRect(),p=page.getBoundingClientRect();const result={half,full:+rekhtaRulerX.dataset.pixelsPerMm,x:+rekhtaRulerX.dataset.zero,y:+rekhtaRulerY.dataset.zero,expectedX:p.left-f.left-26,expectedY:p.top-f.top-26,unit:rekhtaRulerX.dataset.unit};fitPage();refreshRekhtaRulers();return result;})()`);
  assert.equal(ruler.unit,'mm');assert(Math.abs(ruler.full-96/25.4)<.00001);assert(Math.abs(ruler.half*2-ruler.full)<.00001);assert(Math.abs(ruler.x-ruler.expectedX)<1&&Math.abs(ruler.y-ruler.expectedY)<1,'Ruler zero must track page edges after scroll');

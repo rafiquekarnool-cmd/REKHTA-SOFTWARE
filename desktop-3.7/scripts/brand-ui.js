@@ -293,10 +293,7 @@ if(options.format==='pdf'){const factor=(options.scaling||100)/100,mmW=width/96*
 let blob;
 if(options.format==='gif'){blob=encodeRekhtaGIF(canvas,options.gray);}
 else if(options.format==='eps'){
-const ctx=canvas.getContext('2d'),data=ctx.getImageData(0,0,canvas.width,canvas.height).data;const hex=Array.from({length:256},(_,i)=>i.toString(16).padStart(2,'0'));const parts=[];let line='';for(let i=0;i<data.length;i+=4){const a=data[i+3]/255;line+=hex[Math.round(data[i]*a+255*(1-a))]+hex[Math.round(data[i+1]*a+255*(1-a))]+hex[Math.round(data[i+2]*a+255*(1-a))];if(line.length>=120){parts.push(line+'\n');line='';}}if(line)parts.push(line+'\n');
-const factor=(options.scaling||100)/100,ptW=width*72/96*factor,ptH=height*72/96*factor;
-const header='%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(ptW)+' '+Math.ceil(ptH)+'\n%%HiResBoundingBox: 0 0 '+ptW+' '+ptH+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%Pages: 1\n%%EndComments\n%%BeginProlog\n/rekhtaSave save def\n/rekhtaRow '+(canvas.width*3)+' string def\n%%EndProlog\n%%Page: 1 1\ngsave\n0 '+ptH+' translate\n'+ptW+' -'+ptH+' scale\n'+canvas.width+' '+canvas.height+' 8\n['+canvas.width+' 0 0 '+canvas.height+' 0 0]\n{ currentfile rekhtaRow readhexstring pop }\nfalse 3 colorimage\n';
-blob=new Blob([header,...parts,'grestore\nrekhtaSave restore\nshowpage\n%%Trailer\n%%EOF\n'],{type:'application/postscript'});
+blob=await encodeRekhtaPathEPS(canvas,width,height,options);
 }else{blob=await new Promise(resolve=>canvas.toBlob(resolve,options.format==='jpg'?'image/jpeg':'image/png',options.quality));if(!blob)throw Error('Unable to generate image.');}
 await saveConfiguredExport(blob,name+'.'+options.format,options);
 };
@@ -312,3 +309,22 @@ const hasInk=[...(source.matches?.('.obj')?[source]:[]),...source.querySelectorA
 if(hasInk){const d=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let visible=false;for(let i=0;i<d.length;i+=4){if(d[i+3]&& (d[i]<250||d[i+1]<250||d[i+2]<250)){visible=true;break;}}if(!visible)throw Error('Page capture is blank. Export cancelled so an empty file is not saved.');}
 return canvas;
 };})();
+
+async function encodeRekhtaPathEPS(canvas,width,height,options={}){
+const w=canvas.width,h=canvas.height,data=canvas.getContext('2d').getImageData(0,0,w,h).data;
+const factor=(options.scaling||100)/100,pw=width*.75*factor,ph=height*.75*factor;
+const parts=['%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(pw)+' '+Math.ceil(ph)+'\n%%HiResBoundingBox: 0 0 '+pw+' '+ph+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%EndComments\ngsave\n'+pw/w+' '+ph/h+' scale\n1 1 1 setrgbcolor\n0 0 '+w+' '+h+' rectfill\n'];
+const channel=(i,c)=>Math.round(data[i+c]*data[i+3]/255+255-data[i+3]);
+let last=-1,runs=0;
+for(let y=0;y<h;y++){
+let line='';
+for(let x=0;x<w;){const i=(y*w+x)*4,r=channel(i,0),g=channel(i,1),b=channel(i,2),rgb=(r<<16)|(g<<8)|b;let end=x+1;
+while(end<w){const j=(y*w+end)*4;if(channel(j,0)!==r||channel(j,1)!==g||channel(j,2)!==b)break;end++;}
+if(rgb!==0xffffff){if(++runs>2000000)throw Error('EPS artwork is too detailed at this resolution. Choose a lower DPI or export PNG.');
+if(rgb!==last){line+=(r/255).toFixed(6)+' '+(g/255).toFixed(6)+' '+(b/255).toFixed(6)+' setrgbcolor\n';last=rgb;}
+line+='newpath '+x+' '+(h-y-1)+' moveto '+(end-x)+' 0 rlineto 0 1 rlineto '+(x-end)+' 0 rlineto closepath fill\n';}
+x=end;}
+if(line)parts.push(line);if(y%64===63)await new Promise(resolve=>setTimeout(resolve,0));
+}
+parts.push('grestore\nshowpage\n%%EOF\n');return new Blob(parts,{type:'application/postscript'});
+}
