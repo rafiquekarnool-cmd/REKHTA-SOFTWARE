@@ -271,3 +271,32 @@ finally{closeIpDialog();}
 
 // Hide the property strip while retaining its controls for existing commands.
 (()=>{const style=document.createElement('style');style.id='rk-hide-top-properties';style.textContent=`@media screen{.rk-topdesign{display:none!important}#app{grid-template-rows:auto auto auto minmax(0,1fr) 26px!important}}`;document.head.appendChild(style);requestAnimationFrame(()=>{if(typeof fitPage==='function'&&document.getElementById('app')?.offsetParent!==null)fitPage();window.dispatchEvent(new Event('resize'));});})();
+
+// Use the conventional RGB colorimage EPS stream for CorelDRAW import.
+runConfiguredExport=async function(options){
+if(typeof html2canvas==='undefined')throw Error('Export library is unavailable. Connect to internet and reopen the HTML.');
+if(options.format==='pdf'&&!window.jspdf)throw Error('PDF library is unavailable. Connect to internet and reopen the HTML.');
+const source=options.area==='selection'?selected:page;if(!source)throw Error('Select text or an object first.');
+const urdu=(source.getAttribute('lang')==='ur'||source.dataset.mixed==='1'||!!source.querySelector('[lang="ur"],[data-mixed="1"]'));
+if(urdu){try{const fonts=await document.fonts.load('34px "Jameel Noori Nastaleeq"');if(!fonts.length)throw Error();}catch(e){throw Error('Jameel Noori Nastaleeq is unavailable. Install the font or place JAMEEL NOORI NASTALEEQ.TTF beside this HTML.');}}
+await document.fonts.ready;
+const width=source.offsetWidth||parseFloat(source.style.width)||1,height=source.offsetHeight||parseFloat(source.style.height)||1,scale=options.dpi/96*((options.scaling||100)/100);
+if(width*height*scale*scale>80000000)throw Error('This resolution is too large. Choose 150 or 300 DPI.');
+const clone=source.cloneNode(true);clone.querySelectorAll('.handle').forEach(h=>h.remove());[clone,...clone.querySelectorAll('.obj')].forEach(el=>{el.classList.remove('selected','keyboard-selected');el.style.outline='none';});clone.classList.remove('margin-guides','show-grid');
+clone.removeAttribute('id');clone.style.position='relative';clone.style.left='0';clone.style.top='0';clone.style.margin='0';clone.style.transform='none';clone.style.width=width+'px';clone.style.height=height+'px';
+if(source===page&&options.transparent&&options.format==='png')clone.style.background='transparent';
+const holder=document.createElement('div');holder.style.cssText='position:fixed;left:-100000px;top:0;pointer-events:none;';holder.appendChild(clone);document.body.appendChild(holder);
+let canvas;try{canvas=await captureRekhtaCanvas(clone,{scale,useCORS:true,backgroundColor:options.transparent&&options.format==='png'?null:'#ffffff',width,height,logging:false});}finally{holder.remove();}
+if(options.gray){const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height);for(let i=0;i<pixels.data.length;i+=4){const g=Math.round(.299*pixels.data[i]+.587*pixels.data[i+1]+.114*pixels.data[i+2]);pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=g;}ctx.putImageData(pixels,0,0);}
+const name=(options.name||'REKHTA_Design').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').replace(/\.(gif|png|jpg|jpeg|pdf|eps)$/i,'')||'REKHTA_Design';
+if(options.format==='pdf'){const factor=(options.scaling||100)/100,mmW=width/96*25.4*factor,mmH=height/96*25.4*factor;const pdf=new window.jspdf.jsPDF({orientation:mmW>mmH?'landscape':'portrait',unit:'mm',format:[mmW,mmH]});pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,mmW,mmH);await saveConfiguredExport(pdf.output('blob'),name+'.pdf',options);return;}
+let blob;
+if(options.format==='gif'){blob=encodeRekhtaGIF(canvas,options.gray);}
+else if(options.format==='eps'){
+const ctx=canvas.getContext('2d'),data=ctx.getImageData(0,0,canvas.width,canvas.height).data;const hex=Array.from({length:256},(_,i)=>i.toString(16).padStart(2,'0'));const parts=[];let line='';for(let i=0;i<data.length;i+=4){const a=data[i+3]/255;line+=hex[Math.round(data[i]*a+255*(1-a))]+hex[Math.round(data[i+1]*a+255*(1-a))]+hex[Math.round(data[i+2]*a+255*(1-a))];if(line.length>=120){parts.push(line+'\n');line='';}}if(line)parts.push(line+'\n');
+const factor=(options.scaling||100)/100,ptW=width*72/96*factor,ptH=height*72/96*factor;
+const header='%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(ptW)+' '+Math.ceil(ptH)+'\n%%HiResBoundingBox: 0 0 '+ptW+' '+ptH+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%Pages: 1\n%%EndComments\n%%BeginProlog\n/rekhtaSave save def\n/rekhtaRow '+(canvas.width*3)+' string def\n%%EndProlog\n%%Page: 1 1\ngsave\n'+ptW+' '+ptH+' scale\n'+canvas.width+' '+canvas.height+' 8\n['+canvas.width+' 0 0 -'+canvas.height+' 0 '+canvas.height+']\n{ currentfile rekhtaRow readhexstring pop }\nfalse 3 colorimage\n';
+blob=new Blob([header,...parts,'grestore\nrekhtaSave restore\nshowpage\n%%Trailer\n%%EOF\n'],{type:'application/postscript'});
+}else{blob=await new Promise(resolve=>canvas.toBlob(resolve,options.format==='jpg'?'image/jpeg':'image/png',options.quality));if(!blob)throw Error('Unable to generate image.');}
+await saveConfiguredExport(blob,name+'.'+options.format,options);
+};
