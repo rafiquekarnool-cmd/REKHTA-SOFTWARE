@@ -1,0 +1,42 @@
+name: REKHTA Offline Licensed EXE
+on:
+  push:
+    branches: [test/rekhta-stability-20261001]
+    paths: [offline-licensing/customer/**, .github/workflows/rekhta-offline-license.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Prepare current verified editor
+        run: npm install
+        working-directory: desktop-3.7
+      - name: Stage offline desktop files
+        shell: pwsh
+        run: |
+          Copy-Item desktop-3.7/REKHTA.html offline-licensing/customer/REKHTA.html
+          Copy-Item desktop-3.7/assets offline-licensing/customer/assets -Recurse -Force
+          Copy-Item desktop-3.7/scripts offline-licensing/customer/scripts -Recurse -Force
+          Copy-Item desktop-3.7/vendor offline-licensing/customer/vendor -Recurse -Force
+      - name: Install licensed build dependencies
+        run: npm install
+        working-directory: offline-licensing/customer
+      - name: Test offline license verification
+        run: npm test
+        working-directory: offline-licensing/customer
+      - name: Build Windows 8 x64 installer
+        run: npm run dist
+        working-directory: offline-licensing/customer
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: REKHTA-Offline-Licensed-Win8-x64
+          path: offline-licensing/customer/dist/*.exe
+          if-no-files-found: error

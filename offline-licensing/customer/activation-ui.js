@@ -1,0 +1,4 @@
+const pc=document.getElementById('pc'),button=document.getElementById('activate'),message=document.getElementById('message');
+window.activation.info().then(info=>{if(info.error){pc.value='Unavailable';message.textContent=info.error;return;}pc.value=info.pc;button.disabled=false;document.getElementById('copy').disabled=false;}).catch(()=>message.textContent='Could not read PC Code. Please contact RK Solution.');
+document.getElementById('copy').onclick=()=>{pc.select();document.execCommand('copy');};
+button.onclick=async()=>{button.disabled=true;message.textContent='Checking license…';try{const result=await window.activation.activate(document.getElementById('key').value.trim());if(result.error){message.textContent=result.error;button.disabled=false;}else message.textContent='Activated for '+result.customer;}catch{message.textContent='Activation failed. Please try again.';button.disabled=false;}};

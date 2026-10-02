@@ -1,0 +1,62 @@
+{
+  "name": "rekhta-offline-licensed",
+  "version": "1.0.26",
+  "description": "REKHTA 3.7 Urdu and English Layout Studio",
+  "main": "main.js",
+  "author": "RK Solution - Rafique Karnool",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "test": "node license-tests.cjs",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "dependencies": {
+    "html2canvas": "1.4.1",
+    "jspdf": "2.5.1"
+  },
+  "devDependencies": {
+    "electron": "22.3.27",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "com.rksolution.rekhta",
+    "productName": "REKHTA",
+    "files": [
+      "main.js",
+      "preload.js",
+      "license.cjs",
+      "license-public.pem",
+      "activation.html",
+      "activation-ui.js",
+      "REKHTA.html",
+      "assets/**",
+      "!assets/*.br",
+      "!**/*PRIVATE*",
+      "!license-tests.cjs",
+      "scripts/**",
+      "vendor/**"
+    ],
+    "asar": true,
+    "compression": "maximum",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "REKHTA-Setup-${version}-Win8-x64.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "REKHTA",
+      "perMachine": false,
+      "runAfterFinish": true
+    }
+  }
+}
