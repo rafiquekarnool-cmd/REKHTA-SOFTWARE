@@ -170,3 +170,19 @@ const style=document.createElement('style');style.id='rekhtaTopProperties';style
 `;document.head.append(style);
 requestAnimationFrame(()=>{if(!app.classList.contains('hidden'))fitPage();window.dispatchEvent(new Event('resize'));});
 })();
+
+/* Compact upper controls leave more room for the document. */
+(function(){const style=document.createElement('style');style.id='rekhtaCompactTop';style.textContent=`@media screen{
+.fullmenubar{min-height:28px;padding:2px 7px;gap:2px;}.menu-head{font-size:11px;padding:4px 7px;}
+.topbar{min-height:56px;gap:3px;padding:3px 7px;}
+.topbar>.rk-icon-button,.topbar .smart-two>.rk-icon-button{min-width:48px;min-height:46px;padding:3px 5px;gap:3px;}
+.topbar .rk-large-icon{width:22px;height:22px;stroke-width:1.8;}.topbar .rk-icon-label{font-size:10px;}
+.topbar .appmark{min-width:115px;margin-right:5px;gap:6px;}.appmark .mini{width:28px;height:28px;border-radius:6px;font-size:14px;}.rk-brand-name{font-size:17px;}.rk-brand-credit{font-size:9px;letter-spacing:.4px;margin-top:3px;}
+.formatbar{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;min-height:36px;padding:3px 7px;gap:4px;}.formatbar>*{flex-shrink:0;}.formatbar input,.formatbar select{font-size:11px;height:27px;}.formatbar button{font-size:11px;min-height:26px;padding:3px 6px;}
+#app{grid-template-rows:auto auto auto 100px minmax(0,1fr) 26px!important;}
+.rk-topdesign{gap:8px;padding:4px 7px;}.rk-topdesign .panel-title{font-size:10px;padding:4px 6px;margin-bottom:4px;letter-spacing:.3px;}
+.rk-top-object{width:310px;gap:3px;}.rk-top-object>.two{gap:4px;}.rk-topdesign input{height:23px;width:60px;font-size:11px;}
+.rk-topdesign .right-section{width:370px;}.rk-topdesign .actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;}.rk-topdesign .actions button{font-size:10px;min-height:21px;padding:3px 2px;}
+.rk-topdesign .right-section:last-child{width:285px;}.rk-topdesign .right-section:last-child .actions{grid-template-columns:repeat(3,minmax(0,1fr));}
+.statusbar{font-size:10px;}.rk-topdesign button:hover{background:#e9f3ff;border-color:#8bb3df;}
+}`;document.head.append(style);requestAnimationFrame(()=>{if(!app.classList.contains('hidden'))fitPage();window.dispatchEvent(new Event('resize'));});})();
