@@ -12,6 +12,16 @@ module.exports=async function(win){
  try{const c=await captureRekhtaBrowserCanvas(sheet,{width:240,height:160,scale:1,backgroundColor:'#ffffff',logging:false});const ctx=c.getContext('2d'),red=[...ctx.getImageData(40,40,1,1).data],d=ctx.getImageData(0,90,240,60).data;let ink=0;for(let i=0;i<d.length;i+=4)if(d[i]<100&&d[i+1]<100&&d[i+2]<100)ink++;return{red,ink};}finally{holder.remove();}
  })()`);
  assert(browserExport.red[0]>180&&browserExport.red[1]<70&&browserExport.ink>20,'Browser export must include colours and text, not white pixels');
+
+ const epsBrowser=await win.webContents.executeJavaScript(`(async()=>{
+ const capture=captureRekhtaCanvas,save=saveConfiguredExport,previous=page.innerHTML;
+ let output;
+ try{page.innerHTML='';const text=createText(60,60,false);text.textContent='نکاح EPS Test';captureRekhtaCanvas=captureRekhtaBrowserCanvas;saveConfiguredExport=async blob=>{output=await blob.text();};
+ await runConfiguredExport({name:'Browser EPS',format:'eps',area:'page',dpi:96,scaling:100,gray:false});
+ const hex=output.split('false 3 colorimage\\n')[1]?.split('grestore')[0].replace(/\\s/g,'');return{header:output.startsWith('%!PS-Adobe'),length:hex?.length||0,ink:!!hex&&/[^f]/i.test(hex)};
+ }finally{captureRekhtaCanvas=capture;saveConfiguredExport=save;page.innerHTML=previous;selectObj(null);}
+ })()`);
+ assert(epsBrowser.header&&epsBrowser.length>100000&&epsBrowser.ink,'Actual browser EPS export of Urdu/English must contain nonwhite RGB data');
  // Rulers use document millimetres, track zoom and keep zero at the page edge.
  const ruler=await win.webContents.executeJavaScript(`(async()=>{setZoom(.5);refreshRekhtaRulers();const half=+rekhtaRulerX.dataset.pixelsPerMm;setZoom(1);stageWrap.scrollTop=100;stageWrap.scrollLeft=20;refreshRekhtaRulers();const f=document.querySelector('.rekhta-ruler-frame').getBoundingClientRect(),p=page.getBoundingClientRect();const result={half,full:+rekhtaRulerX.dataset.pixelsPerMm,x:+rekhtaRulerX.dataset.zero,y:+rekhtaRulerY.dataset.zero,expectedX:p.left-f.left-26,expectedY:p.top-f.top-26,unit:rekhtaRulerX.dataset.unit};fitPage();refreshRekhtaRulers();return result;})()`);
  assert.equal(ruler.unit,'mm');assert(Math.abs(ruler.full-96/25.4)<.00001);assert(Math.abs(ruler.half*2-ruler.full)<.00001);assert(Math.abs(ruler.x-ruler.expectedX)<1&&Math.abs(ruler.y-ruler.expectedY)<1,'Ruler zero must track page edges after scroll');
