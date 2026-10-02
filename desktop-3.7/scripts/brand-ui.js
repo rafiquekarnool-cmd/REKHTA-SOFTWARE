@@ -268,3 +268,6 @@ const r=s.getRangeAt(0);if(r.collapsed&&r.startContainer.nodeType===Node.ELEMENT
 }catch(err){console.error('Geometry insertion failed',err);toast('Symbol could not be inserted. Choose it again.');}
 finally{closeIpDialog();}
 };})();
+
+// Hide the property strip while retaining its controls for existing commands.
+(()=>{const style=document.createElement('style');style.id='rk-hide-top-properties';style.textContent=`@media screen{.rk-topdesign{display:none!important}#app{grid-template-rows:auto auto auto minmax(0,1fr) 26px!important}}`;document.head.appendChild(style);requestAnimationFrame(()=>{if(typeof fitPage==='function'&&document.getElementById('app')?.offsetParent!==null)fitPage();window.dispatchEvent(new Event('resize'));});})();
