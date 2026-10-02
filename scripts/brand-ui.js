@@ -113,3 +113,14 @@ const style=document.createElement('style');style.id='rekhtaToolCursors';style.t
 #page .rk-node{cursor:move!important;}
 }`;document.head.append(style);
 })();
+
+/* Save offers editable projects and the existing output formats. */
+(function(){
+const saveJson=saveProject;
+saveProject=function(){
+const vector=!!selected?.querySelector('svg path[data-rings]');
+openIpDialog('Save As',`<label>File format<select id="rkSaveFormat"><option value="json">REKHTA Project (*.json) — editable</option><option value="png">PNG Picture (*.png)</option><option value="jpg">JPEG Picture (*.jpg)</option><option value="gif">GIF Picture (*.gif)</option><option value="pdf">PDF — image (*.pdf)</option><option value="eps">EPS — image (*.eps)</option><option value="svg" ${vector?'':'disabled'}>SVG — selected vector (*.svg)</option></select></label><p>JSON opens again in REKHTA for editing. Picture formats open export settings for file name, resolution and page range. SVG saves only a selected traced vector or Pen shape.</p>`,null);
+ipDialogApply.textContent='Continue';ipDialogApply.disabled=false;
+ipDialogApply.onclick=function(){const format=document.getElementById('rkSaveFormat').value;closeIpDialog();if(format==='json')return saveJson();if(format==='svg'){const b=[...document.querySelectorAll('.rk-vector-tools button')].find(x=>x.textContent.trim()==='SVG Export');if(b)b.click();return;}openExportDialog(format,false);};
+};window.saveProject=saveProject;
+})();
