@@ -2,11 +2,49 @@ const assert=require('node:assert/strict');
 module.exports=async win=>{
  const fs=require('node:fs');fs.mkdirSync('test-output',{recursive:true});const shot=async name=>fs.writeFileSync('test-output/'+name+'.png',(await win.capturePage()).toPNG());
  const run=s=>win.webContents.executeJavaScript(s),pause=()=>new Promise(r=>setTimeout(r,70));
- const clickTool=label=>run(`(()=>{const b=[...document.querySelectorAll('.rk-vector-tools button')].find(b=>b.textContent===${JSON.stringify(label)});if(!b)throw Error('Missing tool');b.click();})()`);
+ const clickTool=label=>run(`(()=>{const b=[...document.querySelectorAll('.rk-vector-tools button')].find(b=>b.textContent.trim().replace(/^Image Trace$/,'Trace').replace(/^[^A-Za-z]+/,'')===${JSON.stringify(label)}.replace(/^[^A-Za-z]+/,''));if(!b)throw Error('Missing tool');b.click();})()`);
  const click=async(x,y,count=1)=>{win.webContents.sendInputEvent({type:'mouseDown',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});win.webContents.sendInputEvent({type:'mouseUp',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});await pause();};
  const point=(x,y)=>run(`(()=>{const r=page.getBoundingClientRect();return{x:r.left+${x}*zoom,y:r.top+${y}*zoom};})()`);
+ await run(`(()=>{page.innerHTML='';language.value='ur';const t=createText(100,100,false);t.style.width='600px';t.innerHTML='سلام English<br>second line';t.focus();const r=document.createRange();r.setStart(t.firstChild,2);r.collapse(true);const s=getSelection();s.removeAllRanges();s.addRange(r);switchLanguage('en');})()`);
+ win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});await pause();
+ assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
+ for(const kind of ['triangle','square','circle','star']){
+ await run(`openGeometricSymbols();document.querySelector('[data-geometric=${kind}]').click();`);
+ assert.equal(await run(`ipDialogBackdrop.classList.contains('open')`),false,'Geometry chooser closes after '+kind);
+ assert.equal(await run(`selected.dataset.symbol`),kind,'Geometry inserted');
+ }
+ await run(`page.innerHTML='';selectObj(null);`);
+
+ await run(`window.rkPageSetupBefore=serialize();window.rkPageTest=createText(100,100,false);rkPageTest.textContent='سلام English';ipPageSetup();ndWidth.value='297';ndHeight.value='210';ndLandscape.checked=true;nd_left.value='15';nd_right.value='12';nd_top.value='10';nd_bottom.value='10';ndColumns.value='2';ndGutter.value='5';ndAutomatic.checked=true;ipDialogApply.click();`);
+ assert.equal(await run(`rkPageTest.textContent`),'سلام English','Page Setup preserves text');assert.equal(await run(`rkPageTest.style.getPropertyValue('--flow-columns')`),'2');assert.equal(Math.round(await run(`parseFloat(page.style.width)*25.4/96`)),297);
+ const config=await run(`serialize().documentSettings`);assert.equal(config.left,15);assert.equal(config.columns,2);
+ await run(`(()=>{const saved=serialize();restore(saved);if(documentSettings.columns!==2)throw Error('Settings not restored');restore(rkPageSetupBefore);selectObj(null);})()`);
+
+ assert.deepEqual(await run(`[...document.querySelectorAll('.rk-vector-tools button')].filter(b=>!b.hidden).map(b=>b.textContent.trim())`),['Image Trace'],'Only Image Trace is shown on left');
+ assert.equal(await run(`!!document.querySelector('.rk-topdesign #propX')&&!!document.querySelector('.rk-topdesign #propW')`),true,'Object properties moved above page');
+ assert.equal(await run(`!!document.querySelector('.rightbar #fillColor')&&!!document.querySelector('.rightbar #shapeColor')&&!!document.querySelector('.rightbar #layers')`),true,'Color and Layers remain right');
+ assert.equal(await run(`document.querySelector('.rk-topdesign').getBoundingClientRect().bottom<=document.querySelector('.workspace').getBoundingClientRect().top+1`),true,'Properties do not overlap workspace');
+
+ assert.equal(await run(`document.querySelectorAll('[data-clipboard-action]').length`),4);
+ await run(`(()=>{const t=createText(100,100,false);t.textContent='سلام English';t.focus();document.querySelector('[data-clipboard-action=selectall]').click();})()`);
+ assert.equal(await run(`getSelection().toString()`),'سلام English','Edit Select All selects mixed text');
+ await run(`(()=>{window.rkTestCopy=document.execCommand;document.execCommand=c=>c==='copy';document.querySelector('[data-clipboard-action=cut]').click();})()`);
+ await pause();assert.equal(await run(`selected.textContent`),'','Cut removes selected text after successful copy');await run(`document.execCommand=rkTestCopy;page.innerHTML='';selectObj(null);`);
+
+ await run(`saveProject()`);assert.equal(await run(`document.querySelectorAll('#rkSaveFormat option').length`),7);
+ assert.equal(await run(`document.querySelector('#rkSaveFormat option[value=svg]').disabled`),true,'SVG needs a vector selection');await run(`closeIpDialog()`);
+ for(const format of ['png','jpg','gif','pdf','eps']){
+ await run(`saveProject();document.getElementById('rkSaveFormat').value='${format}';ipDialogApply.click();`);
+ assert.equal(await run(`document.getElementById('expFormat').value`),format,'Save routes '+format+' to export');assert.equal(await run(`ipDialogBackdrop.classList.contains('open')`),true,'Export remains open');await run(`closeIpDialog()`);
+ }
+
+ for(const [label,expected] of [['Text','text'],['Pen','crosshair'],['Freehand','crosshair'],['Pick','default']]){
+ await clickTool(label);assert.equal(await run(`getComputedStyle(page).cursor`),expected,'Cursor matches '+label);
+ }
+ assert.equal(await run(`page.classList.contains('tool-vectorpen')`),false,'Pen cursor class is cleared on switching tool');
+
  const z=await run('zoom');await clickTool('＋ Zoom');assert((await run('zoom'))>z);await clickTool('− Zoom');assert.equal(await run('zoom'),z);await clickTool('Fit');await run('setZoom(.7)');
  // Real pointer drawing, not calling a shape constructor.
  await clickTool('✎ Freehand');let p=await point(100,160);win.webContents.sendInputEvent({type:'mouseDown',x:Math.round(p.x),y:Math.round(p.y),button:'left',clickCount:1});
