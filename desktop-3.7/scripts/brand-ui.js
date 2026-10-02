@@ -274,6 +274,7 @@ finally{closeIpDialog();}
 
 // Use the conventional RGB colorimage EPS stream for CorelDRAW import.
 runConfiguredExport=async function(options){
+if(options.format==='eps')options={...options,transparent:true};
 if(typeof html2canvas==='undefined')throw Error('Export library is unavailable. Connect to internet and reopen the HTML.');
 if(options.format==='pdf'&&!window.jspdf)throw Error('PDF library is unavailable. Connect to internet and reopen the HTML.');
 const source=options.area==='selection'?selected:page;if(!source)throw Error('Select text or an object first.');
@@ -284,9 +285,9 @@ const width=source.offsetWidth||parseFloat(source.style.width)||1,height=source.
 if(width*height*scale*scale>80000000)throw Error('This resolution is too large. Choose 150 or 300 DPI.');
 const clone=source.cloneNode(true);clone.querySelectorAll('.handle').forEach(h=>h.remove());[clone,...clone.querySelectorAll('.obj')].forEach(el=>{el.classList.remove('selected','keyboard-selected');el.style.outline='none';});clone.classList.remove('margin-guides','show-grid');
 clone.removeAttribute('id');clone.style.position='relative';clone.style.left='0';clone.style.top='0';clone.style.margin='0';clone.style.transform='none';clone.style.width=width+'px';clone.style.height=height+'px';
-if(source===page&&options.transparent&&options.format==='png')clone.style.background='transparent';
+if(source===page&&options.transparent&&['png','eps'].includes(options.format))clone.style.background='transparent';
 const holder=document.createElement('div');holder.style.cssText='position:fixed;left:0;top:0;z-index:-2147483647;pointer-events:none;';holder.appendChild(clone);document.body.appendChild(holder);
-let canvas;try{canvas=await captureRekhtaCanvas(clone,{scale,useCORS:true,backgroundColor:options.transparent&&options.format==='png'?null:'#ffffff',width,height,logging:false});}finally{holder.remove();}
+let canvas;try{canvas=await captureRekhtaCanvas(clone,{scale,useCORS:true,backgroundColor:options.transparent&&['png','eps'].includes(options.format)?null:'#ffffff',width,height,logging:false});}finally{holder.remove();}
 if(options.gray){const ctx=canvas.getContext('2d'),pixels=ctx.getImageData(0,0,canvas.width,canvas.height);for(let i=0;i<pixels.data.length;i+=4){const g=Math.round(.299*pixels.data[i]+.587*pixels.data[i+1]+.114*pixels.data[i+2]);pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=g;}ctx.putImageData(pixels,0,0);}
 const name=(options.name||'REKHTA_Design').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').replace(/\.(gif|png|jpg|jpeg|pdf|eps)$/i,'')||'REKHTA_Design';
 if(options.format==='pdf'){const factor=(options.scaling||100)/100,mmW=width/96*25.4*factor,mmH=height/96*25.4*factor;const pdf=new window.jspdf.jsPDF({orientation:mmW>mmH?'landscape':'portrait',unit:'mm',format:[mmW,mmH]});pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,mmW,mmH);await saveConfiguredExport(pdf.output('blob'),name+'.pdf',options);return;}
@@ -313,14 +314,14 @@ return canvas;
 async function encodeRekhtaPathEPS(canvas,width,height,options={}){
 const w=canvas.width,h=canvas.height,data=canvas.getContext('2d').getImageData(0,0,w,h).data;
 const factor=(options.scaling||100)/100,pw=width*.75*factor,ph=height*.75*factor;
-const parts=['%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(pw)+' '+Math.ceil(ph)+'\n%%HiResBoundingBox: 0 0 '+pw+' '+ph+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%EndComments\ngsave\n'+pw/w+' '+ph/h+' scale\n1 1 1 setrgbcolor\n0 0 '+w+' '+h+' rectfill\n'];
+const parts=['%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(pw)+' '+Math.ceil(ph)+'\n%%HiResBoundingBox: 0 0 '+pw+' '+ph+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%EndComments\ngsave\n'+pw/w+' '+ph/h+' scale\n'];
 const channel=(i,c)=>Math.round(data[i+c]*data[i+3]/255+255-data[i+3]);
 let last=-1,runs=0;
 for(let y=0;y<h;y++){
 let line='';
-for(let x=0;x<w;){const i=(y*w+x)*4,r=channel(i,0),g=channel(i,1),b=channel(i,2),rgb=(r<<16)|(g<<8)|b;let end=x+1;
-while(end<w){const j=(y*w+end)*4;if(channel(j,0)!==r||channel(j,1)!==g||channel(j,2)!==b)break;end++;}
-if(rgb!==0xffffff){if(++runs>2000000)throw Error('EPS artwork is too detailed at this resolution. Choose a lower DPI or export PNG.');
+for(let x=0;x<w;){const i=(y*w+x)*4,r=channel(i,0),g=channel(i,1),b=channel(i,2),rgb=(r<<16)|(g<<8)|b;const painted=data[i+3]>0;let end=x+1;
+while(end<w){const j=(y*w+end)*4;if((data[j+3]>0)!==painted||channel(j,0)!==r||channel(j,1)!==g||channel(j,2)!==b)break;end++;}
+if(painted){if(++runs>2000000)throw Error('EPS artwork is too detailed at this resolution. Choose a lower DPI or export PNG.');
 if(rgb!==last){line+=(r/255).toFixed(6)+' '+(g/255).toFixed(6)+' '+(b/255).toFixed(6)+' setrgbcolor\n';last=rgb;}
 line+='newpath '+x+' '+(h-y-1)+' moveto '+(end-x)+' 0 rlineto 0 1 rlineto '+(x-end)+' 0 rlineto closepath fill\n';}
 x=end;}
@@ -328,3 +329,8 @@ if(line)parts.push(line);if(y%64===63)await new Promise(resolve=>setTimeout(reso
 }
 parts.push('grestore\nshowpage\n%%EOF\n');return new Blob(parts,{type:'application/postscript'});
 }
+
+// Default input settings apply to newly created text, not existing mixed lines.
+keyboardPrefs.mode='phonetic';
+(()=>{const create=createText;createText=function(...args){const el=create(...args);if(el&&['ur','en','mix'].includes(language.value)){el.style.fontFamily=language.value==='en'?'"Times New Roman",Times,serif':'"Jameel Noori Nastaleeq"';}return el;};
+const open=openExportDialog;openExportDialog=function(...args){const result=open(...args);const format=document.getElementById('expFormat'),check=document.getElementById('expTransparent');if(format&&check){check.parentElement.lastChild.textContent=' Transparent background (PNG / EPS)';const update=()=>{if(format.value==='eps'){check.checked=true;check.disabled=true;}else check.disabled=format.value!=='png';};format.addEventListener('change',update);update();}return result;};})();
