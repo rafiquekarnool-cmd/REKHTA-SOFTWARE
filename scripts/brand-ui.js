@@ -202,3 +202,18 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#3a7
 .rk-trace-dialog{border-color:#a7bdb1;}.rk-trace-dialog h3{color:#2b4242;border-color:#bccdc3;}.rk-trace-dialog button{background:#e8efeb;color:#2b4242;border-color:#a9bfb2;}.rk-trace-dialog [data-apply]{background:#2b4242;color:#fff;}
 .statusbar{background:#2b4242;color:#f2f6f4;border-color:#49625e;}.rightbar #layers button{color:#2b4242;}
 }`;document.head.append(s);})();
+
+/* Dark menu labels and balanced use of the available upper strip width. */
+(function(){const s=document.createElement('style');s.id='rekhtaHeaderBalance';s.textContent=`@media screen{
+.fullmenubar{background:#dce5df;border-bottom:1px solid #a6b8ad;}
+.menu-head{color:#203b32;font-weight:600;}
+.menu-head:hover,.menu-wrap.open>.menu-head{background:#b7cec0;color:#18352a;}
+.topbar .rk-icon-label{color:#203b32;font-weight:600;}
+.topbar>.spacer{flex:1 1 0;min-width:0;}
+.topbar .corel-page-controls{margin-left:auto;}
+.rk-topdesign>.rk-top-object{flex:1 0 310px;max-width:420px;}
+.rk-topdesign>.right-section{flex:1.2 0 350px;width:auto;}
+.rk-topdesign>.right-section:last-child{flex:1 0 285px;width:auto;border-right:0;}
+.rk-topdesign .field{justify-content:flex-start;}.rk-topdesign .field label{min-width:40px;color:#203b32;font-weight:600;}
+.rk-topdesign .panel-title{color:#203b32;font-weight:700;}
+}`;document.head.append(s);})();
