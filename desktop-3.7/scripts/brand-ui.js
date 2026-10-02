@@ -262,7 +262,7 @@ closeIpDialog();
 try{insert(kind);
 if(mode==='inline'&&selected?.dataset.type==='text'){
 const el=selected,s=getSelection();if(s.rangeCount&&el.contains(s.anchorNode)){
-const r=s.getRangeAt(0);if(r.collapsed&&r.startContainer.nodeType===Node.ELEMENT_NODE){const tail=document.createTextNode('');r.insertNode(tail);r.setStart(tail,0);r.collapse(true);s.removeAllRanges();s.addRange(r);rekhtaSymbolRange={object:el,range:r.cloneRange()};}
+const r=s.getRangeAt(0);if(r.collapsed&&r.startContainer.nodeType===Node.ELEMENT_NODE){const tail=document.createTextNode('\u200b');r.insertNode(tail);r.setStart(tail,1);r.collapse(true);s.removeAllRanges();s.addRange(r);rekhtaSymbolRange={object:el,range:r.cloneRange()};}
 }setTool('text');el.focus({preventScroll:true});
 }else{setTool('select');page.focus({preventScroll:true});}
 }catch(err){console.error('Geometry insertion failed',err);toast('Symbol could not be inserted. Choose it again.');}
