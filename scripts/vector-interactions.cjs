@@ -10,6 +10,13 @@ module.exports=async win=>{
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
+ for(const kind of ['triangle','square','circle','star']){
+ await run(`openGeometricSymbols();document.querySelector('[data-geometric=${kind}]').click();`);
+ assert.equal(await run(`ipDialogBackdrop.classList.contains('open')`),false,'Geometry chooser closes after '+kind);
+ assert.equal(await run(`selected.dataset.symbol`),kind,'Geometry inserted');
+ }
+ await run(`page.innerHTML='';selectObj(null);`);
+
  await run(`window.rkPageSetupBefore=serialize();window.rkPageTest=createText(100,100,false);rkPageTest.textContent='سلام English';ipPageSetup();ndWidth.value='297';ndHeight.value='210';ndLandscape.checked=true;nd_left.value='15';nd_right.value='12';nd_top.value='10';nd_bottom.value='10';ndColumns.value='2';ndGutter.value='5';ndAutomatic.checked=true;ipDialogApply.click();`);
  assert.equal(await run(`rkPageTest.textContent`),'سلام English','Page Setup preserves text');assert.equal(await run(`rkPageTest.style.getPropertyValue('--flow-columns')`),'2');assert.equal(Math.round(await run(`parseFloat(page.style.width)*25.4/96`)),297);
  const config=await run(`serialize().documentSettings`);assert.equal(config.left,15);assert.equal(config.columns,2);
