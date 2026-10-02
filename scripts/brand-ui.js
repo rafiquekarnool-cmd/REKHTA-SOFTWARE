@@ -217,3 +217,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline-color:#3a7
 .rk-topdesign .field{justify-content:flex-start;}.rk-topdesign .field label{min-width:40px;color:#203b32;font-weight:600;}
 .rk-topdesign .panel-title{color:#203b32;font-weight:700;}
 }`;document.head.append(s);})();
+
+/* Only Image Trace remains in the left tool strip. */
+(function(){const bar=document.querySelector('.rk-vector-tools');if(!bar)return;
+bar.classList.add('rk-trace-only');bar.setAttribute('aria-label','Image Trace');
+for(const b of bar.querySelectorAll('button')){
+if(b.textContent.trim()==='Trace'){const label=b.querySelector('.rk-icon-label');if(label)label.textContent='Image Trace';b.title='Image Trace — select a picture first';b.setAttribute('aria-label','Image Trace');}
+else{b.hidden=true;b.setAttribute('aria-hidden','true');b.tabIndex=-1;}
+}
+const s=document.createElement('style');s.id='rekhtaTraceOnly';s.textContent='.rk-trace-only button[hidden]{display:none!important}';document.head.append(s);
+})();

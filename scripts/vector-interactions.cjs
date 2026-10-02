@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 module.exports=async win=>{
  const fs=require('node:fs');fs.mkdirSync('test-output',{recursive:true});const shot=async name=>fs.writeFileSync('test-output/'+name+'.png',(await win.capturePage()).toPNG());
  const run=s=>win.webContents.executeJavaScript(s),pause=()=>new Promise(r=>setTimeout(r,70));
- const clickTool=label=>run(`(()=>{const b=[...document.querySelectorAll('.rk-vector-tools button')].find(b=>b.textContent.trim().replace(/^[^A-Za-z]+/,'')===${JSON.stringify(label)}.replace(/^[^A-Za-z]+/,''));if(!b)throw Error('Missing tool');b.click();})()`);
+ const clickTool=label=>run(`(()=>{const b=[...document.querySelectorAll('.rk-vector-tools button')].find(b=>b.textContent.trim().replace(/^Image Trace$/,'Trace').replace(/^[^A-Za-z]+/,'')===${JSON.stringify(label)}.replace(/^[^A-Za-z]+/,''));if(!b)throw Error('Missing tool');b.click();})()`);
  const click=async(x,y,count=1)=>{win.webContents.sendInputEvent({type:'mouseDown',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});win.webContents.sendInputEvent({type:'mouseUp',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});await pause();};
  const point=(x,y)=>run(`(()=>{const r=page.getBoundingClientRect();return{x:r.left+${x}*zoom,y:r.top+${y}*zoom};})()`);
  await run(`(()=>{page.innerHTML='';language.value='ur';const t=createText(100,100,false);t.style.width='600px';t.innerHTML='سلام English<br>second line';t.focus();const r=document.createRange();r.setStart(t.firstChild,2);r.collapse(true);const s=getSelection();s.removeAllRanges();s.addRange(r);switchLanguage('en');})()`);
@@ -10,6 +10,7 @@ module.exports=async win=>{
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
+ assert.deepEqual(await run(`[...document.querySelectorAll('.rk-vector-tools button')].filter(b=>!b.hidden).map(b=>b.textContent.trim())`),['Image Trace'],'Only Image Trace is shown on left');
  assert.equal(await run(`!!document.querySelector('.rk-topdesign #propX')&&!!document.querySelector('.rk-topdesign #propW')`),true,'Object properties moved above page');
  assert.equal(await run(`!!document.querySelector('.rightbar #fillColor')&&!!document.querySelector('.rightbar #shapeColor')&&!!document.querySelector('.rightbar #layers')`),true,'Color and Layers remain right');
  assert.equal(await run(`document.querySelector('.rk-topdesign').getBoundingClientRect().bottom<=document.querySelector('.workspace').getBoundingClientRect().top+1`),true,'Properties do not overlap workspace');
