@@ -251,3 +251,20 @@ const oldRestore=restore;restore=function(data){oldRestore(data);if(data.documen
 const menu=document.querySelector('[data-menu="page"]')?.closest('.menu-wrap').querySelector('.menu-drop');if(menu){const b=document.createElement('button');b.type='button';b.textContent='Page Setup…';b.onclick=()=>{closeAllMenus();ipPageSetup();};menu.prepend(b);}
 const b=document.createElement('button');b.type='button';b.className='small-btn';b.textContent='Page Setup';b.title='Size, Orientation, Margins and Columns';b.onclick=ipPageSetup;document.querySelector('.corel-page-controls')?.append(b);
 })();
+
+/* Geometry insertion always releases the chooser and restores a typing caret. */
+(function(){const insert=insertGeometricSymbol;
+insertGeometricSymbol=function(kind){
+if(!rekhtaGeometricShapes[kind])return;
+const mode=document.getElementById('geometricPlacement')?.value||'inline';
+if(mode==='inline'&&rekhtaSymbolRange?.object?.classList.contains('locked')){closeIpDialog();toast('Unlock the text layer before inserting a symbol');return;}
+closeIpDialog();
+try{insert(kind);
+if(mode==='inline'&&selected?.dataset.type==='text'){
+const el=selected,s=getSelection();if(s.rangeCount&&el.contains(s.anchorNode)){
+const r=s.getRangeAt(0);if(r.collapsed&&r.startContainer.nodeType===Node.ELEMENT_NODE){const tail=document.createTextNode('');r.insertNode(tail);r.setStart(tail,0);r.collapse(true);s.removeAllRanges();s.addRange(r);rekhtaSymbolRange={object:el,range:r.cloneRange()};}
+}setTool('text');el.focus({preventScroll:true});
+}else{setTool('select');page.focus({preventScroll:true});}
+}catch(err){console.error('Geometry insertion failed',err);toast('Symbol could not be inserted. Choose it again.');}
+finally{closeIpDialog();}
+};})();

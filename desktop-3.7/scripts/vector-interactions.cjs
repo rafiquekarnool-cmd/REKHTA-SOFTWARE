@@ -10,10 +10,11 @@ module.exports=async win=>{
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
  await run(`(()=>{page.innerHTML='';selectObj(null);setZoom(.5);})()`);
  assert.equal(await run(`document.querySelectorAll('.rk-vector-tools button').length`),13);
- for(const kind of ['triangle','square','circle','star']){
- await run(`openGeometricSymbols();document.querySelector('[data-geometric=${kind}]').click();`);
+ for(const mode of ['inline','drawing','png'])for(const kind of ['triangle','square','circle','star']){
+ await run(`openGeometricSymbols();geometricPlacement.value='${mode}';document.querySelector('[data-geometric=${kind}]').click();`);
  assert.equal(await run(`ipDialogBackdrop.classList.contains('open')`),false,'Geometry chooser closes after '+kind);
- assert.equal(await run(`selected.dataset.symbol`),kind,'Geometry inserted');
+ assert.equal(await run(`selected.dataset.symbol||selected.querySelector('.geometric-inline:last-of-type')?.dataset.symbol`),kind,'Geometry inserted');
+ if(mode==='inline'){await run(`insertRekhtaText(selected,'A')`);assert.equal(await run(`selected.textContent.endsWith('A')`),true,'Typing continues after inline symbol');}
  }
  await run(`page.innerHTML='';selectObj(null);`);
 
