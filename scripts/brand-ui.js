@@ -227,3 +227,27 @@ else{b.hidden=true;b.setAttribute('aria-hidden','true');b.tabIndex=-1;}
 }
 const s=document.createElement('style');s.id='rekhtaTraceOnly';s.textContent='.rk-trace-only button[hidden]{display:none!important}';document.head.append(s);
 })();
+
+/* Full Page Setup reuses document controls without clearing the design. */
+(function(){
+const px=96/25.4;
+function flow(t,v,y=v.top*px){if(!t||t.dataset.type!=='text')return;t.style.left=v.left*px+'px';t.style.top=y+'px';t.style.width=(v.width-v.left-v.right)*px+'px';t.classList.add('flow-text');t.style.setProperty('--flow-columns',v.columns);t.style.setProperty('--flow-gutter',v.gutter*px+'px');t.style.setProperty('--flow-height',Math.max(10,(v.height-v.bottom)*px-y)+'px');}
+ipPageSetup=function(){
+// Display current actual page dimensions, including sizes chosen on the toolbar.
+const width=parseFloat(page.style.width||794)/px,height=parseFloat(page.style.height||1123)/px;
+documentSettings={...documentSettings,width,height,orientation:width>height?'landscape':'portrait'};
+openNewDocumentSettings();ipDialogTitle.textContent='Page Setup — Size, Orientation, Margins & Columns';
+ipDialogApply.onclick=()=>{try{
+const v=validateDocumentSettings({size:ndSize.value,width:+ndWidth.value,height:+ndHeight.value,orientation:ndLandscape.checked?'landscape':'portrait',left:+nd_left.value,right:+nd_right.value,top:+nd_top.value,bottom:+nd_bottom.value,columns:+ndColumns.value,gutter:+ndGutter.value,direction:documentSettings.direction,automatic:ndAutomatic.checked});
+documentSettings={...v};page.style.width=v.width*px+'px';page.style.height=v.height*px+'px';for(const k of ['left','right','top','bottom'])page.style.setProperty('--margin-'+k,v[k]*px+'px');page.classList.add('margin-guides');page.dataset.pageSetupConfigured='1';
+const texts=[...page.querySelectorAll('.textobj.flow-text')];if(v.automatic){if(selected?.dataset.type==='text'&&!texts.includes(selected))texts.push(selected);if(!texts.length&&!page.querySelector('.obj'))texts.push(createText((v.width-v.right)*px,v.top*px,false));texts.forEach(t=>flow(t,v));}
+else texts.forEach(t=>{t.classList.remove('flow-text');t.style.columnCount='1';});
+closeIpDialog();fitPage();snapshot();toast('Page setup applied');
+}catch(err){ndError.textContent=err.message;}};
+};
+const originalCreate=createText;createText=function(x,y,focus=false){const t=originalCreate(x,y,focus);if(page.dataset.pageSetupConfigured==='1'&&documentSettings.automatic)flow(t,documentSettings,Math.max(documentSettings.top*px,Math.min(y,(documentSettings.height-documentSettings.bottom)*px-20)));return t;};
+const oldSerialize=serialize;serialize=function(){const data=oldSerialize();data.documentSettings={...documentSettings};data.pageSetupConfigured=page.dataset.pageSetupConfigured==='1';return data;};
+const oldRestore=restore;restore=function(data){oldRestore(data);if(data.documentSettings)documentSettings={...rekhtaDocumentDefaults,...data.documentSettings};if(data.pageSetupConfigured)page.dataset.pageSetupConfigured='1';else delete page.dataset.pageSetupConfigured;};
+const menu=document.querySelector('[data-menu="page"]')?.closest('.menu-wrap').querySelector('.menu-drop');if(menu){const b=document.createElement('button');b.type='button';b.textContent='Page Setup…';b.onclick=()=>{closeAllMenus();ipPageSetup();};menu.prepend(b);}
+const b=document.createElement('button');b.type='button';b.className='small-btn';b.textContent='Page Setup';b.title='Size, Orientation, Margins and Columns';b.onclick=ipPageSetup;document.querySelector('.corel-page-controls')?.append(b);
+})();
