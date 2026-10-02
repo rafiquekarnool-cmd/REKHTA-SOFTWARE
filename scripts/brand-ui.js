@@ -70,3 +70,27 @@ const style=document.createElement('style');style.id='rekhtaLargeIcons';style.te
 }
 `;document.head.append(style);
 })();
+
+/* After an input-language change, the first plain Space continues at line end. */
+(function(){
+const pending=new WeakSet();const original=switchLanguage;
+switchLanguage=function(code){
+const el=selected?.dataset.type==='text'?selected:null;
+const before=el?.dataset.inputLanguage||language.value;
+original(code);
+if(el&&before!==code&&!el.classList.contains('locked'))pending.add(el);
+};window.switchLanguage=switchLanguage;
+window.addEventListener('keydown',function(e){
+if(e.key!==' '||e.ctrlKey||e.altKey||e.metaKey||e.shiftKey||e.isComposing)return;
+const el=document.activeElement;
+if(!el?.classList.contains('textobj')||!pending.has(el)||el.classList.contains('locked')||!el.isContentEditable)return;
+const sel=getSelection();if(!sel.rangeCount||!el.contains(sel.anchorNode)||!sel.isCollapsed)return;
+// Browser line boundaries include soft wraps, connected Urdu runs and mixed text.
+if(typeof sel.modify!=='function')return;
+const saved=sel.getRangeAt(0).cloneRange();
+sel.modify('move','forward','lineboundary');
+if(!el.contains(sel.anchorNode)){sel.removeAllRanges();sel.addRange(saved);return;}
+e.preventDefault();e.stopImmediatePropagation();pending.delete(el);
+insertRekhtaText(el,' ');debouncedSnapshot();
+},true);
+})();
