@@ -334,3 +334,18 @@ parts.push('grestore\nshowpage\n%%EOF\n');return new Blob(parts,{type:'applicati
 keyboardPrefs.mode='phonetic';
 (()=>{const create=createText;createText=function(...args){const el=create(...args);if(el&&['ur','en','mix'].includes(language.value)){el.style.fontFamily=language.value==='en'?'"Times New Roman",Times,serif':'"Jameel Noori Nastaleeq"';}return el;};
 const open=openExportDialog;openExportDialog=function(...args){const result=open(...args);const format=document.getElementById('expFormat'),check=document.getElementById('expTransparent');if(format&&check){check.parentElement.lastChild.textContent=' Transparent background (PNG / EPS)';const update=()=>{if(format.value==='eps'){check.checked=true;check.disabled=true;}else check.disabled=format.value!=='png';};format.addEventListener('change',update);update();}return result;};})();
+
+// Paragraph direction lock remains independent of language and font selection.
+let rekhtaRTLLocked=false;try{rekhtaRTLLocked=localStorage.getItem('rekhta.rtlLocked')==='1';}catch{}
+(()=>{
+const direction=setTextDirection,create=createText,select=selectObj,settings=applyDocumentSettings;
+const button=document.createElement('button');button.id='rkRTLLock';button.type='button';button.title='Keep Urdu and English paragraphs Right to Left';button.style.cssText='white-space:nowrap;border:1px solid #6b8784;border-radius:5px;';
+textDirection.closest('label').after(button);
+const sync=()=>{button.textContent=rekhtaRTLLocked?'RTL Lock: ON':'RTL Lock: OFF';button.setAttribute('aria-pressed',String(rekhtaRTLLocked));button.style.background=rekhtaRTLLocked?'#2b6263':'';button.style.color=rekhtaRTLLocked?'white':'';textDirection.disabled=rekhtaRTLLocked;if(rekhtaRTLLocked){currentTextDirection='rtl';textDirection.value='rtl';}};
+setRekhtaRTLLock=function(value){rekhtaRTLLocked=!!value;try{localStorage.setItem('rekhta.rtlLocked',rekhtaRTLLocked?'1':'0');}catch{}if(rekhtaRTLLocked)direction('rtl');sync();};
+setTextDirection=function(value){if(rekhtaRTLLocked&&value!=='rtl'){sync();toast('Turn RTL Lock off before changing direction');return;}return direction(value);};
+createText=function(...args){if(rekhtaRTLLocked){currentTextDirection='rtl';textDirection.value='rtl';}return create(...args);};
+selectObj=function(el,...args){const result=select(el,...args);if(rekhtaRTLLocked){if(el?.dataset.type==='text'&&(el.dataset.textDirection!=='rtl'||el.dir!=='rtl'))direction('rtl');sync();}return result;};
+applyDocumentSettings=function(...args){const result=settings(...args);if(rekhtaRTLLocked){direction('rtl');sync();}return result;};
+button.addEventListener('mousedown',e=>e.preventDefault());button.onclick=()=>setRekhtaRTLLock(!rekhtaRTLLocked);sync();
+})();

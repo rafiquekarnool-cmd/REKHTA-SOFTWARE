@@ -5,6 +5,13 @@ module.exports=async win=>{
  const clickTool=label=>run(`(()=>{const b=[...document.querySelectorAll('.rk-vector-tools button')].find(b=>(${JSON.stringify(label)}==='＋ Zoom'||${JSON.stringify(label)}==='− Zoom')?b.dataset.rekhtaCommand===${JSON.stringify(label)}:b.textContent.trim().replace(/^Image Trace$/,'Trace').replace(/^[^A-Za-z]+/,'')===${JSON.stringify(label)}.replace(/^[^A-Za-z]+/,'').replace(/^T Text$/,'Text'));if(!b)throw Error('Missing tool');b.click();})()`);
  const click=async(x,y,count=1)=>{win.webContents.sendInputEvent({type:'mouseDown',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});win.webContents.sendInputEvent({type:'mouseUp',x:Math.round(x),y:Math.round(y),button:'left',clickCount:count});await pause();};
  const point=(x,y)=>run(`(()=>{const r=page.getBoundingClientRect();return{x:r.left+${x}*zoom,y:r.top+${y}*zoom};})()`);
+
+ await run(`(()=>{page.innerHTML='';language.value='ur';const t=createText(350,80,false);t.textContent='سلام English';t.focus();placeCaretEnd(t);setRekhtaRTLLock(true);window.rkLockFont=t.style.fontFamily;})()`);
+ win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space',modifiers:['control']});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space',modifiers:['control']});await pause();
+ const locked=await run(`(()=>{setTextDirection('ltr');return{dir:selected.dir,font:selected.style.fontFamily,original:window.rkLockFont,language:language.value,pressed:document.getElementById('rkRTLLock').getAttribute('aria-pressed'),disabled:textDirection.disabled};})()`);
+ assert.equal(locked.dir,'rtl');assert.equal(locked.font,locked.original);assert.equal(locked.language,'en');assert.equal(locked.pressed,'true');assert(locked.disabled);
+ const english=await run(`(()=>{const t=createText(400,140,false);return{dir:t.dir,font:t.style.fontFamily};})()`);assert.equal(english.dir,'rtl');assert(english.font.includes('Times New Roman'));
+ await run(`(()=>{setRekhtaRTLLock(false);setTextDirection('ltr');})()`);assert.equal(await run(`selected.dir`),'ltr');await run(`setTextDirection('rtl')`);
  await run(`(()=>{page.innerHTML='';language.value='ur';const t=createText(100,100,false);t.style.width='600px';t.innerHTML='سلام English<br>second line';t.focus();const r=document.createRange();r.setStart(t.firstChild,2);r.collapse(true);const s=getSelection();s.removeAllRanges();s.addRange(r);switchLanguage('en');})()`);
  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Space'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Space'});await pause();
  assert.equal(await run(`selected.innerHTML`),'سلام English <br>second line','Language change plus Space appends to current line, not document end');
