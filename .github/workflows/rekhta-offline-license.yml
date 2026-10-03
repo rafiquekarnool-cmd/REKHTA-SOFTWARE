@@ -24,6 +24,9 @@ jobs:
           Copy-Item desktop-3.7/assets offline-licensing/customer/assets -Recurse -Force
           Copy-Item desktop-3.7/scripts offline-licensing/customer/scripts -Recurse -Force
           Copy-Item desktop-3.7/vendor offline-licensing/customer/vendor -Recurse -Force
+      - name: Apply current welcome and design gallery updates
+        run: node apply-recent-updates.cjs
+        working-directory: offline-licensing/customer
       - name: Install licensed build dependencies
         run: npm install
         working-directory: offline-licensing/customer

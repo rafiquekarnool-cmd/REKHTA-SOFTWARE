@@ -1,9 +1,9 @@
 {
   "name": "rekhta-offline-licensed",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "REKHTA 3.7 Urdu and English Layout Studio",
   "main": "main.js",
-  "author": "RK Solution - Rafique Karnool",
+  "author": "RK SOLUTION - Rafique Ahmed N. Karnool",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
