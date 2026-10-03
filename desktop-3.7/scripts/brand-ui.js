@@ -312,21 +312,28 @@ return canvas;
 };})();
 
 async function encodeRekhtaPathEPS(canvas,width,height,options={}){
-const w=canvas.width,h=canvas.height,data=canvas.getContext('2d').getImageData(0,0,w,h).data;
+const w=canvas.width,h=canvas.height,d=canvas.getContext('2d').getImageData(0,0,w,h).data;
+const labels=new Uint32Array(w*h),colors=new Set(),yieldUI=()=>new Promise(r=>setTimeout(r,0));
+for(let y=0;y<h;y++){for(let x=0;x<w;x++){const i=(y*w+x)*4,a=d[i+3];if(!a)continue;const r=Math.round(d[i]*a/255+255-a),g=Math.round(d[i+1]*a/255+255-a),b=Math.round(d[i+2]*a/255+255-a),key=((r<<16)|(g<<8)|b)+1;labels[y*w+x]=key;colors.add(key);if(colors.size>4096)throw Error('This picture has too many colours for an editable EPS. Use PNG or PDF for photographs.');}if(y%64===63)await yieldUI();}
+const groups=new Map(),stride=w+1;let edges=0;
+const edge=(c,a,b)=>{if(++edges>2000000)throw Error('EPS outline is too detailed. Choose lower DPI or use PNG/PDF.');let m=groups.get(c);if(!m)groups.set(c,m=new Map());const ends=m.get(a);if(ends)ends.push(b);else m.set(a,[b]);};
+for(let y=0;y<h;y++){for(let x=0;x<w;x++){const c=labels[y*w+x];if(!c)continue;const a=y*stride+x;
+if(y===0||labels[(y-1)*w+x]!==c)edge(c,a,a+1);
+if(x===w-1||labels[y*w+x+1]!==c)edge(c,a+1,a+stride+1);
+if(y===h-1||labels[(y+1)*w+x]!==c)edge(c,a+stride+1,a+stride);
+if(x===0||labels[y*w+x-1]!==c)edge(c,a+stride,a);
+}if(y%64===63)await yieldUI();}
 const factor=(options.scaling||100)/100,pw=width*.75*factor,ph=height*.75*factor;
-const parts=['%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(pw)+' '+Math.ceil(ph)+'\n%%HiResBoundingBox: 0 0 '+pw+' '+ph+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%EndComments\ngsave\n'+pw/w+' '+ph/h+' scale\n'];
-const channel=(i,c)=>Math.round(data[i+c]*data[i+3]/255+255-data[i+3]);
-let last=-1,runs=0;
-for(let y=0;y<h;y++){
-let line='';
-for(let x=0;x<w;){const i=(y*w+x)*4,r=channel(i,0),g=channel(i,1),b=channel(i,2),rgb=(r<<16)|(g<<8)|b;const painted=data[i+3]>0;let end=x+1;
-while(end<w){const j=(y*w+end)*4;if((data[j+3]>0)!==painted||channel(j,0)!==r||channel(j,1)!==g||channel(j,2)!==b)break;end++;}
-if(painted){if(++runs>2000000)throw Error('EPS artwork is too detailed at this resolution. Choose a lower DPI or export PNG.');
-if(rgb!==last){line+=(r/255).toFixed(6)+' '+(g/255).toFixed(6)+' '+(b/255).toFixed(6)+' setrgbcolor\n';last=rgb;}
-line+='newpath '+x+' '+(h-y-1)+' moveto '+(end-x)+' 0 rlineto 0 1 rlineto '+(x-end)+' 0 rlineto closepath fill\n';}
-x=end;}
-if(line)parts.push(line);if(y%64===63)await new Promise(resolve=>setTimeout(resolve,0));
+const parts=['%!PS-Adobe-3.0 EPSF-3.0\n%%Creator: REKHTA - RK Solution\n%%BoundingBox: 0 0 '+Math.ceil(pw)+' '+Math.ceil(ph)+'\n%%HiResBoundingBox: 0 0 '+pw+' '+ph+'\n%%LanguageLevel: 2\n%%DocumentData: Clean7Bit\n%%RKOutlineObjects: '+groups.size+'\n%%EndComments\ngsave\n'+pw/w+' '+ph/h+' scale\n'];
+for(const [key,m] of groups){const rgb=key-1;let ps=[((rgb>>16)&255)/255,((rgb>>8)&255)/255,(rgb&255)/255].map(v=>v.toFixed(6)).join(' ')+' setrgbcolor\nnewpath\n';let count=0;
+while(m.size){const start=m.keys().next().value,ring=[];let current=start;
+do{ring.push([current%stride,Math.floor(current/stride)]);const ends=m.get(current);if(!ends)throw Error('Incomplete EPS outline');current=ends.pop();if(!ends.length)m.delete(ring.length===1?start:ring[ring.length-1][1]*stride+ring[ring.length-1][0]);if(++count>2000000)throw Error('EPS outline limit');}while(current!==start);
+if(ring.length<4)continue;
+const simple=ring.filter((b,i)=>{const a=ring[(i+ring.length-1)%ring.length],c=ring[(i+1)%ring.length];return (b[0]-a[0])*(c[1]-b[1])!==(b[1]-a[1])*(c[0]-b[0]);});
+ps+=simple.map((p,i)=>p[0]+' '+(h-p[1])+' '+(i?'lineto':'moveto')).join('\n')+'\nclosepath\n';
+if(count%1000<ring.length)await yieldUI();
 }
+parts.push(ps+'eofill\n');await yieldUI();}
 parts.push('grestore\nshowpage\n%%EOF\n');return new Blob(parts,{type:'application/postscript'});
 }
 

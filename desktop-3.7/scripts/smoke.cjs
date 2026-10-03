@@ -18,7 +18,7 @@ module.exports=async function(win){
  let output;
  try{page.innerHTML='';const text=createText(60,60,false);text.textContent='نکاح EPS Test';captureRekhtaCanvas=captureRekhtaBrowserCanvas;saveConfiguredExport=async blob=>{output=await blob.text();};
  await runConfiguredExport({name:'Browser EPS',format:'eps',area:'page',dpi:96,scaling:100,gray:false});
- return{header:output.startsWith('%!PS-Adobe'),length:output.length,ink:output.includes('closepath fill'),noRaster:!output.includes('colorimage')};
+ return{header:output.startsWith('%!PS-Adobe'),length:output.length,ink:output.includes('eofill'),noRaster:!output.includes('colorimage')};
  }finally{captureRekhtaCanvas=capture;saveConfiguredExport=save;page.innerHTML=previous;selectObj(null);}
  })()`);
  assert(epsBrowser.header&&epsBrowser.length>1000&&epsBrowser.ink&&epsBrowser.noRaster,'Actual browser EPS export of Urdu/English must contain nonwhite RGB data');
