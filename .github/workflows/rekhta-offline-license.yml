@@ -33,6 +33,9 @@ jobs:
       - name: Test offline license verification
         run: npm test
         working-directory: offline-licensing/customer
+      - name: Test selected line size isolation
+        run: npx electron line-size-test.cjs
+        working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
         run: npm run dist
         working-directory: offline-licensing/customer
