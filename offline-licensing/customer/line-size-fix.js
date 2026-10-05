@@ -14,11 +14,13 @@ applyTextStyle=function(property){
   selection.modify('move','backward','lineboundary');
   selection.modify('extend','forward','lineboundary');
   range=selection.getRangeAt(0).cloneRange();
-  if(!object.contains(range.startContainer)||!object.contains(range.endContainer)){selection.removeAllRanges();selection.addRange(remembered.range);return;}
+  if(!object.contains(range.startContainer)||!object.contains(range.endContainer)){selection.removeAllRanges();selection.addRange(remembered?.range||range);return;}
  }
  document.execCommand('styleWithCSS',false,false);
  document.execCommand('fontSize',false,'7');
  for(const font of object.querySelectorAll('font[size="7"]')){font.removeAttribute('size');font.style.fontSize=value+'px';}
  snapshot();if(selection.rangeCount)remembered={object,range:selection.getRangeAt(0).cloneRange()};
 };
+size.step='1';size.onchange=null;
+size.addEventListener('input',()=>{if(!size.value||!size.validity.valid)return;const focused=document.activeElement===size;applyTextStyle('fontSize');if(focused)size.focus({preventScroll:true});});
 })();
