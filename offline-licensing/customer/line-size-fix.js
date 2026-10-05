@@ -19,8 +19,9 @@ applyTextStyle=function(property){
  document.execCommand('styleWithCSS',false,false);
  document.execCommand('fontSize',false,'7');
  for(const font of object.querySelectorAll('font[size="7"]')){font.removeAttribute('size');font.style.fontSize=value+'px';}
- snapshot();if(selection.rangeCount)remembered={object,range:selection.getRangeAt(0).cloneRange()};
+ snapshot();size.value=String(value);if(selection.rangeCount)remembered={object,range:selection.getRangeAt(0).cloneRange()};
 };
 size.step='1';size.onchange=null;
+size.addEventListener('keydown',e=>{if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;e.preventDefault();e.stopImmediatePropagation();e.key==='ArrowUp'?size.stepUp():size.stepDown();size.dispatchEvent(new Event('input',{bubbles:true}));},true);
 size.addEventListener('input',()=>{if(!size.value||!size.validity.valid)return;const focused=document.activeElement===size;applyTextStyle('fontSize');if(focused)size.focus({preventScroll:true});});
 })();
