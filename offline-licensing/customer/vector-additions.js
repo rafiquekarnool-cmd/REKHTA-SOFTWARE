@@ -38,6 +38,8 @@ async function smartFill(p){
 page.addEventListener('mousedown',e=>{if(tool!=='smartfill')return;e.preventDefault();e.stopImmediatePropagation();if(e.button===0){swallowFillClick=true;smartFill(pagePoint(e)).catch(showError);}},true);
 document.addEventListener('click',e=>{if(!swallowFillClick)return;swallowFillClick=false;if(page.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fillButton.classList.remove('active');});
+const normalizeOriginal=normalizeTextHorizontal;
+normalizeTextHorizontal=function(el){if(el?.dataset.curvesOriginal==='1'&&el.dataset.layerHidden==='1')return;return normalizeOriginal(el);};
 function textRuns(el){
  const runs=[],origin=el.getBoundingClientRect(),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let node;
  while((node=walker.nextNode())){
@@ -70,7 +72,7 @@ async function convertText(){
   });
   if(!count)throw Error('The text has no visible glyph outlines.');
   const el=createVector(svg,parseFloat(source.style.left)||0,parseFloat(source.style.top)||0,w,h,'text-curves');el.style.transform=transform;el.style.transformOrigin=source.style.transformOrigin;el.style.opacity=source.style.opacity;el.dataset.rotation=source.dataset.rotation||'0';el.dataset.originalText=source.textContent;el.dataset.sourceTextId=source.dataset.id;
-  source.dataset.layerName=source.textContent.trim().slice(0,26);source.dataset.layerHidden='1';refreshLayers();snapshot();toast('Text curves created. Editable original is kept in a hidden layer.');
+  source.dataset.layerName=source.textContent.trim().slice(0,26);source.dataset.curvesOriginal='1';source.dataset.layerHidden='1';refreshLayers();snapshot();toast('Text curves created. Editable original is kept in a hidden layer.');
  }finally{source.style.transform=transform;busy=false;curvesButton.disabled=false;}
 }
 const oldPalette=applyPaletteColor;
