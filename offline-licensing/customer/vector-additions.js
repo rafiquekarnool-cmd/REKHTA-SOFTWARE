@@ -24,7 +24,7 @@ function closedRegion(data,w,h,sx,sy,tolerance=40){
  return {pixels,width:rw,height:rh,x:left,y:top,count:tail};
 }
 async function smartFill(p){
- if(busy)return;busy=true;fillButton.disabled=true;
+ if(busy)return;snapshot();busy=true;fillButton.disabled=true;
  try{
   toast('Finding closed area…');const w=page.offsetWidth,h=page.offsetHeight;
   const canvas=await captureRekhtaCanvas(page,{width:w,height:h,scale:1,backgroundColor:'#ffffff'}),ctx=canvas.getContext('2d');
@@ -60,7 +60,7 @@ function textRuns(el){
 async function convertText(){
  const source=selected;if(!source||source.dataset.type!=='text')return toast('Select an Urdu text object first.');if(source.classList.contains('locked'))return toast('Unlock the text before converting.');if(!source.textContent.trim())return toast('Type some text first.');if(!window.rekhtaDesktop?.textCurves)return toast('Text to Curves is available in the REKHTA desktop EXE.');if(busy)return;
  if(source.querySelector('.geometric-inline,img,svg'))throw Error('Convert text separately from inline symbols and pictures.');
- busy=true;curvesButton.disabled=true;const transform=source.style.transform;
+ snapshot();busy=true;curvesButton.disabled=true;const transform=source.style.transform;
  try{
   await document.fonts.ready;source.style.transform='none';let runs;try{runs=textRuns(source);}finally{source.style.transform=transform;}
   const shaped=await window.rekhtaDesktop.textCurves(runs);if(!source.isConnected)throw Error('The text object was removed.');
