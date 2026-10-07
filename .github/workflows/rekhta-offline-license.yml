@@ -36,6 +36,9 @@ jobs:
       - name: Test selected line size isolation
         run: npx electron line-size-test.cjs
         working-directory: offline-licensing/customer
+      - name: Test trace, Smart Fill and native Urdu curves
+        run: npx electron vector-additions-test.cjs
+        working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
         run: npm run dist
         working-directory: offline-licensing/customer
@@ -44,5 +47,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: REKHTA-Offline-Licensed-Win8-x64
-          path: offline-licensing/customer/dist/*.exe
+          path: |
+            offline-licensing/customer/dist/*.exe
+            offline-licensing/customer/test-output/*
           if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: REKHTA-vector-test-failure
+          path: offline-licensing/customer/test-output/*

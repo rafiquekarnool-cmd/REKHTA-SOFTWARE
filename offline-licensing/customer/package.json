@@ -1,6 +1,6 @@
 {
   "name": "rekhta-offline-licensed",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "REKHTA 3.7 Urdu and English Layout Studio",
   "main": "main.js",
   "author": "RK SOLUTION - Rafique Ahmed N. Karnool",
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "html2canvas": "1.4.1",
-    "jspdf": "2.5.1"
+    "jspdf": "2.5.1",
+    "harfbuzzjs": "0.4.13"
   },
   "devDependencies": {
     "electron": "22.3.27",
@@ -23,6 +24,7 @@
     "productName": "REKHTA",
     "files": [
       "main.js",
+      "curves-engine.cjs",
       "preload.js",
       "license.cjs",
       "license-public.pem",

@@ -13,6 +13,10 @@ app.whenReady().then(async()=>{
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}));
  window.webContents.on('will-navigate',e=>e.preventDefault());
  session.defaultSession.on('will-download',(_event,item)=>{if(smoke){item.cancel();return;}item.setSaveDialogOptions({title:'Save REKHTA File',defaultPath:path.join(app.getPath('documents'),item.getFilename())});});
+ ipcMain.handle('rekhta:text-curves',async(event,runs)=>{
+  if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');
+  return require('./curves-engine.cjs').shapeRuns(runs);
+ });
  ipcMain.handle('rekhta:capture-page',async(event,options)=>{
   if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');
   const {width,height,scale,html}=options;
