@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const NS='http://www.w3.org/2000/svg';let busy=false;
+const NS='http://www.w3.org/2000/svg';let busy=false,swallowFillClick=false;
 const bar=document.querySelector('.rk-vector-tools');if(!bar)return;
 const css=document.createElement('style');css.textContent='#page.tool-smartfill,#page.tool-smartfill *{cursor:crosshair!important}.rk-vector-tools button.rk-added{display:block!important;color:#2b4242;background:#f5f8f6;border:1px solid #a9bfb2}.rk-vector-tools button.rk-added.active{background:#c8ddd4}.rk-vector-tools .rk-added svg{display:block;width:23px;height:23px;margin:2px auto 4px}.rk-vector-tools .rk-added span{font-size:10px;line-height:1.25;display:block}.rk-vector-tools button[disabled]{opacity:.5}';document.head.append(css);
 function addButton(id,label,icon,fn){const b=document.createElement('button');b.type='button';b.id=id;b.className='rk-added';b.title=label;b.setAttribute('aria-label',label);b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="'+icon+'"/></svg><span></span>';b.querySelector('span').textContent=label;b.onclick=fn;bar.append(b);return b;}
@@ -35,7 +35,8 @@ async function smartFill(p){
   createVector(svg,region.x*w/canvas.width,region.y*h/canvas.height,region.width*w/canvas.width,region.height*h/canvas.height,'smart-fill');snapshot();toast('Smart Fill vector created.');
  }finally{busy=false;fillButton.disabled=false;fillButton.classList.remove('active');setTool('select');}
 }
-page.addEventListener('mousedown',e=>{if(tool!=='smartfill')return;e.preventDefault();e.stopImmediatePropagation();if(e.button===0)smartFill(pagePoint(e)).catch(showError);},true);
+page.addEventListener('mousedown',e=>{if(tool!=='smartfill')return;e.preventDefault();e.stopImmediatePropagation();if(e.button===0){swallowFillClick=true;smartFill(pagePoint(e)).catch(showError);}},true);
+document.addEventListener('click',e=>{if(!swallowFillClick)return;swallowFillClick=false;if(page.contains(e.target)){e.preventDefault();e.stopImmediatePropagation();}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')fillButton.classList.remove('active');});
 function textRuns(el){
  const runs=[],origin=el.getBoundingClientRect(),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d'),walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let node;
