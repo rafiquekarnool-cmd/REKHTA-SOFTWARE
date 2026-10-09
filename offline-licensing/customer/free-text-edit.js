@@ -47,6 +47,9 @@
   el.focus({preventScroll:true});r.selectNodeContents(span);
   const s=getSelection();s.removeAllRanges();s.addRange(r);saved={el,range:r.cloneRange()};
   refreshLayerName(el);debouncedSnapshot();
+  if(prop==='fontSize')fontSize.value=String(parseFloat(value));
+  if(prop==='color')textColor.value=value;
+  if(prop==='fontFamily')fontFamily.value=value.replace(/^"|"$/g,'');
  }
  const previous=applyTextStyle;
  applyTextStyle=function(property){
