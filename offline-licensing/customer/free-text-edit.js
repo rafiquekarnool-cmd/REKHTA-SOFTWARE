@@ -41,7 +41,7 @@
   if(!r||r.collapsed||!el.contains(r.commonAncestorContainer)){
    toast('Select the text to change its formatting');return;
   }
-  const span=document.createElement('span');span.dataset.rekhtaSelectionStyle='1';span.style[prop]=value;
+  const span=document.createElement(prop==='fontSize'?'font':'span');span.dataset.rekhtaSelectionStyle='1';span.style[prop]=value;
   span.appendChild(r.extractContents());
   span.querySelectorAll('*').forEach(n=>n.style.removeProperty(prop.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())));r.insertNode(span);
   el.focus({preventScroll:true});r.selectNodeContents(span);
@@ -50,7 +50,8 @@
  }
  const previous=applyTextStyle;
  applyTextStyle=function(property){
-  const id=property||control||'textColor';
+  const active=document.activeElement?.id;const id=property||(['fontSize','fontFamily','textColor'].includes(active)?active:null)||control||'textColor';
+  if(id==='fontSize'&&saved?.el===selected&&saved.range.collapsed){previous.apply(this,arguments);selected.querySelectorAll('font').forEach(n=>n.dataset.rekhtaSelectionStyle='1');return;}
   if(id==='fontSize'){const v=Number(fontSize.value);if(v>=8&&v<=200)format('fontSize',v+'px');}
   else if(id==='fontFamily')format('fontFamily','"'+fontFamily.value+'"');
   else if(id==='textColor')format('color',textColor.value);

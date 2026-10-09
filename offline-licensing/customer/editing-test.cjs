@@ -1,0 +1,15 @@
+const {app,BrowserWindow}=require('electron'),assert=require('assert/strict'),fs=require('fs');
+app.whenReady().then(async()=>{let w;try{
+ fs.mkdirSync('test-output',{recursive:true});w=new BrowserWindow({width:1400,height:1000,show:true,webPreferences:{contextIsolation:true}});await w.loadFile('REKHTA.html');const run=s=>w.webContents.executeJavaScript(s);
+ await run(`(()=>{document.getElementById('rkWelcomeStart').click();newDoc(false);language.value='en';window.a=createText(48,48,false);a.innerHTML='FIRST SECOND';window.b=createText(48,200,false);b.innerHTML='OTHER TEXT';a.focus();selectObj(a,false);const r=document.createRange();r.setStart(a.firstChild,0);r.setEnd(a.firstChild,5);getSelection().removeAllRanges();getSelection().addRange(r);document.dispatchEvent(new Event('selectionchange'));textColor.value='#ff0000';applyTextStyle('textColor');})()`);
+ assert.deepEqual(await run(`({first:getComputedStyle(a.firstChild).color,base:getComputedStyle(a).color,other:getComputedStyle(b).color})`),{first:'rgb(255, 0, 0)',base:'rgb(17, 17, 17)',other:'rgb(17, 17, 17)'});
+ await run(`(()=>{const r=document.createRange();r.selectNodeContents(a.firstChild);r.collapse(false);getSelection().removeAllRanges();getSelection().addRange(r);insertRekhtaText(a,'NEW');})()`);
+ assert.equal(await run(`getComputedStyle([...a.querySelectorAll('span')].find(e=>e.textContent==='NEW')).color`),'rgb(17, 17, 17)');assert.equal(await run(`a.textContent`),'FIRSTNEW SECOND');
+ await run(`(()=>{a.focus();selectObj(a,false);placeCaretEnd(a);openInPageEncoding();legacyInPageInput.value='السلام علیکم';legacyConvertButton.click();ipDialogApply.click();})()`);
+ assert(await run(`a.textContent.endsWith('السلام علیکم')`));assert.equal(await run(`ipDialogBackdrop.classList.contains('open')`),false);
+ await run(`(()=>{selectObj(null);openInPageEncoding();legacyInPageInput.value='نیا متن';legacyConvertButton.click();ipDialogApply.click();})()`);
+ assert.equal(await run(`selected.textContent`),'نیا متن');assert.equal(await run(`selected.dir`),'rtl');
+ // A real blank-page click must create exactly one text object and focus it.
+ await run(`(()=>{newDoc(false);setTool('select');})()`);const point=await run(`(()=>{const r=page.getBoundingClientRect();return {x:r.left+200*zoom,y:r.top+150*zoom};})()`);w.webContents.sendInputEvent({type:'mouseDown',x:Math.round(point.x),y:Math.round(point.y),button:'left',clickCount:1});w.webContents.sendInputEvent({type:'mouseUp',x:Math.round(point.x),y:Math.round(point.y),button:'left',clickCount:1});await new Promise(r=>setTimeout(r,250));assert.equal(await run(`page.querySelectorAll('.textobj').length`),1);assert(await run(`document.activeElement.classList.contains('textobj')`));
+ fs.writeFileSync('test-output/editing.png',(await w.webContents.capturePage()).toPNG());console.log('PASS: selected-only color, normal new typing, InPage Insert target/new Urdu object, native page click');app.exit(0);
+ }catch(e){console.error(e);if(w)fs.writeFileSync('test-output/editing-failure.png',(await w.webContents.capturePage()).toPNG());app.exit(1);}});

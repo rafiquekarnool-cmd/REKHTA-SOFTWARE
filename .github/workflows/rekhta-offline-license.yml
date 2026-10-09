@@ -2,8 +2,13 @@ name: REKHTA Offline Licensed EXE
 on:
   push:
     branches: [test/rekhta-stability-20261001]
-    paths: [offline-licensing/customer/**, .github/workflows/rekhta-offline-license.yml]
+    paths: [desktop-3.7/**, offline-licensing/customer/**, .github/workflows/rekhta-offline-license.yml]
   workflow_dispatch:
+    inputs:
+      build_exe:
+        description: Build installer only when explicitly requested
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -40,14 +45,19 @@ jobs:
         run: npx electron vector-additions-test.cjs
         working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
+        if: github.event_name == 'workflow_dispatch' && inputs.build_exe
         run: npm run dist
         working-directory: offline-licensing/customer
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Test text editing and InPage insertion
+        run: npx electron editing-test.cjs
+        working-directory: offline-licensing/customer
       - name: Test automatic pagination and multi-page print/export
         run: npx electron pagination-test.cjs
         working-directory: offline-licensing/customer
       - name: Confirm installer built
+        if: github.event_name == 'workflow_dispatch' && inputs.build_exe
         run: node -e "if(!require('fs').readdirSync('dist').some(f=>f.endsWith('.exe')))process.exit(1)"
         working-directory: offline-licensing/customer
         env:

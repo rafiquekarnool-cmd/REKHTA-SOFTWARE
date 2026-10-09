@@ -1,8 +1,27 @@
 /* REKHTA contour tracer: pixel boundaries become editable SVG paths. */
 (function(root){
 'use strict';
-function tracePixels(data,w,h,{threshold=160,color=false,minArea=4}={}){
+function tracePixels(data,w,h,{threshold=160,color=false,minArea=4,closeGaps=0}={}){
  const labels=new Array(w*h);for(let i=0;i<labels.length;i++){const p=i*4;if(data[p+3]<128){labels[i]=null;continue;}const r=data[p],g=data[p+1],b=data[p+2];labels[i]=color?'#'+[r,g,b].map(v=>Math.round(v/85)*85).map(v=>v.toString(16).padStart(2,'0')).join(''):(.299*r+.587*g+.114*b<threshold?'#000000':null);}
+ // Close only small user-selected gaps; preserve the mask outside the image.
+ const radius=Math.max(0,Math.min(2,Math.round(Number(closeGaps)||0)));
+ if(radius&&!color){
+  const original=labels.slice(),expanded=new Uint8Array(w*h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+   let filled=false;
+   for(let dy=-radius;dy<=radius&&!filled;dy++)for(let dx=-radius;dx<=radius;dx++){
+    const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<w&&ny<h&&original[ny*w+nx]){filled=true;break;}
+   }
+   expanded[y*w+x]=filled?1:0;
+  }
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+   let filled=true;
+   for(let dy=-radius;dy<=radius&&filled;dy++)for(let dx=-radius;dx<=radius;dx++){
+    const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<w&&ny<h&&!expanded[ny*w+nx]){filled=false;break;}
+   }
+   labels[y*w+x]=original[y*w+x]||filled?'#000000':null;
+  }
+ }
  const groups=new Map();const at=(x,y)=>x<0||y<0||x>=w||y>=h?null:labels[y*w+x];
  function edge(c,a,b){if(!groups.has(c))groups.set(c,new Map());const m=groups.get(c),k=a.join(',');if(!m.has(k))m.set(k,[]);m.get(k).push(b);}
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const c=at(x,y);if(!c)continue;if(at(x,y-1)!==c)edge(c,[x,y],[x+1,y]);if(at(x+1,y)!==c)edge(c,[x+1,y],[x+1,y+1]);if(at(x,y+1)!==c)edge(c,[x+1,y+1],[x,y+1]);if(at(x-1,y)!==c)edge(c,[x,y+1],[x,y]);}
