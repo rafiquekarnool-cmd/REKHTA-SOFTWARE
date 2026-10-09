@@ -4,3 +4,6 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('line-size-fix.js','utf8')+'
 
 fs.appendFileSync(file,'<style>#rkWelcomeArt::after{content:"";position:absolute;left:0;top:0;width:275px;max-width:76.4%;height:34px;background:#f2f5f3;pointer-events:none}</style>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('vector-additions.js','utf8')+'</script>');
+
+
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('pagination.js','utf8')+'</script>');

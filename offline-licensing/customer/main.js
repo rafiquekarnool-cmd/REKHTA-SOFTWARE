@@ -46,7 +46,7 @@ app.whenReady().then(async()=>{
  ipcMain.handle('rekhta:choose-save',async(event,options)=>{
   if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');
   const safeName=path.basename(String(options.name||'REKHTA_Design.png')).replace(/[<>:"|?*]/g,'_');
-  const extension=String(options.extension||'png');if(!['png','gif','jpg','pdf','eps'].includes(extension))throw Error('Invalid format');
+  const extension=String(options.extension||'png');if(!['png','gif','jpg','pdf','eps','zip'].includes(extension))throw Error('Invalid format');
   const result=await dialog.showSaveDialog(window,{title:'Export As Picture',defaultPath:path.join(app.getPath('documents'),safeName),filters:[{name:extension.toUpperCase()+' File',extensions:[extension]}]});
   if(result.canceled)return null;const id=crypto.randomBytes(16).toString('hex');saveTargets.set(id,result.filePath);return{id,name:path.basename(result.filePath)};
  });
@@ -59,3 +59,4 @@ app.whenReady().then(async()=>{
  window.maximize();window.show();
 });
 app.on('window-all-closed',()=>app.quit());
+

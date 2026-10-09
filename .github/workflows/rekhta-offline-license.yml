@@ -44,6 +44,14 @@ jobs:
         working-directory: offline-licensing/customer
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Test automatic pagination and multi-page print/export
+        run: npx electron pagination-test.cjs
+        working-directory: offline-licensing/customer
+      - name: Confirm installer built
+        run: node -e "if(!require('fs').readdirSync('dist').some(f=>f.endsWith('.exe')))process.exit(1)"
+        working-directory: offline-licensing/customer
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
       - uses: actions/upload-artifact@v4
         with:
           name: REKHTA-Offline-Licensed-Win8-x64
@@ -56,3 +64,4 @@ jobs:
         with:
           name: REKHTA-vector-test-failure
           path: offline-licensing/customer/test-output/*
+
