@@ -41,9 +41,12 @@
   if(!r||r.collapsed||!el.contains(r.commonAncestorContainer)){
    toast('Select the text to change its formatting');return;
   }
-  const span=document.createElement(prop==='fontSize'?'font':'span');span.dataset.rekhtaSelectionStyle='1';span.style[prop]=value;
-  span.appendChild(r.extractContents());
-  span.querySelectorAll('*').forEach(n=>n.style.removeProperty(prop.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())));r.insertNode(span);
+  const ancestor=(r.commonAncestorContainer.nodeType===1?r.commonAncestorContainer:r.commonAncestorContainer.parentElement)?.closest('[data-rekhta-selection-style]');
+  const full=ancestor?document.createRange():null;if(full)full.selectNodeContents(ancestor);
+  const reuse=ancestor&&el.contains(ancestor)&&r.compareBoundaryPoints(Range.START_TO_START,full)===0&&r.compareBoundaryPoints(Range.END_TO_END,full)===0;
+  const span=reuse?ancestor:document.createElement(prop==='fontSize'?'font':'span');span.dataset.rekhtaSelectionStyle='1';span.style[prop]=value;
+  if(!reuse){span.appendChild(r.extractContents());r.insertNode(span);}
+  span.querySelectorAll('*').forEach(n=>n.style.removeProperty(prop.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())));
   el.focus({preventScroll:true});r.selectNodeContents(span);
   const s=getSelection();s.removeAllRanges();s.addRange(r);saved={el,range:r.cloneRange()};
   refreshLayerName(el);debouncedSnapshot();
