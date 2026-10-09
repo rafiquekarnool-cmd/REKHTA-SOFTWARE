@@ -42,6 +42,7 @@ jobs:
         run: npx electron line-size-test.cjs
         working-directory: offline-licensing/customer
       - name: Test trace, Smart Fill and native Urdu curves
+        if: success() || failure()
         run: npx electron vector-additions-test.cjs
         working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
@@ -51,9 +52,11 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
       - name: Test text editing and InPage insertion
+        if: success() || failure()
         run: npx electron editing-test.cjs
         working-directory: offline-licensing/customer
       - name: Test automatic pagination and multi-page print/export
+        if: success() || failure()
         run: npx electron pagination-test.cjs
         working-directory: offline-licensing/customer
       - name: Confirm installer built
