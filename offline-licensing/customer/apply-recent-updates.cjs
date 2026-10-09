@@ -9,3 +9,5 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('vector-additions.js','utf8'
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('pagination.js','utf8')+'</script>');
 
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('free-text-edit.js','utf8')+'</script>');
+
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('inpage-insert-fix.js','utf8')+'</script>');
