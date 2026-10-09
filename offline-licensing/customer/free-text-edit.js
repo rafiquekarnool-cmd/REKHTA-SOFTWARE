@@ -15,6 +15,11 @@
   if(e.target.closest('.handle,.rk-node')||e.altKey||e.shiftKey)return;
   const el=e.target.closest('.textobj');
   if(el&&!el.classList.contains('locked')){
+   if(!el.textContent&&!el.dataset.flowId&&!el.querySelector('img,svg,.geometric-inline')){
+    const p=pagePoint(e);el.remove();const text=createText(p.x,p.y,false);selectObj(text,false);text.focus({preventScroll:true});
+    const r=document.createRange();r.selectNodeContents(text);r.collapse(true);const s=getSelection();s.removeAllRanges();s.addRange(r);saved={el:text,range:r.cloneRange()};
+    e.preventDefault();e.stopImmediatePropagation();snapshot();return;
+   }
    // Preserve the browser's native caret placement and drag text selection.
    selectObj(el,false);el.contentEditable='true';el.focus({preventScroll:true});
    drag=null;e.stopImmediatePropagation();return;
