@@ -41,7 +41,7 @@
   if(!r||r.collapsed||!el.contains(r.commonAncestorContainer)){
    toast('Select the text to change its formatting');return;
   }
-  const span=document.createElement('span');span.style[prop]=value;
+  const span=document.createElement('span');span.dataset.rekhtaSelectionStyle='1';span.style[prop]=value;
   span.appendChild(r.extractContents());
   span.querySelectorAll('*').forEach(n=>n.style.removeProperty(prop.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())));r.insertNode(span);
   el.focus({preventScroll:true});r.selectNodeContents(span);
@@ -58,6 +58,34 @@
  };
  toggleBold=function(){const n=saved?.range.startContainer;const el=n?.nodeType===1?n:n?.parentElement;format('fontWeight',el&&Number(getComputedStyle(el).fontWeight)>=600?'400':'700');};
  toggleItalic=function(){const n=saved?.range.startContainer;const el=n?.nodeType===1?n:n?.parentElement;format('fontStyle',el&&getComputedStyle(el).fontStyle==='italic'?'normal':'italic');};
+ // At the end of edited text, resume the object's original formatting.
+ // A caret inside existing text still edits that text in its own style.
+ const previousInsert=insertRekhtaText;
+ insertRekhtaText=function(el,text){
+  const s=getSelection();
+  if(el&&s.rangeCount){
+   const r=s.getRangeAt(0);
+   if(r.collapsed&&el.contains(r.startContainer)){
+    let node=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;
+    let boundary=null;
+    while(node&&node!==el){
+     if(node.dataset?.rekhtaSelectionStyle==='1'){
+      const rest=r.cloneRange();rest.setEnd(node,node.childNodes.length);
+      if(!rest.toString()&&!rest.cloneContents().querySelector('br,img,svg'))boundary=node;
+     }
+     node=node.parentElement;
+    }
+    if(boundary){
+     const normal=document.createElement('span'),style=getComputedStyle(el);
+     for(const prop of ['fontFamily','fontSize','color','fontWeight','fontStyle','textDecoration'])normal.style[prop]=style[prop];
+     const outside=document.createRange();outside.setStartAfter(boundary);outside.collapse(true);outside.insertNode(normal);
+     const caret=document.createRange();caret.selectNodeContents(normal);caret.collapse(true);
+     s.removeAllRanges();s.addRange(caret);
+    }
+   }
+  }
+  return previousInsert.call(this,el,text);
+ };
  // Keyboard focus through Tab must preserve the same range as mouse controls.
  for(const id of ['fontSize','fontFamily','textColor']){
   document.getElementById(id)?.addEventListener('focus',()=>{control=id;});
