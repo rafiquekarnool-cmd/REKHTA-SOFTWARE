@@ -23,16 +23,31 @@ insertRekhtaText=function(el,value){
  const caret=document.createRange();caret.setStartAfter(run);caret.collapse(true);selection.removeAllRanges();selection.addRange(caret);
  refreshLayerName(el);if(replacesAll)selectObj(el,false);debouncedSnapshot();
 };
-window.addEventListener('paste',e=>{
- if(e.target.closest?.('input,textarea,select,.ip-dialog,.wedding-modal'))return;
- let el=e.target.closest?.('.textobj');const surface=page.contains(e.target)||e.target===page;
- if(!el&&!surface)return;if(el&&!page.contains(el))return;
- e.preventDefault();e.stopImmediatePropagation();if(el?.classList.contains('locked'))return toast('Unlock the text before pasting.');
- const raw=clean(e.clipboardData?.getData('text/plain')||'');if(!raw)return;
+function pasteIntoEditor(value,el=null){
+ if(el?.classList.contains('locked'))return toast('Unlock the text before pasting.');
+ const raw=clean(value||'');if(!raw)return toast('Clipboard has no plain text. Copy the InPage text again.');
  const converted=convertLegacyInPage(raw);
  if(converted.unknown.length){openInPageEncoding();const source=document.getElementById('legacyInPageInput');source.value=raw;source.dispatchEvent(new Event('input',{bubbles:true}));toast('Review the converted InPage text, then click Insert Text.');return;}
  if(!el){const p=typeof lastPageClick==='object'&&lastPageClick?lastPageClick:{x:page.clientWidth-48,y:48};el=createText(p.x,p.y,false);selectObj(el,false);el.focus({preventScroll:true});placeCaretEnd(el);}
  snapshot();insertRekhtaText(el,converted.text);snapshot();
+}
+window.addEventListener('paste',e=>{
+ if(e.target.closest?.('input,textarea,select,.ip-dialog,.wedding-modal'))return;
+ const el=e.target.closest?.('.textobj'),surface=page.contains(e.target)||e.target===page;
+ if(!el&&!surface)return;if(el&&!page.contains(el))return;
+ e.preventDefault();e.stopImmediatePropagation();pasteIntoEditor(e.clipboardData?.getData('text/plain'),el);
 },true);
-window.rekhtaUrduPaste={clean};
+// A blank page is not contenteditable, so browsers do not dispatch a native paste there.
+window.addEventListener('keydown',async e=>{
+ if(!(e.ctrlKey||e.metaKey)||e.altKey||e.key.toLowerCase()!=='v'||document.activeElement!==page)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ try{const raw=await navigator.clipboard.readText();pasteIntoEditor(raw);}
+ catch(error){
+  openIpDialog('Paste InPage / Unicode Text','<p>Press Ctrl+V in this box, then click Insert Text.</p><textarea id="rkInPagePasteInput" rows="5" dir="auto" style="width:100%"></textarea>',null);
+  ipDialogApply.hidden=false;ipDialogApply.style.removeProperty('display');ipDialogApply.disabled=false;ipDialogApply.textContent='Insert Text';
+  ipDialogApply.onclick=()=>{const raw=document.getElementById('rkInPagePasteInput').value;if(!raw.trim())return toast('Paste text in the box first.');closeIpDialog();pasteIntoEditor(raw);};
+  document.getElementById('rkInPagePasteInput').focus();
+ }
+},true);
+window.rekhtaUrduPaste={clean,pasteIntoEditor};
 })();
