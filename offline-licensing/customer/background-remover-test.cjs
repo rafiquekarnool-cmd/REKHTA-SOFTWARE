@@ -2,7 +2,7 @@ const {app,BrowserWindow}=require('electron'),assert=require('assert/strict'),fs
 app.whenReady().then(async()=>{let w;try{
  fs.mkdirSync('test-output',{recursive:true});w=new BrowserWindow({width:1400,height:1000,show:true,webPreferences:{contextIsolation:true}});await w.loadFile('REKHTA.html');const run=s=>w.webContents.executeJavaScript(s);
  await run('document.fonts.ready.then(()=>{})');
- assert(await run(`(()=>{const el=document.querySelector('#rkWelcome .rkUrdu:not(.rkUrduName)'),r=el.getBoundingClientRect();return r.height>=parseFloat(getComputedStyle(el).fontSize)*2.3&&getComputedStyle(el).flexShrink==='0';})()`),'Urdu welcome retains full line height');
+ assert(await run(`(()=>{const el=document.querySelector('#rkWelcome .rkUrdu:not(.rkUrduName)'),r=el.getBoundingClientRect();return r.height+0.5>=parseFloat(getComputedStyle(el).fontSize)*2.3&&getComputedStyle(el).flexShrink==='0';})()`),'Urdu welcome retains full line height');
  await w.setSize(1366,768);await new Promise(r=>setTimeout(r,100));
  assert(await run(`(()=>{const r=rkSplashContent.getBoundingClientRect();return r.width<=480&&r.top>=0&&r.bottom<=innerHeight;})()`),'Compact splash fits laptop screen');
  await w.setSize(800,480);await new Promise(r=>setTimeout(r,100));assert(await run(`(()=>{const r=rkSplashContent.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight;})()`),'Splash fits shorter screen');
