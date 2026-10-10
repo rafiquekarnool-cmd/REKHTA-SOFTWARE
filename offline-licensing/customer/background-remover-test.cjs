@@ -9,6 +9,12 @@ app.whenReady().then(async()=>{let w;try{
  await run(`rkBgPreview.click();void 0`);await new Promise(r=>setTimeout(r,200));
  assert.equal(await run(`rkBgApply.disabled`),false);
  assert.deepEqual(await run(`(()=>{const c=rkBgCanvas.getContext('2d'),d=c.getImageData(0,0,20,20).data;return [d[3],d[(6*20+6)*4+3],d[(10*20+10)*4+3]];})()`),[0,255,255],'Edge background gone; dark object and enclosed white retained');
+ await run(`rkBgTool.value='erase';rkBgTool.dispatchEvent(new Event('change'));rkBgBrushSize.value='2';void 0;`);
+ const brushPoint=await run(`(()=>{const r=rkBgCanvas.getBoundingClientRect();return {x:Math.round(r.left+r.width*7/20),y:Math.round(r.top+r.height*7/20)};})()`);
+ const mouse=()=>{w.webContents.sendInputEvent({type:'mouseDown',...brushPoint,button:'left',clickCount:1});w.webContents.sendInputEvent({type:'mouseUp',...brushPoint,button:'left',clickCount:1});};mouse();await new Promise(r=>setTimeout(r,100));
+ assert.equal(await run(`rkBgCanvas.getContext('2d').getImageData(7,7,1,1).data[3]`),0,'Native Erase brush removes leftover pixels');
+ await run(`rkBgTool.value='restore';rkBgTool.dispatchEvent(new Event('change'));void 0`);mouse();await new Promise(r=>setTimeout(r,100));assert.equal(await run(`rkBgCanvas.getContext('2d').getImageData(7,7,1,1).data[3]`),255,'Restore brush restores subject');
+ await run(`rkBgUndoBrush.click();void 0`);assert.equal(await run(`rkBgCanvas.getContext('2d').getImageData(7,7,1,1).data[3]`),0);await run(`rkBgUndoBrush.click();void 0`);assert.equal(await run(`rkBgCanvas.getContext('2d').getImageData(7,7,1,1).data[3]`),255);
  await run(`rkBgCancel.click()`);assert.equal(await run(`im.src===originalSrc`),true,'Cancel preserves original');
  await run(`rekhtaBackgroundRemover.open()`);await run(`rkBgPreview.click();void 0`);await new Promise(r=>setTimeout(r,200));await run(`rkBgApply.click()`);
  assert.equal(await run(`!!document.getElementById('rkBackgroundDialog')`),false);
