@@ -92,8 +92,9 @@ const dialogOld=openExportDialog;openExportDialog=function(...args){dialogOld(..
 };
 // CorelDRAW accepts one page per EPS. Default to the page currently being edited.
 openCorelExport=function(){
+ const top=selected?.isConnected?parseFloat(selected.style.top)||0:(typeof lastPageClick==='object'?lastPageClick.y||0:0);
  if(document.activeElement?.classList.contains('textobj'))paginate(document.activeElement);
- const top=selected?.isConnected?parseFloat(selected.style.top)||0:(typeof lastPageClick==='object'?lastPageClick.y||0:0),number=Math.max(1,Math.min(count,Math.floor(top/(paperH+GAP))+1));
+ const number=Math.max(1,Math.min(count,Math.floor(top/(paperH+GAP))+1));
  openExportDialog('eps');expAll.checked=false;expSelected.checked=false;expPages.checked=true;expFrom.value=expTo.value=String(number);expTransparent.checked=true;
 };
 window.rekhtaPagination={paginate,makePaper,preparePrint,canvasFor,zipStore,get count(){return count;},get height(){return paperH;},get frames(){return objects().filter(e=>e.dataset.flowId);},flush(){if(document.activeElement?.classList.contains('textobj'))paginate(document.activeElement);}};
