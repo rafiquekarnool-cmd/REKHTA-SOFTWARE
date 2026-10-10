@@ -3,11 +3,12 @@
 let remembered=null;
 document.addEventListener('selectionchange',()=>{const s=getSelection();if(!s.rangeCount)return;const r=s.getRangeAt(0),n=r.commonAncestorContainer,e=(n.nodeType===1?n:n.parentElement)?.closest('.textobj');if(e&&page.contains(e))remembered={el:e,range:r.cloneRange()};});
 const blockTags=new Set(['DIV','P','LI','H1','H2','H3','H4','H5','H6','PRE','BLOCKQUOTE']);
+function alignment(el){const style=getComputedStyle(el);if(style.textAlign==='start')return style.direction==='rtl'?'right':'left';if(style.textAlign==='end')return style.direction==='rtl'?'left':'right';return style.textAlign;}
 function compare(a,b){const r=document.createRange(),s=document.createRange();r.setStart(a.node,a.offset);r.collapse(true);s.setStart(b.node,b.offset);s.collapse(true);return r.compareBoundaryPoints(Range.START_TO_START,s);}
 function paragraphs(el){
  const items=[];let start={node:el,offset:0},lastBreak=false;
  const point=(node,after=false)=>({node:node.parentNode,offset:[...node.parentNode.childNodes].indexOf(node)+(after?1:0)});
- function flush(end,force=false){const r=document.createRange();r.setStart(start.node,start.offset);r.setEnd(end.node,end.offset);const f=r.cloneContents();if(force||f.textContent||f.querySelector('img,svg,.geometric-inline')){const n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement,ancestor=n.closest?.('[data-rekhta-paragraph],div,p,li');items.push({range:r,align:getComputedStyle(ancestor&&el.contains(ancestor)?ancestor:el).textAlign});}start=end;}
+ function flush(end,force=false){const r=document.createRange();r.setStart(start.node,start.offset);r.setEnd(end.node,end.offset);const f=r.cloneContents();if(force||f.textContent||f.querySelector('img,svg,.geometric-inline')){const n=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement,ancestor=n.closest?.('[data-rekhta-paragraph],div,p,li');items.push({range:r,align:alignment(ancestor&&el.contains(ancestor)?ancestor:el)});}start=end;}
  function walk(node){for(const child of [...node.childNodes]){if(child.nodeType!==1){if(child.textContent)lastBreak=false;continue;}if(child.matches('.handle,.rk-node'))continue;if(child.tagName==='BR'){flush(point(child),true);start=point(child,true);lastBreak=true;}else if(blockTags.has(child.tagName)){flush(point(child));start={node:child,offset:0};const before=items.length;walk(child);flush({node:child,offset:child.childNodes.length},items.length===before);start=point(child,true);lastBreak=false;}else walk(child);}}
  walk(el);const end={node:el,offset:el.childNodes.length};flush(end,!items.length||lastBreak);return items;
 }
@@ -16,7 +17,7 @@ function locate(items,point){for(let i=items.length-1;i>=0;i--){const r=items[i]
 function textPoint(el,offset){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n,last;while((n=w.nextNode())){last=n;if(offset<=n.length)return {node:n,offset};offset-=n.length;}return last?{node:last,offset:last.length}:{node:el,offset:0};}
 setAlign=function(value){
  if(!['left','center','right'].includes(value))return;
- const el=selected?.dataset.type==='text'?selected:remembered?.el;if(!el?.isConnected||!page.contains(el))return toast('Click a text line first.');if(el.classList.contains('locked'))return toast('Unlock the text before changing alignment.');
+ const el=selected?(selected.dataset.type==='text'?selected:null):remembered?.el;if(!el?.isConnected||!page.contains(el))return toast('Click a text line first.');if(el.classList.contains('locked'))return toast('Unlock the text before changing alignment.');
  const s=getSelection();let r=s.rangeCount?s.getRangeAt(0):null;if(!r||!el.contains(r.startContainer)||!el.contains(r.endContainer))r=remembered?.el===el&&el.contains(remembered.range.startContainer)&&el.contains(remembered.range.endContainer)?remembered.range:null;
  const lines=paragraphs(el),start=r?{node:r.startContainer,offset:r.startOffset}:null,end=r?{node:r.endContainer,offset:r.endOffset}:null,first=start?locate(lines,start):null,last=end?locate(lines,end):null;
  const chosen=lines.map((p,i)=>{if(!r)return true;if(r.collapsed)return i===first.line;const a={node:p.range.startContainer,offset:p.range.startOffset},b={node:p.range.endContainer,offset:p.range.endOffset};return compare(start,b)<0&&compare(end,a)>0;});
