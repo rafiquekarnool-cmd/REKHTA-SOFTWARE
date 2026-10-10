@@ -46,7 +46,7 @@ jobs:
         run: npx electron vector-additions-test.cjs
         working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
-        if: github.event_name == 'workflow_dispatch' && inputs.build_exe
+        if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && github.event.head_commit.message == 'Build authorized REKHTA 1.0.35 Windows 8 x64 installer')
         run: npm run dist
         working-directory: offline-licensing/customer
         env:
@@ -80,7 +80,7 @@ jobs:
         run: npx electron alignment-test.cjs
         working-directory: offline-licensing/customer
       - name: Confirm installer built
-        if: github.event_name == 'workflow_dispatch' && inputs.build_exe
+        if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && github.event.head_commit.message == 'Build authorized REKHTA 1.0.35 Windows 8 x64 installer')
         run: node -e "if(!require('fs').readdirSync('dist').some(f=>f.endsWith('.exe')))process.exit(1)"
         working-directory: offline-licensing/customer
         env:
