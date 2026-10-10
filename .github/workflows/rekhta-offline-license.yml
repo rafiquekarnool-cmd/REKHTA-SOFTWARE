@@ -67,6 +67,10 @@ jobs:
         if: success() || failure()
         run: npx electron rtl-paste-test.cjs
         working-directory: offline-licensing/customer
+      - name: Test direct CorelDRAW EPS export
+        if: success() || failure()
+        run: npx electron eps-export-test.cjs
+        working-directory: offline-licensing/customer
       - name: Confirm installer built
         if: github.event_name == 'workflow_dispatch' && inputs.build_exe
         run: node -e "if(!require('fs').readdirSync('dist').some(f=>f.endsWith('.exe')))process.exit(1)"
