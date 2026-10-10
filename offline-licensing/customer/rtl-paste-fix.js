@@ -24,10 +24,14 @@ insertRekhtaText=function(el,value){
  refreshLayerName(el);if(replacesAll)selectObj(el,false);debouncedSnapshot();
 };
 window.addEventListener('paste',e=>{
- const el=e.target.closest?.('.textobj');if(!el||!page.contains(el))return;
- e.preventDefault();e.stopImmediatePropagation();if(el.classList.contains('locked'))return toast('Unlock the text before pasting.');
+ if(e.target.closest?.('input,textarea,select,.ip-dialog,.wedding-modal'))return;
+ let el=e.target.closest?.('.textobj');const surface=page.contains(e.target)||e.target===page;
+ if(!el&&!surface)return;if(el&&!page.contains(el))return;
+ e.preventDefault();e.stopImmediatePropagation();if(el?.classList.contains('locked'))return toast('Unlock the text before pasting.');
  const raw=clean(e.clipboardData?.getData('text/plain')||'');if(!raw)return;
- const converted=convertLegacyInPage(raw);if(converted.unknown.length)return toast('Unknown InPage codes. Use Text → InPage Encoding to review.');
+ const converted=convertLegacyInPage(raw);
+ if(converted.unknown.length){openInPageEncoding();const source=document.getElementById('legacyInPageInput');source.value=raw;source.dispatchEvent(new Event('input',{bubbles:true}));toast('Review the converted InPage text, then click Insert Text.');return;}
+ if(!el){const p=typeof lastPageClick==='object'&&lastPageClick?lastPageClick:{x:page.clientWidth-48,y:48};el=createText(p.x,p.y,false);selectObj(el,false);el.focus({preventScroll:true});placeCaretEnd(el);}
  snapshot();insertRekhtaText(el,converted.text);snapshot();
 },true);
 window.rekhtaUrduPaste={clean};
