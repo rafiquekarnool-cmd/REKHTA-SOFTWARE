@@ -46,7 +46,7 @@ jobs:
         run: npx electron vector-additions-test.cjs
         working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
-        if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && github.event.head_commit.message == 'Build authorized REKHTA 1.0.35 Windows 8 x64 installer')
+        if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && github.event.head_commit.message == 'Build authorized REKHTA 1.0.36 seven-day demo installer')
         run: npm run dist
         working-directory: offline-licensing/customer
         env:
@@ -79,8 +79,16 @@ jobs:
         if: success() || failure()
         run: npx electron alignment-test.cjs
         working-directory: offline-licensing/customer
+      - name: Test seven-day demo UI
+        if: success() || failure()
+        run: npx electron demo-ui-test.cjs
+        working-directory: offline-licensing/customer
+      - name: Test real Windows demo startup
+        if: success() || failure()
+        run: npx electron main.js --demo-startup-test
+        working-directory: offline-licensing/customer
       - name: Confirm installer built
-        if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && github.event.head_commit.message == 'Build authorized REKHTA 1.0.35 Windows 8 x64 installer')
+        if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && github.event.head_commit.message == 'Build authorized REKHTA 1.0.36 seven-day demo installer')
         run: node -e "if(!require('fs').readdirSync('dist').some(f=>f.endsWith('.exe')))process.exit(1)"
         working-directory: offline-licensing/customer
         env:

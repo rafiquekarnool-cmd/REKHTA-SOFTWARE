@@ -1,13 +1,13 @@
 {
   "name": "rekhta-offline-licensed",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "REKHTA 3.7 Urdu and English Layout Studio",
   "main": "main.js",
   "author": "RK SOLUTION - Rafique Ahmed N. Karnool",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "test": "node license-tests.cjs",
+    "test": "node license-tests.cjs && node trial-tests.cjs",
     "dist": "electron-builder --win nsis --x64 --publish never"
   },
   "dependencies": {
@@ -36,7 +36,8 @@
       "!**/*PRIVATE*",
       "!license-tests.cjs",
       "scripts/**",
-      "vendor/**"
+      "vendor/**",
+      "trial-store.cjs"
     ],
     "asar": true,
     "compression": "maximum",
@@ -49,7 +50,7 @@
           ]
         }
       ],
-      "artifactName": "REKHTA-Setup-${version}-Win8-x64.${ext}"
+      "artifactName": "REKHTA-Demo-7Days-Setup-${version}-Win8-x64.${ext}"
     },
     "nsis": {
       "oneClick": false,
