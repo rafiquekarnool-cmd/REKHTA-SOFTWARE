@@ -55,7 +55,7 @@ function paginate(source){
   const flow=id||'flow-'+Date.now()+'-'+nextFlow++,template=first.style.cssText,attributes=[...first.attributes].filter(a=>a.name.startsWith('data-')&&!['data-id','data-flow-id','data-flow-order','data-flow-join'].includes(a.name));let target=null,remaining=cursor;
   chunks.forEach((chunk,i)=>{let el=frames[i];if(!el){el=baseObj('text',x,0,w,chunk.available);el.classList.add('textobj');el.contentEditable='true';el.spellcheck=false;el.addEventListener('focus',()=>selectObj(el,false));el.addEventListener('input',()=>debouncedSnapshot());}
    for(const a of attributes)el.setAttribute(a.name,a.value);el.setAttribute('dir',first.dir||'rtl');el.setAttribute('lang',first.lang||'ur');el.style.cssText=template;el.style.left=x+'px';el.style.top=chunk.pageNo*(paperH+GAP)+chunk.y+'px';el.style.width=w+'px';el.style.setProperty('--rk-frame-height',chunk.available+'px');el.dataset.flowId=flow;el.dataset.flowOrder=String(i);el.dataset.flowJoin=String(chunk.joinDepth);if(el.innerHTML!==chunk.html)el.innerHTML=chunk.html;
-   if(remaining!==null&&!target){if(remaining<=chunk.len||i===chunks.length-1)target={el,offset:Math.min(remaining,chunk.len)};else remaining-=chunk.len;}
+   if(remaining!==null&&!target){if(remaining<chunk.len||remaining===chunk.len&&frames.indexOf(active)<=i||i===chunks.length-1)target={el,offset:Math.min(remaining,chunk.len)};else remaining-=chunk.len;}
   });frames.slice(chunks.length).forEach(el=>el.remove());repaint();if(target)setCaret(target.el,target.offset);else if(selected&&!selected.isConnected)selectObj(first,false);refreshLayers();
  }catch(e){toast(e.message);console.error('Pagination:',e.message);}finally{ghost?.remove();running=false;observer.takeRecords();}
 }
@@ -75,7 +75,7 @@ window.addEventListener('keydown',e=>{
   const old=selection.getRangeAt(0).cloneRange(),before=old.getBoundingClientRect(),down=e.key==='ArrowDown',neighbor=frames[i+(down?1:-1)];
   selection.modify('move',down?'forward':'backward','line');const moved=selection.getRangeAt(0),after=moved.getBoundingClientRect();
   const same=old.startContainer===moved.startContainer&&old.startOffset===moved.startOffset;
-  if(neighbor&&(same||before.height&&after.height&&Math.abs(before.top-after.top)<Math.max(1,zoom))){
+  if(neighbor&&((down?offset===length(bodyCopy(el)):offset===0)||same||before.height&&after.height&&Math.abs(before.top-after.top)<Math.max(1,zoom))){
    selection.removeAllRanges();selection.addRange(old);next={el:neighbor,offset:down?0:length(bodyCopy(neighbor))};
   }else{e.preventDefault();e.stopImmediatePropagation();caretPage();return;}
  }
