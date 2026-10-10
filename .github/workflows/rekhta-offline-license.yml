@@ -59,6 +59,10 @@ jobs:
         if: success() || failure()
         run: npx electron pagination-test.cjs
         working-directory: offline-licensing/customer
+      - name: Test offline background remover and welcome layout
+        if: success() || failure()
+        run: npx electron background-remover-test.cjs
+        working-directory: offline-licensing/customer
       - name: Confirm installer built
         if: github.event_name == 'workflow_dispatch' && inputs.build_exe
         run: node -e "if(!require('fs').readdirSync('dist').some(f=>f.endsWith('.exe')))process.exit(1)"

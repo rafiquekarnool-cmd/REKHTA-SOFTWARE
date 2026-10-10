@@ -10,7 +10,7 @@ app.whenReady().then(async()=>{
   await win.loadFile(path.join(__dirname,'REKHTA.html'));
   const run=s=>win.webContents.executeJavaScript(s);
   await run(`(()=>{document.getElementById('rkWelcome')?.remove();startStudio('regular');page.innerHTML='';page.classList.remove('show-grid','margin-guides');setZoom(1);})()`);
-  assert.deepEqual(await run(`[...document.querySelectorAll('.rk-vector-tools button')].filter(b=>!b.hidden).map(b=>b.id)`),['rkPictureTrace','rkSmartFill','rkTextCurves','rkCurveSVG']);
+  assert.deepEqual(await run(`[...document.querySelectorAll('.rk-vector-tools button')].filter(b=>!b.hidden).map(b=>b.id)`),['rkPictureTrace','rkSmartFill','rkTextCurves','rkCurveSVG','rkBackgroundRemover']);
   const groups=await shapeRuns([{family:'Jameel Noori Nastaleeq',direction:'rtl',text:'السلام علیکم ئ'}]);assert(groups[0].glyphs.some(g=>/[QC]/.test(g.d)),'Real font curves');assert(groups[0].glyphs.length<13,'Urdu shaping produces joined ligatures');
   await assert.rejects(shapeRuns([{family:'Unknown',direction:'rtl',text:'سلام'}]),/supports/);
   const flood=await run(`(()=>{const c=document.createElement('canvas');c.width=c.height=100;const ctx=c.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,100,100);ctx.strokeStyle='black';ctx.lineWidth=2;ctx.strokeRect(10,10,80,80);ctx.fillStyle='black';ctx.fillRect(40,40,20,20);const d=ctx.getImageData(0,0,100,100).data,r=rekhtaVectorAdditions.closedRegion(d,100,100,20,20);let open=false;try{rekhtaVectorAdditions.closedRegion(d,100,100,0,0);}catch(e){open=/open/.test(e.message);}return{count:r.count,hole:r.pixels[((45-r.y)*r.width+45-r.x)*4+3],open};})()`);assert(flood.count>5000);assert.equal(flood.hole,0,'Hole remains empty');assert(flood.open,'Open region rejected');

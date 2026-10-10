@@ -1,0 +1,22 @@
+const {app,BrowserWindow}=require('electron'),assert=require('assert/strict'),fs=require('fs');
+app.whenReady().then(async()=>{let w;try{
+ fs.mkdirSync('test-output',{recursive:true});w=new BrowserWindow({width:1400,height:1000,show:true,webPreferences:{contextIsolation:true}});await w.loadFile('REKHTA.html');const run=s=>w.webContents.executeJavaScript(s);
+ await run('document.fonts.ready.then(()=>{})');
+ assert(await run(`(()=>{const el=document.querySelector('#rkWelcome .rkUrdu:not(.rkUrduName)'),r=el.getBoundingClientRect();return r.height>=parseFloat(getComputedStyle(el).fontSize)*2.3&&getComputedStyle(el).flexShrink==='0';})()`),'Urdu welcome retains full line height');
+ fs.writeFileSync('test-output/welcome.png',(await w.webContents.capturePage()).toPNG());
+ await run(`(()=>{rkWelcomeStart.click();newDoc(false);window.pic=baseObj('image',80,80,200,200);pic.classList.add('imageobj');const canvas=document.createElement('canvas');canvas.width=20;canvas.height=20;const c=canvas.getContext('2d');c.fillStyle='white';c.fillRect(0,0,20,20);c.fillStyle='black';c.fillRect(5,5,10,10);c.fillStyle='white';c.fillRect(8,8,4,4);window.im=document.createElement('img');im.src=canvas.toDataURL();pic.append(im);window.originalSrc=im.src;selectObj(pic);snapshot();})()`);
+ await run(`rekhtaBackgroundRemover.open()`);assert(await run(`!!document.getElementById('rkBackgroundDialog')`));
+ await run(`rkBgPreview.click();void 0`);await new Promise(r=>setTimeout(r,200));
+ assert.equal(await run(`rkBgApply.disabled`),false);
+ assert.deepEqual(await run(`(()=>{const c=rkBgCanvas.getContext('2d'),d=c.getImageData(0,0,20,20).data;return [d[3],d[(6*20+6)*4+3],d[(10*20+10)*4+3]];})()`),[0,255,255],'Edge background gone; dark object and enclosed white retained');
+ await run(`rkBgCancel.click()`);assert.equal(await run(`im.src===originalSrc`),true,'Cancel preserves original');
+ await run(`rekhtaBackgroundRemover.open()`);await run(`rkBgPreview.click();void 0`);await new Promise(r=>setTimeout(r,200));await run(`rkBgApply.click()`);
+ assert.equal(await run(`!!document.getElementById('rkBackgroundDialog')`),false);
+ assert.equal(await run(`im.src!==originalSrc&&im.src.startsWith('data:image/png')`),true);
+ await run(`im.decode()`);assert.deepEqual(await run(`({w:im.naturalWidth,h:im.naturalHeight,left:pic.style.left,top:pic.style.top})`),{w:20,h:20,left:'80px',top:'80px'});
+ await run(`window.removedSrc=im.src;window.saved=serialize();restore(saved);`);assert.equal(await run(`page.querySelector('.imageobj img').src===removedSrc`),true,'Transparent PNG survives save/open');
+ await run(`undo()`);assert.equal(await run(`page.querySelector('.imageobj img').src===originalSrc`),true,'Undo restores original');await run(`redo()`);assert.equal(await run(`page.querySelector('.imageobj img').src===removedSrc`),true);
+ await run(`selectObj(page.querySelector('.imageobj'));rekhtaBackgroundRemover.open()`);await run(`rkBgAll.checked=true;rkBgAll.dispatchEvent(new Event('change'));rkBgPreview.click();void 0`);await new Promise(r=>setTimeout(r,200));assert.equal(await run(`rkBgCanvas.getContext('2d').getImageData(10,10,1,1).data[3]`),0,'All matching colour removes enclosed background too');
+ fs.writeFileSync('test-output/background-remover.png',(await w.webContents.capturePage()).toPNG());await run(`rkBgCancel.click()`);
+ console.log('PASS: welcome height, edge-only removal, preview, cancel, apply, original dimensions, save/open, undo/redo and all-colour mode');app.exit(0);
+ }catch(e){console.error(e);if(w)fs.writeFileSync('test-output/background-remover-failure.png',(await w.webContents.capturePage()).toPNG());app.exit(1);}});
