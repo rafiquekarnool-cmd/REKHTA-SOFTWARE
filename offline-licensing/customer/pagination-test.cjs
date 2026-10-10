@@ -10,6 +10,10 @@ app.whenReady().then(async()=>{try{
  assert.equal(await run(`document.activeElement.dataset.flowOrder`),'0','Up returns to previous page');
  await run(`(()=>{const f=rekhtaPagination.frames[0];f.focus();const r=document.createRange();r.selectNodeContents(f);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r);})()`);
  win.webContents.sendInputEvent({type:'keyDown',keyCode:'Down'});win.webContents.sendInputEvent({type:'keyUp',keyCode:'Down'});await run(`new Promise(r=>setTimeout(r,40))`);assert.equal(await run(`document.activeElement.dataset.flowOrder`),'0','Down within page stays in that page');
+ assert.equal(await run(`getComputedStyle(stageWrap).overflowY`),'scroll','Vertical scrollbar is always available');assert.equal(await run(`getComputedStyle(stageWrap).overflowX`),'scroll');
+ await run(`new Promise(r=>setTimeout(r,220))`);await run(`stageWrap.scrollTop=(rekhtaPagination.height+32)*zoom;void 0;`);await run(`new Promise(r=>setTimeout(r,80))`);
+ assert.equal(await run(`rekhtaPagination.currentPage`),2,'Scrolling updates current page');assert.equal(await run(`document.getElementById('rkCurrentPage').textContent`),'Page 2 of '+initial.pages);
+ assert(await run(`(()=>{const r=document.getElementById('rkCurrentPage').getBoundingClientRect();return r.width>0&&r.top>=0&&r.bottom<=innerHeight;})()`),'Page status remains visible');
  assert.equal(await run(`page.querySelectorAll('span[style*="ff0000"],span[style*="255, 0, 0"]').length>0`),true,'Inline colour preserved');
  await run(`window.saved=serialize();restore(saved);`);assert.equal(await run(`rekhtaPagination.count`),initial.pages);assert.equal(await run(`rekhtaPagination.frames.map(e=>e.textContent).join('')`),initial.text);
  await run(`(()=>{const first=rekhtaPagination.frames[0];rekhtaPagination.frames.slice(1).forEach(e=>e.remove());first.innerHTML='SHORT TEXT';first.focus();placeCaretEnd(first);rekhtaPagination.paginate(first);})()`);assert.equal(await run(`rekhtaPagination.count`),1,'Deleting text shrinks unused pages');
