@@ -14,3 +14,5 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('inpage-insert-fix.js','utf8
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('background-remover.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('rtl-paste-fix.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('paragraph-alignment.js','utf8')+'</script>');
+
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('splash-layout.js','utf8')+'</script>');
