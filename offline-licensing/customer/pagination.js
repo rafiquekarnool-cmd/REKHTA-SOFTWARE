@@ -68,11 +68,21 @@ const restoreOld=restore;restore=function(d){clearTimeout(timer);pending.clear()
 const newOld=newDoc;newDoc=function(...args){if(args[0]!==false)return newOld(...args);clearTimeout(timer);pending.clear();queued=false;running=true;count=1;try{newOld(...args);paperH=page.offsetHeight;repaint();}finally{running=false;observer.takeRecords();}};
 const settingsOld=applyDocumentSettings;applyDocumentSettings=function(...args){const was=running;running=true;const oldStride=paperH+GAP;try{const r=settingsOld(...args);paperH=Number(args[0].height)*px;for(const el of objects()){const top=parseFloat(el.style.top)||0,index=Math.floor(top/oldStride);el.style.top=(index*(paperH+GAP)+top-index*oldStride)+'px';}repaint();return r;}finally{running=was;observer.takeRecords();if(!running)for(const el of objects())if(el.dataset.flowId) schedule(el);}};
 const fitOld=fitPage;fitPage=function(){if(count===1)return fitOld();const box=stageWrap.getBoundingClientRect();setZoom(Math.min(1,(box.width-120)/page.offsetWidth,(box.height-90)/paperH));};
-window.addEventListener('keydown',e=>{const el=document.activeElement;if(!el?.dataset.flowId||!getSelection().isCollapsed)return;const offset=caretOffset(el),frames=objects().filter(f=>f.dataset.flowId===el.dataset.flowId&&visible(f)).sort((a,b)=>Number(a.dataset.flowOrder)-Number(b.dataset.flowOrder)),i=frames.indexOf(el);let next=null;
- if((e.key==='PageDown'||offset===length(bodyCopy(el))&&['ArrowDown',el.dir==='rtl'?'ArrowLeft':'ArrowRight'].includes(e.key))&&frames[i+1])next={el:frames[i+1],offset:0};
- if((e.key==='PageUp'||offset===0&&['ArrowUp',el.dir==='rtl'?'ArrowRight':'ArrowLeft','Backspace'].includes(e.key))&&frames[i-1])next={el:frames[i-1],offset:length(bodyCopy(frames[i-1]))};
+window.addEventListener('keydown',e=>{
+ const el=document.activeElement,selection=getSelection();if(!el?.dataset.flowId||!selection.isCollapsed||!selection.rangeCount||e.ctrlKey||e.altKey||e.metaKey||e.shiftKey)return;
+ const offset=caretOffset(el),frames=objects().filter(f=>f.dataset.flowId===el.dataset.flowId&&visible(f)).sort((a,b)=>Number(a.dataset.flowOrder)-Number(b.dataset.flowOrder)),i=frames.indexOf(el);let next=null;
+ if(['ArrowDown','ArrowUp'].includes(e.key)&&typeof selection.modify==='function'){
+  const old=selection.getRangeAt(0).cloneRange(),before=old.getBoundingClientRect(),down=e.key==='ArrowDown',neighbor=frames[i+(down?1:-1)];
+  selection.modify('move',down?'forward':'backward','line');const moved=selection.getRangeAt(0),after=moved.getBoundingClientRect();
+  const same=old.startContainer===moved.startContainer&&old.startOffset===moved.startOffset;
+  if(neighbor&&(same||before.height&&after.height&&Math.abs(before.top-after.top)<Math.max(1,zoom))){
+   selection.removeAllRanges();selection.addRange(old);next={el:neighbor,offset:down?0:length(bodyCopy(neighbor))};
+  }else{e.preventDefault();e.stopImmediatePropagation();caretPage();return;}
+ }
+ if((e.key==='PageDown'||offset===length(bodyCopy(el))&&e.key===(el.dir==='rtl'?'ArrowLeft':'ArrowRight'))&&frames[i+1])next={el:frames[i+1],offset:0};
+ if((e.key==='PageUp'||offset===0&&[el.dir==='rtl'?'ArrowRight':'ArrowLeft','Backspace'].includes(e.key))&&frames[i-1])next={el:frames[i-1],offset:length(bodyCopy(frames[i-1]))};
  if(next){e.preventDefault();e.stopImmediatePropagation();setCaret(next.el,next.offset);if(e.key==='Backspace'){document.execCommand('delete');schedule(next.el);}}
- },true);
+},true);
 function makePaper(index,transparent=false){const p=document.createElement('div');p.className='rk-print-paper';p.style.cssText=`position:relative;width:${page.offsetWidth}px;height:${paperH}px;overflow:hidden;background:${transparent?'transparent':'white'};`;const offset=index*(paperH+GAP);for(const el of objects()){if(!visible(el))continue;const top=parseFloat(el.style.top)||0;if(top+el.offsetHeight<=offset||top>=offset+paperH)continue;const c=bodyCopy(el);c.classList.remove('selected','keyboard-selected');c.removeAttribute('contenteditable');c.style.top=top-offset+'px';c.style.outline='none';p.append(c);}return p;}
 function preparePrint(){document.getElementById('rkPrintPages')?.remove();const root=document.createElement('div');root.id='rkPrintPages';root.style.display='none';for(let i=0;i<count;i++)root.append(makePaper(i));document.body.append(root);let s=document.getElementById('rkPaperPrintSize');if(!s){s=document.createElement('style');s.id='rkPaperPrintSize';document.head.append(s);}s.textContent=`@media print{@page{size:${page.offsetWidth/px}mm ${paperH/px}mm;margin:0}html body{height:auto!important}}`;return root;}
 window.addEventListener('beforeprint',preparePrint);window.addEventListener('afterprint',()=>document.getElementById('rkPrintPages')?.remove());
