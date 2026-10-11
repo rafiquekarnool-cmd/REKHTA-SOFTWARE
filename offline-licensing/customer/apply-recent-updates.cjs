@@ -19,3 +19,5 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('splash-layout.js','utf8')+'
 
 
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('project-save.js','utf8')+'</script>');
+
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('inpage-theme.js','utf8')+'</script>');
