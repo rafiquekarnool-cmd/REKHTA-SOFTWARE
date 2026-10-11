@@ -15,7 +15,7 @@
   if(!r){el.focus({preventScroll:true});r=document.createRange();r.selectNodeContents(el);r.collapse(true);}
   el.focus({preventScroll:true});s.removeAllRanges();s.addRange(r);
   if(r.collapsed){s.modify('move','backward','lineboundary');s.modify('extend','forward','lineboundary');if(!el.contains(s.anchorNode)||!el.contains(s.focusNode)){s.removeAllRanges();s.addRange(r);return;}if(s.isCollapsed)return;}
-  document.dispatchEvent(new Event('selectionchange'));previous.call(this,'fontFamily');chooser.value=family;
+  document.dispatchEvent(new Event('selectionchange'));chooser.value=family;previous.call(this,'fontFamily');chooser.value=family;
  };
  document.fonts.load('24px "Jameel Noori Nastaleeq"','اردو').then(fonts=>{if(!fonts.length)toast('Jameel Noori Nastaleeq could not load. Reopen the updated HTML file.');}).catch(()=>toast('Jameel Noori Nastaleeq could not load. Reopen the updated HTML file.'));
 })();
