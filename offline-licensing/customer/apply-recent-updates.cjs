@@ -23,3 +23,4 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('project-save.js','utf8')+'<
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('inpage-theme.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('export-theme.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('design-close.js','utf8')+'</script>');
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('design-left.js','utf8')+'</script>');
