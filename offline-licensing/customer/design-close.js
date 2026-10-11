@@ -9,7 +9,7 @@
  window.toggleDesignDrawer=function(force){setOpen(typeof force==='boolean'?force:drawer.hidden);};
  buttons.forEach(b=>{b.setAttribute('aria-controls','designDrawer');b.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();const open=drawer.hidden;closeAllMenus();setOpen(open);},true);});
  const close=document.createElement('button');close.id='rkDesignClose';close.type='button';close.textContent='Close ×';close.setAttribute('aria-label','Close Design options');close.onclick=()=>{setOpen(false);buttons[0]?.focus();};drawer.prepend(close);
- document.addEventListener('pointerdown',e=>{if(!drawer.hidden&&!drawer.contains(e.target)&&!buttons.some(b=>b.contains(e.target)))setOpen(false);},true);
+ document.addEventListener('pointerdown',e=>{if(!drawer.dataset.leftPanel&&!drawer.hidden&&!drawer.contains(e.target)&&!buttons.some(b=>b.contains(e.target)))setOpen(false);},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!drawer.hidden){setOpen(false);buttons[0]?.focus();}},true);
  setOpen(false);
 })();

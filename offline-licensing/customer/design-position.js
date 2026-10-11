@@ -1,6 +1,7 @@
 (function(){
  const drawer=document.getElementById('designDrawer'),workspace=document.querySelector('.workspace');
  if(!drawer||!workspace)return;
+ drawer.dataset.leftPanel='true';
  const style=document.createElement('style');style.textContent=`
  @media screen{
  #designDrawer{position:fixed;left:8px;top:var(--rk-design-top,160px);width:180px;max-height:var(--rk-design-height,60vh);box-sizing:border-box;padding:8px;overflow:auto;background:#f2f5f3;color:#2b4242;border:1px solid #93a4ab;box-shadow:0 4px 12px #20393622}
@@ -15,4 +16,7 @@
  `;document.head.append(style);
  function position(){const r=workspace.getBoundingClientRect();drawer.style.setProperty('--rk-design-top',(r.top+8)+'px');drawer.style.setProperty('--rk-design-height',Math.max(80,r.height-16)+'px');}
  new ResizeObserver(position).observe(workspace);window.addEventListener('resize',position);position();
+ const toggle=window.toggleDesignDrawer;
+ window.toggleDesignDrawer=function(force){if(force===false)return;toggle(force);};
+ toggleDesignDrawer(true);
 })();
