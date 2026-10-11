@@ -25,3 +25,4 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('export-theme.js','utf8')+'<
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('design-close.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('design-left.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('design-position.js','utf8')+'</script>');
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('selected-shadow.js','utf8')+'</script>');
