@@ -30,7 +30,7 @@ jobs:
           Copy-Item desktop-3.7/scripts offline-licensing/customer/scripts -Recurse -Force
           Copy-Item desktop-3.7/vendor offline-licensing/customer/vendor -Recurse -Force
       - name: Install licensed build dependencies
-        run: npm install
+        run: npm install --omit=optional
         working-directory: offline-licensing/customer
       - name: Apply current welcome and design gallery updates
         run: node apply-recent-updates.cjs
