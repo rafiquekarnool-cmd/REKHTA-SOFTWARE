@@ -1,7 +1,7 @@
 (function(){
  const chooser=document.getElementById('fontFamily');if(!chooser)return;
  const jameel='Jameel Noori Nastaleeq';
- const create=createText;createText=function(...args){const el=create.apply(this,args),mode=document.getElementById('language')?.value;if(el&&(mode==='ur'||mode==='mix')){el.style.fontFamily='"'+jameel+'"';el.lang='ur';chooser.value=jameel;}return el;};
+ const create=createText;createText=function(...args){const el=create.apply(this,args),mode=document.getElementById('language')?.value;if(el&&(mode==='ur'||mode==='mix')){el.style.fontFamily='"'+jameel+'"';el.lang='ur';chooser.value=jameel;const urduChooser=document.getElementById('rkUrduFonts');if(urduChooser)urduChooser.value=jameel;}return el;};
  if(['ur','mix'].includes(document.getElementById('language')?.value))chooser.value=jameel;
  let remembered=null;
  document.addEventListener('selectionchange',()=>{const s=getSelection();if(s.rangeCount&&selected?.dataset.type==='text'&&selected.contains(s.anchorNode)&&selected.contains(s.focusNode))remembered={el:selected,range:s.getRangeAt(0).cloneRange()};});

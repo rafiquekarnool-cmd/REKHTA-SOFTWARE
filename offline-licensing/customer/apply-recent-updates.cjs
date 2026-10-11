@@ -30,3 +30,5 @@ fs.appendFileSync(file,require('./pdf-runtime.cjs')());
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('pdf-import.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('font-selection-fix.js','utf8')+'</script>');
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('default-zoom.js','utf8')+'</script>');
+
+fs.writeFileSync(file,fs.readFileSync(file,'utf8').replace("window.addEventListener('resize',()=>{if(!app.classList.contains('hidden'))fitPage();});","window.addEventListener('resize',()=>{if(!app.classList.contains('hidden'))setZoom(zoom);});"));
