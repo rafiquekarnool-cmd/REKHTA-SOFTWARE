@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "test": "node license-tests.cjs && node project-files-test.cjs",
+    "test": "node license-tests.cjs && node project-files-test.cjs && node trial-tests.cjs",
     "dist": "electron-builder --win nsis --x64 --publish never"
   },
   "dependencies": {
@@ -38,7 +38,8 @@
       "!license-tests.cjs",
       "scripts/**",
       "vendor/**",
-      "project-files.cjs"
+      "project-files.cjs",
+      "trial-store.cjs"
     ],
     "asar": true,
     "compression": "maximum",
@@ -51,7 +52,7 @@
           ]
         }
       ],
-      "artifactName": "REKHTA-Setup-${version}-Win8-x64.${ext}"
+      "artifactName": "REKHTA-Demo-7Days-Setup-${version}-Win8-x64.${ext}"
     },
     "nsis": {
       "oneClick": false,

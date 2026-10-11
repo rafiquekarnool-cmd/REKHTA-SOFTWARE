@@ -1,7 +1,7 @@
-name: REKHTA Offline Licensed EXE
+name: REKHTA 7 Day Demo EXE
 on:
   push:
-    branches: [test/rekhta-1.0.35-save-20261011]
+    branches: [test/rekhta-1.0.37-demo-20261011]
     paths: [desktop-3.7/**, offline-licensing/customer/**, .github/workflows/rekhta-offline-license.yml]
   workflow_dispatch:
     inputs:
@@ -47,6 +47,12 @@ jobs:
       - name: Test trace, Smart Fill and native Urdu curves
         if: success() || failure()
         run: npx electron vector-additions-test.cjs
+        working-directory: offline-licensing/customer
+      - name: Test demo expiry interface
+        run: npx electron demo-ui-test.cjs
+        working-directory: offline-licensing/customer
+      - name: Test real native demo startup
+        run: npx electron . --demo-startup-test
         working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer
         if: (github.event_name == 'workflow_dispatch' && inputs.build_exe) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[build-exe]'))
@@ -94,7 +100,7 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
       - uses: actions/upload-artifact@v4
         with:
-          name: REKHTA-Offline-Licensed-Win8-x64
+          name: REKHTA-Demo-7Days-Win8-x64
           path: |
             offline-licensing/customer/dist/*.exe
             offline-licensing/customer/test-output/*

@@ -36,3 +36,5 @@ fs.writeFileSync(file,fs.readFileSync(file,'utf8').replace("window.addEventListe
 fs.writeFileSync(file,fs.readFileSync(file,'utf8').replaceAll("if(!app.classList.contains('hidden'))fitPage();","if(!app.classList.contains('hidden'))setZoom(zoom);").replaceAll("if(typeof fitPage==='function'&&document.getElementById('app')?.offsetParent!==null)fitPage();","if(typeof setZoom==='function'&&document.getElementById('app')?.offsetParent!==null)setZoom(zoom);"));
 
 fs.writeFileSync(file,fs.readFileSync(file,'utf8').replace('<head>','<head>\n<style id="rk-splash-only-startup">#dashboard{display:none!important}#app.hidden{display:none!important}#rkWelcome{z-index:2147483000!important;isolation:isolate}</style>'));
+
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('demo-ui.js','utf8')+'</script>');
