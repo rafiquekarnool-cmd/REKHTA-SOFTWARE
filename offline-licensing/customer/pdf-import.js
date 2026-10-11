@@ -13,7 +13,7 @@
   busy=true;button.disabled=true;const created=[];
   try{
    const h=rekhtaPagination.height,w=page.offsetWidth;
-   const existing=page.querySelector('.obj');const first=existing?rekhtaPagination.count:0;
+   const existing=[...page.querySelectorAll('.obj')].some(el=>el.dataset.type!=='text'||el.textContent.trim());const first=existing?rekhtaPagination.count:0;
    for(let n=from;n<=to;n++){
     toast('Importing PDF page '+n+' / '+to);
     const p=await pdf.getPage(n),base=p.getViewport({scale:1});let scale=dpi/72;
