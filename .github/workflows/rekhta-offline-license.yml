@@ -14,6 +14,7 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,6 +53,7 @@ jobs:
         run: npx electron demo-ui-test.cjs
         working-directory: offline-licensing/customer
       - name: Test real native demo startup
+        timeout-minutes: 2
         run: npx electron . --demo-startup-test
         working-directory: offline-licensing/customer
       - name: Build Windows 8 x64 installer

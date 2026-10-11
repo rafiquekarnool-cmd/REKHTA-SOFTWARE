@@ -1,7 +1,7 @@
 const {app,BrowserWindow,ipcMain,dialog,session,safeStorage}=require('electron');
 const path=require('path');const fs=require('fs/promises');const crypto=require('crypto');
 const offline=require('./license.cjs');let licenseStore,trialStore,pcCode,licenseError;
-function canUse(){return !!canUse()||!!trialStore?.check().active;}
+function canUse(){return !!licenseStore?.active||!!trialStore?.check().active;}
 let window;const saveTargets=new Map();
 const smoke=process.argv.includes('--smoke-test'),demoStartup=process.argv.includes('--demo-startup-test');
 function isOwnFrame(event){return window&&event.sender===window.webContents&&event.senderFrame===window.webContents.mainFrame;}
