@@ -123,5 +123,5 @@ stageWrap.addEventListener('wheel',()=>{caretScrollUntil=0;},{passive:true});
 stageWrap.addEventListener('pointerdown',e=>{if(e.target===stageWrap)caretScrollUntil=0;});
 stageWrap.addEventListener('scroll',()=>{if(performance.now()<caretScrollUntil)return;const r=page.getBoundingClientRect(),v=stageWrap.getBoundingClientRect(),scale=r.width/page.offsetWidth;showPage(Math.floor(Math.max(0,(v.top+Math.min(v.height/2,paperH*scale/2)-r.top)/scale)/(paperH+GAP))+1);},{passive:true});
 showPage(1);
-window.rekhtaPagination={paginate,makePaper,preparePrint,canvasFor,zipStore,get currentPage(){return current;},get count(){return count;},get height(){return paperH;},get frames(){return objects().filter(e=>e.dataset.flowId);},flush(){if(document.activeElement?.classList.contains('textobj'))paginate(document.activeElement);}};
+window.rekhtaPagination={refresh:repaint,paginate,makePaper,preparePrint,canvasFor,zipStore,get currentPage(){return current;},get count(){return count;},get height(){return paperH;},get frames(){return objects().filter(e=>e.dataset.flowId);},flush(){if(document.activeElement?.classList.contains('textobj'))paginate(document.activeElement);}};
 })();

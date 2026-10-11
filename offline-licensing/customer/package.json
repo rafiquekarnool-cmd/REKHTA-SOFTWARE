@@ -13,7 +13,8 @@
   "dependencies": {
     "html2canvas": "1.4.1",
     "jspdf": "2.5.1",
-    "harfbuzzjs": "0.4.13"
+    "harfbuzzjs": "0.4.13",
+    "pdfjs-dist": "3.11.174"
   },
   "devDependencies": {
     "electron": "22.3.27",
