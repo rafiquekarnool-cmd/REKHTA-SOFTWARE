@@ -28,3 +28,4 @@ fs.appendFileSync(file,'\n<script>'+fs.readFileSync('design-position.js','utf8')
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('selected-shadow.js','utf8')+'</script>');
 fs.appendFileSync(file,require('./pdf-runtime.cjs')());
 fs.appendFileSync(file,'\n<script>'+fs.readFileSync('pdf-import.js','utf8')+'</script>');
+fs.appendFileSync(file,'\n<script>'+fs.readFileSync('font-selection-fix.js','utf8')+'</script>');
