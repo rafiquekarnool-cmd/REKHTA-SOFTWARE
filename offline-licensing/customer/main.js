@@ -13,6 +13,10 @@ app.whenReady().then(async()=>{
  window.webContents.setWindowOpenHandler(()=>({action:'deny'}));
  window.webContents.on('will-navigate',e=>e.preventDefault());
  session.defaultSession.on('will-download',(_event,item)=>{if(smoke){item.cancel();return;}item.setSaveDialogOptions({title:'Save REKHTA File',defaultPath:path.join(app.getPath('documents'),item.getFilename())});});
+ const projects=require('./project-files.cjs').createProjectFiles({chooseSave:async current=>{const r=await dialog.showSaveDialog(window,{title:'Save REKHTA Project',defaultPath:current||path.join(app.getPath('documents'),'REKHTA-Project.json'),filters:[{name:'REKHTA Project',extensions:['json']}]});return r.canceled?null:r.filePath;},chooseOpen:async()=>{const r=await dialog.showOpenDialog(window,{title:'Open REKHTA Project',properties:['openFile'],filters:[{name:'REKHTA Project',extensions:['json']}]});return r.canceled?null:r.filePaths[0];}});
+ ipcMain.handle('rekhta:project-save',async(event,data,saveAs)=>{if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');return projects.save(data,saveAs===true);});
+ ipcMain.handle('rekhta:project-open',async event=>{if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');return projects.open();});
+ ipcMain.handle('rekhta:project-reset',async event=>{if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');return projects.reset();});
  ipcMain.handle('rekhta:text-curves',async(event,runs)=>{
   if(!isOwnFrame(event)||!licenseStore?.active)throw Error('Activation required');
   return require('./curves-engine.cjs').shapeRuns(runs);
@@ -59,4 +63,5 @@ app.whenReady().then(async()=>{
  window.maximize();window.show();
 });
 app.on('window-all-closed',()=>app.quit());
+
 
