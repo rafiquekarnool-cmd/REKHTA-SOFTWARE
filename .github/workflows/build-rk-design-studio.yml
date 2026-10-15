@@ -26,6 +26,7 @@ jobs:
       - name: Restore editor and Windows icon
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force -Path "build" | Out-Null
           $index64 = (Get-ChildItem "upload/index.b64.part*" | Sort-Object Name | ForEach-Object { Get-Content $_.FullName -Raw }) -join ""
           [IO.File]::WriteAllBytes("index.html", [Convert]::FromBase64String($index64))
           $icon64 = (Get-ChildItem "upload/icon.b64.part*" | Sort-Object Name | ForEach-Object { Get-Content $_.FullName -Raw }) -join ""
