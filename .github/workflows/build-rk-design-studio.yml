@@ -23,6 +23,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+      - name: Restore editor and Windows icon
+        shell: pwsh
+        run: |
+          $index64 = (Get-ChildItem "upload/index.b64.part*" | Sort-Object Name | ForEach-Object { Get-Content $_.FullName -Raw }) -join ""
+          [IO.File]::WriteAllBytes("index.html", [Convert]::FromBase64String($index64))
+          $icon64 = (Get-ChildItem "upload/icon.b64.part*" | Sort-Object Name | ForEach-Object { Get-Content $_.FullName -Raw }) -join ""
+          [IO.File]::WriteAllBytes("build/icon.ico", [Convert]::FromBase64String($icon64))
       - name: Install dependencies
         run: npm install
       - name: Build Windows 8 x64 installer
