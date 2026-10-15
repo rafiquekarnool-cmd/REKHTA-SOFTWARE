@@ -1,0 +1,39 @@
+{
+  "name": "rk-design-studio",
+  "version": "8.24.0",
+  "description": "RK Design Studio — Professional Vector and Print Software",
+  "main": "main.js",
+  "author": "RK Solution - Rafique Ahmed N. Karnool",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "22.3.27",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "com.rksolution.rkdesignstudio",
+    "productName": "RK Design Studio",
+    "asar": true,
+    "compression": "maximum",
+    "files": ["main.js", "index.html", "build/icon.ico"],
+    "directories": {"buildResources": "build", "output": "dist"},
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [{"target": "nsis", "arch": ["x64"]}],
+      "artifactName": "RK-Design-Studio-Setup-V8.24-Win8-x64.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "RK Design Studio",
+      "perMachine": false,
+      "runAfterFinish": true
+    }
+  }
+}
