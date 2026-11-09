@@ -1,0 +1,38 @@
+name: Build REKHTA for Windows 10 x64
+
+on:
+  push:
+    branches: [build/rekhta-win10-x64]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          if (Test-Path package-lock.json) {
+            npm ci
+          } else {
+            npm install
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build Windows 10 x64 installer
+        shell: pwsh
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npm run dist -- --publish never '-c.win.artifactName=REKHTA-Windows10-x64-Setup-${version}.${ext}'
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: REKHTA-Windows10-x64-Setup
+          path: dist/REKHTA-Windows10-x64-Setup-*.exe
+          if-no-files-found: error
